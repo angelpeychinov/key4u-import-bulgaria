@@ -149,7 +149,7 @@ const translations = {
     'contact.viber': 'Чат във Viber',
     
     // Features
-    'features.title': 'Защо KEY4U?',
+    'features.title': 'Защо да изберете KEY4U?',
     'features.endToEnd': 'Пълна Услуга',
     'features.endToEndDesc': 'От заявка до регистрация, ние се грижим за всичко',
     'features.affordable': 'Достъпен Лукс',
