@@ -1,5 +1,5 @@
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Facebook, Instagram } from "lucide-react";
+import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import logoFooter from "@/assets/logo-footer.png";
 
 export const Footer = () => {
@@ -21,6 +21,9 @@ export const Footer = () => {
               </a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
                 <Instagram size={24} />
+              </a>
+              <a href="viber://chat?number=%2B359XXXXXXXXX" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
+                <MessageCircle size={24} />
               </a>
             </div>
           </div>
