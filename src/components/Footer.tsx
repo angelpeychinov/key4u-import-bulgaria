@@ -1,4 +1,5 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import logoFooter from "@/assets/logo-footer.png";
 
 export const Footer = () => {
   const { t } = useLanguage();
@@ -9,7 +10,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">KEY4U</h3>
+            <img src={logoFooter} alt="KEY4U" className="h-16 w-auto mb-4" />
             <p className="text-sm opacity-90">
               {t('footer.description') || 'Luxury car import from Canada and USA to Bulgaria'}
             </p>
