@@ -119,14 +119,18 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-primary">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6 text-primary-foreground">
-            {t('contact.subtitle')}
-          </h2>
-          <Button variant="accent" size="lg" onClick={() => navigate('/find-car')}>
-            {t('hero.cta')}
-          </Button>
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <Card className="max-w-3xl mx-auto shadow-elegant">
+            <CardContent className="pt-12 pb-12 text-center">
+              <h2 className="text-4xl font-bold mb-6 text-foreground">
+                {t('contact.subtitle')}
+              </h2>
+              <Button variant="default" size="lg" onClick={() => navigate('/find-car')}>
+                {t('hero.cta')}
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </section>
     </div>
