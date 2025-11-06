@@ -50,7 +50,7 @@ export default function Home() {
           <h1 className="text-5xl md:text-7xl font-bold mb-4 text-foreground">
             {t('hero.title')}
           </h1>
-          <p className="text-2xl md:text-3xl text-primary font-semibold mb-6 drop-shadow-lg bg-background/80 px-6 py-2 rounded-lg inline-block">
+          <p className="text-2xl md:text-3xl text-primary-foreground font-semibold mb-6 drop-shadow-lg">
             {t('hero.subtitle')}
           </p>
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
