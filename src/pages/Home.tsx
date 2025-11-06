@@ -176,16 +176,6 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
-          <div className="text-center mt-12">
-            <Button 
-              variant="default" 
-              size="lg" 
-              onClick={() => navigate('/faq')}
-              className="hover-scale shadow-lg"
-            >
-              {language === 'bg' ? 'Виж всички въпроси' : 'See All Questions'}
-            </Button>
-          </div>
         </div>
       </section>
 
