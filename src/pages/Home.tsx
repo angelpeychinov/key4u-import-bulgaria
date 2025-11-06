@@ -9,7 +9,7 @@ import audiImage from "@/assets/car-audi.jpg";
 import teslaImage from "@/assets/car-tesla.jpg";
 
 export default function Home() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
 
   const features = [
@@ -114,6 +114,56 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Preview Section */}
+      <section className="py-20 bg-card">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4 text-primary">
+              {t('faq.title')}
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              {language === 'bg' ? 'Отговори на най-често задаваните въпроси' : 'Answers to commonly asked questions'}
+            </p>
+          </div>
+          <div className="max-w-3xl mx-auto space-y-6">
+            <Card className="shadow-card hover:shadow-elegant transition-smooth">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                  {t('faq.q1')}
+                </h3>
+                <p className="text-muted-foreground">{t('faq.a1')}</p>
+              </CardContent>
+            </Card>
+            <Card className="shadow-card hover:shadow-elegant transition-smooth">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                  {t('faq.q2')}
+                </h3>
+                <p className="text-muted-foreground">{t('faq.a2')}</p>
+              </CardContent>
+            </Card>
+            <Card className="shadow-card hover:shadow-elegant transition-smooth">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                  {t('faq.q3')}
+                </h3>
+                <p className="text-muted-foreground">{t('faq.a3')}</p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="text-center mt-12">
+            <Button 
+              variant="default" 
+              size="lg" 
+              onClick={() => navigate('/faq')}
+              className="hover-scale shadow-lg"
+            >
+              {language === 'bg' ? 'Виж всички въпроси' : 'See All Questions'}
+            </Button>
           </div>
         </div>
       </section>
