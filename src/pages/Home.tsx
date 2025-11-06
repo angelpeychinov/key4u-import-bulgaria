@@ -151,6 +151,30 @@ export default function Home() {
                 <p className="text-muted-foreground">{t('faq.a3')}</p>
               </CardContent>
             </Card>
+            <Card className="shadow-card hover:shadow-elegant transition-smooth">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                  {t('faq.q4')}
+                </h3>
+                <p className="text-muted-foreground">{t('faq.a4')}</p>
+              </CardContent>
+            </Card>
+            <Card className="shadow-card hover:shadow-elegant transition-smooth">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                  {t('faq.q5')}
+                </h3>
+                <p className="text-muted-foreground">{t('faq.a5')}</p>
+              </CardContent>
+            </Card>
+            <Card className="shadow-card hover:shadow-elegant transition-smooth">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                  {t('faq.q6')}
+                </h3>
+                <p className="text-muted-foreground">{t('faq.a6')}</p>
+              </CardContent>
+            </Card>
           </div>
           <div className="text-center mt-12">
             <Button 
