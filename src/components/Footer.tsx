@@ -18,7 +18,7 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{t('footer.quickLinks') || 'Quick Links'}</h3>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li><a href="/" className="opacity-90 hover:opacity-100 transition-smooth">{t('nav.home')}</a></li>
               <li><a href="/process" className="opacity-90 hover:opacity-100 transition-smooth">{t('nav.process')}</a></li>
