@@ -45,7 +45,6 @@ export const Footer = () => {
             <ul className="space-y-2 text-sm opacity-90">
               <li>Email: info@key4u.bg</li>
               <li>Phone: +359 XXX XXX XXX</li>
-              <li>Sofia, Bulgaria</li>
             </ul>
           </div>
         </div>
