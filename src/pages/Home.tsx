@@ -125,9 +125,6 @@ export default function Home() {
             <h2 className="text-4xl font-bold mb-4 text-primary">
               {t('faq.title')}
             </h2>
-            <p className="text-lg text-muted-foreground">
-              {language === 'bg' ? 'Отговори на най-често задаваните въпроси' : 'Answers to commonly asked questions'}
-            </p>
           </div>
           <div className="max-w-3xl mx-auto space-y-6">
             <Card className="shadow-card hover:shadow-elegant transition-smooth">
