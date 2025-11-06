@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Truck, Shield, MapPin } from "lucide-react";
+import { CheckCircle2, Car, Shield, MapPin } from "lucide-react";
 import heroImage from "@/assets/hero-car.jpg";
 import bmwImage from "@/assets/car-bmw.jpg";
 import audiImage from "@/assets/car-audi.jpg";
@@ -19,7 +19,7 @@ export default function Home() {
       description: t('features.endToEndDesc'),
     },
     {
-      icon: <Truck className="w-12 h-12 text-primary" />,
+      icon: <Car className="w-12 h-12 text-primary" />,
       title: t('features.affordable'),
       description: t('features.affordableDesc'),
     },
