@@ -1,4 +1,5 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Facebook, Instagram } from "lucide-react";
 import logoFooter from "@/assets/logo-footer.png";
 
 export const Footer = () => {
@@ -11,9 +12,17 @@ export const Footer = () => {
           {/* Company Info */}
           <div>
             <img src={logoFooter} alt="KEY4U" className="h-24 w-auto mb-4" />
-            <p className="text-sm opacity-90">
+            <p className="text-sm opacity-90 mb-4">
               {t('footer.description') || 'Luxury car import from Canada and USA to Bulgaria'}
             </p>
+            <div className="flex gap-4">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
+                <Facebook size={24} />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
+                <Instagram size={24} />
+              </a>
+            </div>
           </div>
 
           {/* Quick Links */}
