@@ -121,14 +121,37 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <Card className="max-w-3xl mx-auto shadow-elegant">
-            <CardContent className="pt-12 pb-12 text-center">
-              <h2 className="text-4xl font-bold mb-6 text-foreground">
+          <Card className="max-w-4xl mx-auto shadow-elegant hover:shadow-2xl transition-all duration-300 animate-fade-in">
+            <CardContent className="pt-16 pb-16 px-8 text-center">
+              <div className="mb-6 flex justify-center">
+                <div className="bg-primary/10 p-4 rounded-full">
+                  <CheckCircle2 className="w-16 h-16 text-primary" />
+                </div>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
                 {t('contact.subtitle')}
               </h2>
-              <Button variant="default" size="lg" onClick={() => navigate('/find-car')}>
-                {t('hero.cta')}
-              </Button>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                {t('hero.description') || 'Let us handle everything from finding your perfect car to delivering it to your doorstep in Bulgaria.'}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  onClick={() => navigate('/find-car')}
+                  className="hover-scale shadow-lg"
+                >
+                  {t('hero.cta')}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  onClick={() => navigate('/process')}
+                  className="hover-scale"
+                >
+                  {t('hero.learn')}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
