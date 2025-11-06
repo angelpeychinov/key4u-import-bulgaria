@@ -1,0 +1,104 @@
+import { NavLink } from "@/components/NavLink";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+
+export const Navigation = () => {
+  const { language, setLanguage, t } = useLanguage();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { to: "/", label: t('nav.home') },
+    { to: "/process", label: t('nav.process') },
+    { to: "/find-car", label: t('nav.findCar') },
+    { to: "/faq", label: t('nav.faq') },
+    { to: "/contact", label: t('nav.contact') },
+  ];
+
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <NavLink to="/" className="text-2xl font-bold text-primary">
+            KEY4U
+          </NavLink>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className="text-foreground hover:text-primary transition-smooth"
+                activeClassName="text-primary font-semibold"
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
+
+          {/* Language Switcher */}
+          <div className="hidden md:flex items-center gap-2">
+            <Button
+              variant={language === 'en' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setLanguage('en')}
+            >
+              EN
+            </Button>
+            <Button
+              variant={language === 'bg' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setLanguage('bg')}
+            >
+              BG
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-foreground"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-4 space-y-4">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className="block py-2 text-foreground hover:text-primary transition-smooth"
+                activeClassName="text-primary font-semibold"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </NavLink>
+            ))}
+            <div className="flex gap-2 pt-2">
+              <Button
+                variant={language === 'en' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setLanguage('en')}
+              >
+                EN
+              </Button>
+              <Button
+                variant={language === 'bg' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setLanguage('bg')}
+              >
+                BG
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+};
