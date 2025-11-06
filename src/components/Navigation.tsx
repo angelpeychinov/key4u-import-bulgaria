@@ -22,7 +22,7 @@ export const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <NavLink to="/" className="flex items-center mt-2">
+          <NavLink to="/" className="flex items-center mt-4">
             <img src={logo} alt="KEY4U - Car Import" className="h-24 w-auto" />
           </NavLink>
 
