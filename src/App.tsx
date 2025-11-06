@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { ViberButton } from "@/components/ViberButton";
 import Home from "./pages/Home";
 import Process from "./pages/Process";
@@ -22,17 +23,20 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Navigation />
-          <ViberButton />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/process" element={<Process />} />
-            <Route path="/find-car" element={<FindCar />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/contact" element={<Contact />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="flex flex-col min-h-screen">
+            <Navigation />
+            <ViberButton />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/process" element={<Process />} />
+              <Route path="/find-car" element={<FindCar />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/contact" element={<Contact />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Footer />
+          </div>
         </BrowserRouter>
       </LanguageProvider>
     </TooltipProvider>
