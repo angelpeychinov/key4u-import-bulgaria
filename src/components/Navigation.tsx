@@ -14,7 +14,6 @@ export const Navigation = () => {
     { to: "/process", label: t('nav.process') },
     { to: "/find-car", label: t('nav.findCar') },
     { to: "/faq", label: t('nav.faq') },
-    { to: "/contact", label: t('nav.contact') },
   ];
 
   return (
