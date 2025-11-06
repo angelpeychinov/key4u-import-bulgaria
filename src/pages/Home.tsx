@@ -70,7 +70,7 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-foreground">
+          <h2 className="text-4xl font-bold text-center mb-12 text-primary">
             {t('features.title')}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
