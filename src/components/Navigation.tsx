@@ -3,6 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import logo from "@/assets/logo.png";
 
 export const Navigation = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -21,8 +22,8 @@ export const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <NavLink to="/" className="text-2xl font-bold text-primary">
-            KEY4U
+          <NavLink to="/" className="flex items-center">
+            <img src={logo} alt="KEY4U - Car Import" className="h-12 w-auto" />
           </NavLink>
 
           {/* Desktop Navigation */}
