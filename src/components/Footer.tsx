@@ -29,7 +29,7 @@ export const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">{t('footer.contact') || 'Contact'}</h3>
+            <h3 className="text-lg font-semibold mb-4">Contacts</h3>
             <ul className="space-y-2 text-sm opacity-90">
               <li>Email: info@key4u.bg</li>
               <li>Phone: +359 XXX XXX XXX</li>
