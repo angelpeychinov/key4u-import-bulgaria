@@ -10,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import heroImage from "@/assets/hero-car.jpg";
 import bmwLogo from "@/assets/brands/bmw-logo.png";
 import audiLogo from "@/assets/brands/audi-logo.png";
@@ -111,6 +112,11 @@ export default function Home() {
               align: "start",
               loop: true,
             }}
+            plugins={[
+              Autoplay({
+                delay: 3000,
+              }),
+            ]}
             className="w-full max-w-5xl mx-auto"
           >
             <CarouselContent>
