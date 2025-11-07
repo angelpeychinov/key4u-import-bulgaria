@@ -133,7 +133,7 @@ export default function Home() {
                 { name: "Kia", logo: kiaLogo },
               ].map((brand, index) => (
                 <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/4">
-                  <Card className="shadow-card hover:shadow-elegant transition-smooth">
+                  <Card className="shadow-card cursor-default">
                     <CardContent className="flex flex-col items-center justify-center p-8 h-40">
                       <img 
                         src={brand.logo} 
