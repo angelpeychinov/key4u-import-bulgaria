@@ -119,11 +119,6 @@ export default function Home() {
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
-              <img 
-                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2075963586.jpg" 
-                alt="BMW 528 528i xDrive"
-                className="w-full h-48 object-cover"
-              />
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">BMW 528 528i xDrive</h3>
@@ -147,11 +142,6 @@ export default function Home() {
             </Card>
 
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
-              <img 
-                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2093403586.jpg" 
-                alt="Mercedes-Benz GLB 35 AMG"
-                className="w-full h-48 object-cover"
-              />
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">Mercedes-Benz GLB 35 AMG</h3>
@@ -175,11 +165,6 @@ export default function Home() {
             </Card>
 
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
-              <img 
-                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2030883586.jpg" 
-                alt="Audi Q8 3.0T S-LINE"
-                className="w-full h-48 object-cover"
-              />
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">Audi Q8 3.0T S-LINE</h3>
