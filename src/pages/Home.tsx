@@ -109,14 +109,9 @@ export default function Home() {
       {/* Our Listings Section */}
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-4 text-primary">
+          <h2 className="text-4xl font-bold text-center mb-12 text-primary">
             {language === 'bg' ? 'Нашите Обяви' : 'Our Listings'}
           </h2>
-          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-            {language === 'bg' 
-              ? 'Разгледайте актуалните ни обяви на автомобили, внесени от Канада и САЩ' 
-              : 'Browse our current listings of cars imported from Canada and USA'}
-          </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
               <CardContent className="pt-6">
