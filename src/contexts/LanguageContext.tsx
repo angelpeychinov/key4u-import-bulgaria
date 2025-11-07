@@ -18,7 +18,7 @@ const translations = {
     'nav.contact': 'Contact',
     
     // Hero
-    'hero.title': 'Luxury Cars from Canada & USA',
+    'hero.title': 'Cars from Canada & USA',
     'hero.subtitle': 'Easy, Fast, Affordable',
     'hero.description': 'We handle everything from request to delivery. Your dream car, simplified.',
     'hero.cta': 'Find Your Car',
@@ -93,7 +93,7 @@ const translations = {
     'nav.contact': 'Контакт',
     
     // Hero
-    'hero.title': 'Луксозни Автомобили от Канада и САЩ',
+    'hero.title': 'Автомобили от Канада и САЩ',
     'hero.subtitle': 'Лесно, Бързо, Достъпно',
     'hero.description': 'Ние се грижим за всичко от заявката до доставката. Вашият мечтан автомобил, опростен.',
     'hero.cta': 'Намери Автомобил',
