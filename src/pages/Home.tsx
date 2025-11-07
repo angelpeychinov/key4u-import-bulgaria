@@ -11,6 +11,16 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import heroImage from "@/assets/hero-car.jpg";
+import bmwLogo from "@/assets/brands/bmw-logo.png";
+import audiLogo from "@/assets/brands/audi-logo.png";
+import mercedesLogo from "@/assets/brands/mercedes-logo.png";
+import volvoLogo from "@/assets/brands/volvo-logo.png";
+import volkswagenLogo from "@/assets/brands/volkswagen-logo.png";
+import fordLogo from "@/assets/brands/ford-logo.png";
+import dodgeLogo from "@/assets/brands/dodge-logo.png";
+import toyotaLogo from "@/assets/brands/toyota-logo.png";
+import jeepLogo from "@/assets/brands/jeep-logo.png";
+import kiaLogo from "@/assets/brands/kia-logo.png";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -105,22 +115,26 @@ export default function Home() {
           >
             <CarouselContent>
               {[
-                "BMW",
-                "Audi",
-                "Mercedes",
-                "Volvo",
-                "Volkswagen",
-                "Ford",
-                "Dodge",
-                "Toyota",
-                "Jeep",
-                "Kia",
+                { name: "BMW", logo: bmwLogo },
+                { name: "Audi", logo: audiLogo },
+                { name: "Mercedes", logo: mercedesLogo },
+                { name: "Volvo", logo: volvoLogo },
+                { name: "Volkswagen", logo: volkswagenLogo },
+                { name: "Ford", logo: fordLogo },
+                { name: "Dodge", logo: dodgeLogo },
+                { name: "Toyota", logo: toyotaLogo },
+                { name: "Jeep", logo: jeepLogo },
+                { name: "Kia", logo: kiaLogo },
               ].map((brand, index) => (
                 <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/4">
                   <Card className="shadow-card hover:shadow-elegant transition-smooth">
                     <CardContent className="flex flex-col items-center justify-center p-8 h-40">
-                      <Car className="w-16 h-16 text-primary mb-4" />
-                      <p className="text-xl font-bold text-foreground">{brand}</p>
+                      <img 
+                        src={brand.logo} 
+                        alt={`${brand.name} logo`}
+                        className="w-20 h-20 object-contain mb-2"
+                      />
+                      <p className="text-lg font-bold text-foreground">{brand.name}</p>
                     </CardContent>
                   </Card>
                 </CarouselItem>
