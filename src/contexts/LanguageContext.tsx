@@ -109,7 +109,7 @@ const translations = {
     'process.step3': 'Логистика и митническо оформление',
     'process.step3desc': 'Ние ще се погрижим за доставката и цялата документация',
     'process.step4': 'Получаване на автомобила',
-    'process.step4desc': 'Документи и доставка до вас',
+    'process.step4desc': 'Честито и безаварийно шофиране!',
     
     // Find Car Form
     'form.title': 'Намери Автомобил',
