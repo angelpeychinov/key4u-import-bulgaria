@@ -107,7 +107,7 @@ const translations = {
     'process.step2': 'Започваме търсене',
     'process.step2desc': 'Търсим от Канада и САЩ',
     'process.step3': 'Логистика и митническо оформление',
-    'process.step3desc': 'Доставка, Техноtest и конверсии',
+    'process.step3desc': 'Ние ще се погрижим за доставката и цялата документация',
     'process.step4': 'Регистрация и Доставка',
     'process.step4desc': 'Документи и доставка до вас',
     
