@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Car, Shield, MapPin } from "lucide-react";
+import { CheckCircle2, Car, Shield, MapPin, Gavel } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -133,7 +133,10 @@ export default function Home() {
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">BMW 528 528i xDrive</h3>
-                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">НОВА</span>
+                  <span className="text-xs bg-amber-500/10 text-amber-600 px-2 py-1 rounded flex items-center gap-1">
+                    <Gavel className="w-3 h-3" />
+                    Аукцион
+                  </span>
                 </div>
                 <div className="space-y-2 text-sm text-muted-foreground mb-4">
                   <p>🗓️ Януари 2014 г.</p>
@@ -160,7 +163,10 @@ export default function Home() {
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">Mercedes-Benz GLB 35 AMG</h3>
-                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">НОВА</span>
+                  <span className="text-xs bg-amber-500/10 text-amber-600 px-2 py-1 rounded flex items-center gap-1">
+                    <Gavel className="w-3 h-3" />
+                    Аукцион
+                  </span>
                 </div>
                 <div className="space-y-2 text-sm text-muted-foreground mb-4">
                   <p>🗓️ Август 2022 г.</p>
@@ -187,7 +193,10 @@ export default function Home() {
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">Audi Q8 3.0T S-LINE</h3>
-                  <span className="text-xs bg-green-500/10 text-green-600 px-2 py-1 rounded">🔋</span>
+                  <span className="text-xs bg-amber-500/10 text-amber-600 px-2 py-1 rounded flex items-center gap-1">
+                    <Gavel className="w-3 h-3" />
+                    Аукцион
+                  </span>
                 </div>
                 <div className="space-y-2 text-sm text-muted-foreground mb-4">
                   <p>🗓️ Април 2019 г.</p>
