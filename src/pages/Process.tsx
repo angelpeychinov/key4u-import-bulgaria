@@ -51,9 +51,6 @@ export default function Process() {
               className="relative shadow-card hover:shadow-elegant transition-smooth"
             >
               <CardContent className="pt-6">
-                <div className="absolute top-4 right-4 text-6xl font-bold text-accent/20">
-                  {step.number}
-                </div>
                 <div className="flex flex-col items-center text-center relative z-10">
                   <div className="mb-4">{step.icon}</div>
                   <h3 className="text-2xl font-semibold mb-3 text-card-foreground">
