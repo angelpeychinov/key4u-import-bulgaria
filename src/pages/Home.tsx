@@ -18,9 +18,6 @@ import mercedesLogo from "@/assets/brands/mercedes-logo.png";
 import volvoLogo from "@/assets/brands/volvo-logo.png";
 import volkswagenLogo from "@/assets/brands/volkswagen-logo.png";
 import porscheLogo from "@/assets/brands/porsche-logo.png";
-import bmw528Image from "@/assets/listings/bmw-528.jpg";
-import mercedesGlbImage from "@/assets/listings/mercedes-glb.jpg";
-import audiQ8Image from "@/assets/listings/audi-q8.jpg";
 import dodgeLogo from "@/assets/brands/dodge-logo.png";
 import toyotaLogo from "@/assets/brands/toyota-logo.png";
 import jeepLogo from "@/assets/brands/jeep-logo.png";
@@ -123,7 +120,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
               <img 
-                src={bmw528Image} 
+                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2075963586.jpg" 
                 alt="BMW 528 528i xDrive"
                 className="w-full h-48 object-cover"
               />
@@ -151,7 +148,7 @@ export default function Home() {
 
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
               <img 
-                src={mercedesGlbImage} 
+                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2093403586.jpg" 
                 alt="Mercedes-Benz GLB 35 AMG"
                 className="w-full h-48 object-cover"
               />
@@ -179,7 +176,7 @@ export default function Home() {
 
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
               <img 
-                src={audiQ8Image} 
+                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2030883586.jpg" 
                 alt="Audi Q8 3.0T S-LINE"
                 className="w-full h-48 object-cover"
               />
