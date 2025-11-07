@@ -87,7 +87,7 @@ const translations = {
   bg: {
     // Navigation
     'nav.home': 'Начало',
-    'nav.process': 'Процес на Внос',
+    'nav.process': 'Процес',
     'nav.findCar': 'Намери Автомобил',
     'nav.faq': 'Въпроси',
     'nav.contact': 'Контакт',
