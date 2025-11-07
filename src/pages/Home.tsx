@@ -3,10 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Car, Shield, MapPin } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import heroImage from "@/assets/hero-car.jpg";
-import bmwImage from "@/assets/car-bmw.jpg";
-import audiImage from "@/assets/car-audi.jpg";
-import teslaImage from "@/assets/car-tesla.jpg";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -86,32 +90,45 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Showcase Cars */}
+      {/* Car Brands Carousel */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { img: bmwImage, name: "BMW" },
-              { img: audiImage, name: "Audi" },
-              { img: teslaImage, name: "Tesla" },
-            ].map((car, index) => (
-              <div
-                key={index}
-                className="relative overflow-hidden rounded-lg shadow-card hover:shadow-elegant transition-smooth group"
-              >
-                <img
-                  src={car.img}
-                  alt={`${car.name} luxury car`}
-                  className="w-full h-80 object-cover group-hover:scale-110 transition-smooth"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex items-end">
-                  <p className="text-primary-foreground text-2xl font-bold p-6">
-                    {car.name}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2 className="text-4xl font-bold text-center mb-12 text-primary">
+            {language === 'bg' ? 'Поддържани марки автомобили' : 'Supported Car Brands'}
+          </h2>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full max-w-5xl mx-auto"
+          >
+            <CarouselContent>
+              {[
+                "BMW",
+                "Audi",
+                "Mercedes",
+                "Volvo",
+                "Volkswagen",
+                "Ford",
+                "Dodge",
+                "Toyota",
+                "Jeep",
+                "Kia",
+              ].map((brand, index) => (
+                <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/4">
+                  <Card className="shadow-card hover:shadow-elegant transition-smooth">
+                    <CardContent className="flex flex-col items-center justify-center p-8 h-40">
+                      <Car className="w-16 h-16 text-primary mb-4" />
+                      <p className="text-xl font-bold text-foreground">{brand}</p>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </section>
 
