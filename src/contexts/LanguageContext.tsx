@@ -104,7 +104,7 @@ const translations = {
     'process.subtitle': 'Прости стъпки до мечтания автомобил',
     'process.step1': 'Поискай Автомобила',
     'process.step1desc': 'Кажи ни модела, годината и предпочитанията',
-    'process.step2': 'Намираме и Внасяме',
+    'process.step2': 'Започваме търсене',
     'process.step2desc': 'Търсим от Канада и САЩ',
     'process.step3': 'Логистика и митническо оформление',
     'process.step3desc': 'Доставка, Техноtest и конверсии',
