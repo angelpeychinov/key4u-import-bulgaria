@@ -1,19 +1,19 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Ship, Wrench, FileCheck } from "lucide-react";
+import { ClipboardList, Search, Wrench, FileCheck } from "lucide-react";
 
 export default function Process() {
   const { t } = useLanguage();
 
   const steps = [
     {
-      icon: <Search className="w-16 h-16 text-primary" />,
+      icon: <ClipboardList className="w-16 h-16 text-primary" />,
       title: t('process.step1'),
       description: t('process.step1desc'),
       number: "01",
     },
     {
-      icon: <Ship className="w-16 h-16 text-primary" />,
+      icon: <Search className="w-16 h-16 text-primary" />,
       title: t('process.step2'),
       description: t('process.step2desc'),
       number: "02",
