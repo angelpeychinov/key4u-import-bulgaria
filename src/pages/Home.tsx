@@ -140,7 +140,7 @@ export default function Home() {
                         alt={`${brand.name} logo`}
                         className="w-20 h-20 object-contain mb-2"
                       />
-                      <p className="text-lg font-bold text-foreground">{brand.name}</p>
+                      <p className="text-lg font-bold text-foreground uppercase">{brand.name}</p>
                     </CardContent>
                   </Card>
                 </CarouselItem>
