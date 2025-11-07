@@ -103,52 +103,114 @@ export default function Home() {
 
       {/* Car Brands Carousel */}
       <section className="py-20 bg-background">
+...
+      </section>
+
+      {/* Our Listings Section */}
+      <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-primary">
-            {language === 'bg' ? 'Поддържани марки автомобили' : 'Supported Car Brands'}
+          <h2 className="text-4xl font-bold text-center mb-4 text-primary">
+            {language === 'bg' ? 'Нашите Обяви' : 'Our Listings'}
           </h2>
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            plugins={[
-              Autoplay({
-                delay: 3000,
-              }),
-            ]}
-            className="w-full max-w-5xl mx-auto"
-          >
-            <CarouselContent>
-              {[
-                { name: "BMW", logo: bmwLogo },
-                { name: "Audi", logo: audiLogo },
-                { name: "Mercedes", logo: mercedesLogo },
-                { name: "Volvo", logo: volvoLogo },
-                { name: "Volkswagen", logo: volkswagenLogo },
-                { name: "Porsche", logo: porscheLogo },
-                { name: "Dodge", logo: dodgeLogo },
-                { name: "Toyota", logo: toyotaLogo },
-                { name: "Jeep", logo: jeepLogo },
-                { name: "Kia", logo: kiaLogo },
-              ].map((brand, index) => (
-                <CarouselItem key={index} className="md:basis-1/3 lg:basis-1/4">
-                  <Card className="shadow-card cursor-default">
-                    <CardContent className="flex flex-col items-center justify-center p-8 h-40">
-                      <img 
-                        src={brand.logo} 
-                        alt={`${brand.name} logo`}
-                        className="w-20 h-20 object-contain mb-2"
-                      />
-                      <p className="text-lg font-bold text-foreground uppercase">{brand.name}</p>
-                    </CardContent>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            {language === 'bg' 
+              ? 'Разгледайте актуалните ни обяви на автомобили, внесени от Канада и САЩ' 
+              : 'Browse our current listings of cars imported from Canada and USA'}
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
+              <img 
+                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2075963586.jpg" 
+                alt="BMW 528 528i xDrive"
+                className="w-full h-48 object-cover"
+              />
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-bold text-card-foreground">BMW 528 528i xDrive</h3>
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">НОВА</span>
+                </div>
+                <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                  <p>🗓️ Януари 2014 г.</p>
+                  <p>📍 207 633 км</p>
+                  <p>⛽ Бензинов • Седан • 245 к.с.</p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-2xl font-bold text-primary">14 400 лв.</p>
+                    <p className="text-sm text-muted-foreground">7 362.60 €</p>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => window.open('https://key4u.mobile.bg', '_blank')}>
+                    Детайли
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
+              <img 
+                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2093403586.jpg" 
+                alt="Mercedes-Benz GLB 35 AMG"
+                className="w-full h-48 object-cover"
+              />
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-bold text-card-foreground">Mercedes-Benz GLB 35 AMG</h3>
+                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">НОВА</span>
+                </div>
+                <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                  <p>🗓️ Август 2022 г.</p>
+                  <p>📍 104 000 км</p>
+                  <p>⛽ Бензинов • Джип • 302 к.с.</p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-2xl font-bold text-primary">54 200 лв.</p>
+                    <p className="text-sm text-muted-foreground">27 712.02 €</p>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => window.open('https://key4u.mobile.bg', '_blank')}>
+                    Детайли
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
+              <img 
+                src="https://cdn.focus.bg/mobile/photos/f_800x600/o_1/id_2030883586.jpg" 
+                alt="Audi Q8 3.0T S-LINE"
+                className="w-full h-48 object-cover"
+              />
+              <CardContent className="pt-6">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-xl font-bold text-card-foreground">Audi Q8 3.0T S-LINE</h3>
+                  <span className="text-xs bg-green-500/10 text-green-600 px-2 py-1 rounded">🔋</span>
+                </div>
+                <div className="space-y-2 text-sm text-muted-foreground mb-4">
+                  <p>🗓️ Април 2019 г.</p>
+                  <p>📍 126 000 км</p>
+                  <p>⛽ Бензинов • Джип • 335 к.с.</p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-2xl font-bold text-primary">49 300 лв.</p>
+                    <p className="text-sm text-muted-foreground">25 206.69 €</p>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => window.open('https://key4u.mobile.bg', '_blank')}>
+                    Детайли
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="text-center mt-12">
+            <Button 
+              variant="default" 
+              size="lg" 
+              onClick={() => window.open('https://key4u.mobile.bg', '_blank')}
+            >
+              {language === 'bg' ? 'Виж Всички Обяви' : 'View All Listings'}
+            </Button>
+          </div>
         </div>
       </section>
 
