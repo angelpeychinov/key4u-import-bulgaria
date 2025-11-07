@@ -65,7 +65,7 @@ export default function Home() {
           <h1 className="text-5xl md:text-7xl font-bold mb-4 text-primary">
             {t('hero.title')}
           </h1>
-          <p className="text-lg md:text-xl text-foreground font-medium mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-foreground font-medium mb-8 max-w-2xl mx-auto bg-background/60 backdrop-blur-sm px-6 py-3 rounded-lg">
             {t('hero.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
