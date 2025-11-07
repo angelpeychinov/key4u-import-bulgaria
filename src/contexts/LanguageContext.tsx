@@ -108,7 +108,7 @@ const translations = {
     'process.step2desc': 'Търсим от Канада и САЩ',
     'process.step3': 'Логистика и митническо оформление',
     'process.step3desc': 'Ние ще се погрижим за доставката и цялата документация',
-    'process.step4': 'Регистрация и Доставка',
+    'process.step4': 'Получаване на автомобила',
     'process.step4desc': 'Документи и доставка до вас',
     
     // Find Car Form
