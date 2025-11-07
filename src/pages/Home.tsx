@@ -278,15 +278,6 @@ export default function Home() {
                   {t('faq.a5')}
                 </AccordionContent>
               </AccordionItem>
-              
-              <AccordionItem value="item-6" className="border rounded-lg px-6 shadow-card hover:shadow-elegant transition-smooth bg-card">
-                <AccordionTrigger className="text-lg font-semibold text-card-foreground hover:no-underline">
-                  {t('faq.q6')}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {t('faq.a6')}
-                </AccordionContent>
-              </AccordionItem>
             </Accordion>
           </div>
         </div>

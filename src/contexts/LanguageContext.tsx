@@ -62,8 +62,6 @@ const translations = {
     'faq.a4': 'We import all major brands: BMW, Mercedes, Audi, Tesla, Porsche, and more. Tell us what you want!',
     'faq.q5': 'Can I see the car before purchase?',
     'faq.a5': 'We provide detailed photos, videos, and vehicle history reports. Virtual inspections are also available.',
-    'faq.q6': 'What about warranty?',
-    'faq.a6': 'We work with cars that can be registered in Bulgaria and help you understand any remaining manufacturer warranties.',
     
     // Contact
     'contact.title': 'Get in Touch',
@@ -137,8 +135,6 @@ const translations = {
     'faq.a4': 'Внасяме всички марки, които присъстват на канадския и американския пазар, с други думи почти всички марки, които присъстват и на европейския пазар.',
     'faq.q5': 'Мога ли да видя колата преди покупка?',
     'faq.a5': 'Предоставяме пълна и обстойна информация за всеки автомобил, за да може клиентът ни да е сигурен в покупката си, преди да е заплатил за нея.',
-    'faq.q6': 'Какво става с гаранцията?',
-    'faq.a6': 'Работим с автомобили, които могат да бъдат регистрирани в България и ви помагаме да разберете останалите заводски гаранции.',
     
     // Contact
     'contact.title': 'Свържи се с Нас',
