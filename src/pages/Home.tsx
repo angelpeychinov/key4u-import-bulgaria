@@ -31,7 +31,6 @@ import kiaLogo from "@/assets/brands/kia-logo.png";
 import bmw528Image from "@/assets/listings/bmw-528i.jpg";
 import mercedesGlbImage from "@/assets/listings/mercedes-glb-amg.jpg";
 import audiQ8Image from "@/assets/listings/audi-q8.jpg";
-import audiA4AllroadImage from "@/assets/listings/audi-a4-allroad.jpg";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -114,108 +113,6 @@ export default function Home() {
       {/* Car Brands Carousel */}
       <section className="py-20 bg-background">
 ...
-      </section>
-
-      {/* Live Auctions Section */}
-      <section className="py-20 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-900/30 px-4 py-2 rounded-full mb-4">
-              <Gavel className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-              <span className="text-amber-800 dark:text-amber-300 font-semibold">
-                {language === 'bg' ? 'Текущи Аукциони' : 'Live Auctions'}
-              </span>
-            </div>
-            <h2 className="text-4xl font-bold text-primary">
-              {language === 'bg' ? 'Аукциони в Момента' : 'Current Auctions'}
-            </h2>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-              {language === 'bg' 
-                ? 'Следете активни аукциони в реално време и направете офертата си преди изтичане на времето' 
-                : 'Track live auctions and place your bid before time runs out'}
-            </p>
-          </div>
-          
-          <div className="max-w-2xl mx-auto">
-            <Card className="shadow-elegant hover:shadow-2xl transition-smooth overflow-hidden border-2 border-amber-200 dark:border-amber-800">
-              <div className="aspect-video overflow-hidden relative">
-                <img 
-                  src={audiA4AllroadImage} 
-                  alt="2017 Audi A4 Allroad Quattro" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
-                  {language === 'bg' ? 'АКТИВЕН' : 'LIVE'}
-                </div>
-              </div>
-              <CardContent className="pt-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-card-foreground mb-1">
-                      2017 Audi A4 Allroad Quattro
-                    </h3>
-                    <p className="text-sm text-muted-foreground">VIN: WAUWFBFL4HN007987</p>
-                  </div>
-                  <span className="text-xs bg-green-500/10 text-green-600 dark:text-green-400 px-3 py-1.5 rounded-full font-semibold border border-green-200 dark:border-green-800">
-                    Clean Title
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{language === 'bg' ? 'Година' : 'Year'}</p>
-                    <p className="text-lg font-semibold">2017</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{language === 'bg' ? 'Пробег' : 'Mileage'}</p>
-                    <p className="text-lg font-semibold">120,527 км</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{language === 'bg' ? 'Тип' : 'Type'}</p>
-                    <p className="text-lg font-semibold">Wagon 4D</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{language === 'bg' ? 'Локация' : 'Location'}</p>
-                    <p className="text-lg font-semibold">Seattle, WA</p>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4 mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-muted-foreground">{language === 'bg' ? 'Текуща Наддавка' : 'Current Bid'}</span>
-                    <div className="text-right">
-                      <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">$10,500</p>
-                      <p className="text-sm text-muted-foreground">≈ 19,200 лв. / 9,800 €</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                      <span className="font-semibold text-red-700 dark:text-red-400">
-                        {language === 'bg' ? 'Завършва' : 'Ends'}
-                      </span>
-                    </div>
-                    <span className="font-bold text-red-700 dark:text-red-400">
-                      {language === 'bg' ? 'ЧЕТ 7 НОЕ @ 8:00 PM PST' : 'THU NOV 7 @ 8:00 PM PST'}
-                    </span>
-                  </div>
-                </div>
-
-                <Button 
-                  variant="default" 
-                  size="lg" 
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold"
-                  onClick={() => window.open('https://app.openlane.ca/vdp/019a5471-d1fc-727c-b969-73f85dc4e175?auctionId=019a5c4f-bd57-715b-8509-4832fe66971b&pageNumber=1&tab=upcoming', '_blank')}
-                >
-                  {language === 'bg' ? 'Виж в OpenLane' : 'View on OpenLane'}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
       </section>
 
       {/* Our Listings Section */}
