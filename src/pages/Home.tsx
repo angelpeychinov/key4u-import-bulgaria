@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Car, Shield, MapPin, Gavel } from "lucide-react";
+import { CheckCircle2, Car, Shield, MapPin, Gavel, FileCheck } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -41,6 +41,11 @@ export default function Home() {
       icon: <CheckCircle2 className="w-12 h-12 text-primary" />,
       title: t('features.endToEnd'),
       description: t('features.endToEndDesc'),
+    },
+    {
+      icon: <FileCheck className="w-12 h-12 text-primary" />,
+      title: t('features.realKm'),
+      description: t('features.realKmDesc'),
     },
     {
       icon: <Car className="w-12 h-12 text-primary" />,
@@ -94,7 +99,7 @@ export default function Home() {
           <h2 className="text-4xl font-bold text-center mb-12 text-primary">
             {t('features.title')}
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
             {features.map((feature, index) => (
               <Card key={index} className="shadow-card hover:shadow-elegant transition-smooth">
                 <CardContent className="pt-6 text-center">
