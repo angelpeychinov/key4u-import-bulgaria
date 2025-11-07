@@ -10,6 +10,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import Autoplay from "embla-carousel-autoplay";
 import heroImage from "@/assets/hero-car.jpg";
 import bmwLogo from "@/assets/brands/bmw-logo.png";
@@ -202,55 +208,62 @@ export default function Home() {
               {t('faq.title')}
             </h2>
           </div>
-          <div className="max-w-3xl mx-auto space-y-6">
-            <Card className="shadow-card hover:shadow-elegant transition-smooth">
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+          <div className="max-w-3xl mx-auto">
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="item-1" className="border rounded-lg px-6 shadow-card hover:shadow-elegant transition-smooth bg-card">
+                <AccordionTrigger className="text-lg font-semibold text-card-foreground hover:no-underline">
                   {t('faq.q1')}
-                </h3>
-                <p className="text-muted-foreground">{t('faq.a1')}</p>
-              </CardContent>
-            </Card>
-            <Card className="shadow-card hover:shadow-elegant transition-smooth">
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {t('faq.a1')}
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-2" className="border rounded-lg px-6 shadow-card hover:shadow-elegant transition-smooth bg-card">
+                <AccordionTrigger className="text-lg font-semibold text-card-foreground hover:no-underline">
                   {t('faq.q2')}
-                </h3>
-                <p className="text-muted-foreground">{t('faq.a2')}</p>
-              </CardContent>
-            </Card>
-            <Card className="shadow-card hover:shadow-elegant transition-smooth">
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {t('faq.a2')}
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-3" className="border rounded-lg px-6 shadow-card hover:shadow-elegant transition-smooth bg-card">
+                <AccordionTrigger className="text-lg font-semibold text-card-foreground hover:no-underline">
                   {t('faq.q3')}
-                </h3>
-                <p className="text-muted-foreground">{t('faq.a3')}</p>
-              </CardContent>
-            </Card>
-            <Card className="shadow-card hover:shadow-elegant transition-smooth">
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {t('faq.a3')}
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-4" className="border rounded-lg px-6 shadow-card hover:shadow-elegant transition-smooth bg-card">
+                <AccordionTrigger className="text-lg font-semibold text-card-foreground hover:no-underline">
                   {t('faq.q4')}
-                </h3>
-                <p className="text-muted-foreground">{t('faq.a4')}</p>
-              </CardContent>
-            </Card>
-            <Card className="shadow-card hover:shadow-elegant transition-smooth">
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {t('faq.a4')}
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-5" className="border rounded-lg px-6 shadow-card hover:shadow-elegant transition-smooth bg-card">
+                <AccordionTrigger className="text-lg font-semibold text-card-foreground hover:no-underline">
                   {t('faq.q5')}
-                </h3>
-                <p className="text-muted-foreground">{t('faq.a5')}</p>
-              </CardContent>
-            </Card>
-            <Card className="shadow-card hover:shadow-elegant transition-smooth">
-              <CardContent className="pt-6">
-                <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {t('faq.a5')}
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-6" className="border rounded-lg px-6 shadow-card hover:shadow-elegant transition-smooth bg-card">
+                <AccordionTrigger className="text-lg font-semibold text-card-foreground hover:no-underline">
                   {t('faq.q6')}
-                </h3>
-                <p className="text-muted-foreground">{t('faq.a6')}</p>
-              </CardContent>
-            </Card>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {t('faq.a6')}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
       </section>
