@@ -95,7 +95,7 @@ const translations = {
     // Hero
     'hero.title': 'Автомобили от Канада и САЩ',
     'hero.subtitle': 'Лесно, Бързо, Достъпно',
-    'hero.description': 'Мечтаният автомобил, още по-близо до вас',
+    'hero.description': 'Вие мечтаете, ние изпълняваме!',
     'hero.cta': 'Намери Автомобил',
     'hero.learn': 'Научи Повече',
     
