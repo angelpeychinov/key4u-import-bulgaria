@@ -31,7 +31,7 @@ const translations = {
     'process.step1desc': 'Tell us the model, year, and preferences',
     'process.step2': 'We Find & Import',
     'process.step2desc': 'We source from Canada and USA',
-    'process.step3': 'Transport & Testing',
+    'process.step3': 'Logistics & Customs Clearance',
     'process.step3desc': 'Shipping, Tehnotest, and conversions',
     'process.step4': 'Registration & Delivery',
     'process.step4desc': 'We handle paperwork and deliver to you',
