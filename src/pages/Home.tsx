@@ -28,6 +28,9 @@ import dodgeLogo from "@/assets/brands/dodge-logo.png";
 import toyotaLogo from "@/assets/brands/toyota-logo.png";
 import jeepLogo from "@/assets/brands/jeep-logo.png";
 import kiaLogo from "@/assets/brands/kia-logo.png";
+import bmw528Image from "@/assets/listings/bmw-528i.jpg";
+import mercedesGlbImage from "@/assets/listings/mercedes-glb-amg.jpg";
+import audiQ8Image from "@/assets/listings/audi-q8.jpg";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -120,6 +123,13 @@ export default function Home() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
+              <div className="aspect-video overflow-hidden">
+                <img 
+                  src={bmw528Image} 
+                  alt="BMW 528 528i xDrive" 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">BMW 528 528i xDrive</h3>
@@ -135,14 +145,18 @@ export default function Home() {
                     <p className="text-2xl font-bold text-primary">14 400 лв.</p>
                     <p className="text-sm text-muted-foreground">7 362.60 €</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => window.open('https://key4u.mobile.bg', '_blank')}>
-                    Детайли
-                  </Button>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
+              <div className="aspect-video overflow-hidden">
+                <img 
+                  src={mercedesGlbImage} 
+                  alt="Mercedes-Benz GLB 35 AMG" 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">Mercedes-Benz GLB 35 AMG</h3>
@@ -158,14 +172,18 @@ export default function Home() {
                     <p className="text-2xl font-bold text-primary">54 200 лв.</p>
                     <p className="text-sm text-muted-foreground">27 712.02 €</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => window.open('https://key4u.mobile.bg', '_blank')}>
-                    Детайли
-                  </Button>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
+              <div className="aspect-video overflow-hidden">
+                <img 
+                  src={audiQ8Image} 
+                  alt="Audi Q8 3.0T S-LINE" 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
               <CardContent className="pt-6">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold text-card-foreground">Audi Q8 3.0T S-LINE</h3>
@@ -181,9 +199,6 @@ export default function Home() {
                     <p className="text-2xl font-bold text-primary">49 300 лв.</p>
                     <p className="text-sm text-muted-foreground">25 206.69 €</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => window.open('https://key4u.mobile.bg', '_blank')}>
-                    Детайли
-                  </Button>
                 </div>
               </CardContent>
             </Card>
