@@ -17,7 +17,7 @@ import audiLogo from "@/assets/brands/audi-logo.png";
 import mercedesLogo from "@/assets/brands/mercedes-logo.png";
 import volvoLogo from "@/assets/brands/volvo-logo.png";
 import volkswagenLogo from "@/assets/brands/volkswagen-logo.png";
-import fordLogo from "@/assets/brands/ford-logo.png";
+import porscheLogo from "@/assets/brands/porsche-logo.png";
 import dodgeLogo from "@/assets/brands/dodge-logo.png";
 import toyotaLogo from "@/assets/brands/toyota-logo.png";
 import jeepLogo from "@/assets/brands/jeep-logo.png";
@@ -126,7 +126,7 @@ export default function Home() {
                 { name: "Mercedes", logo: mercedesLogo },
                 { name: "Volvo", logo: volvoLogo },
                 { name: "Volkswagen", logo: volkswagenLogo },
-                { name: "Ford", logo: fordLogo },
+                { name: "Porsche", logo: porscheLogo },
                 { name: "Dodge", logo: dodgeLogo },
                 { name: "Toyota", logo: toyotaLogo },
                 { name: "Jeep", logo: jeepLogo },
