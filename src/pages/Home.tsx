@@ -148,10 +148,10 @@ export default function Home() {
                 </div>
                 
                 <Button 
-                  variant="default" 
+                  variant="outline" 
                   size="lg"
                   onClick={() => window.open('https://key4u.mobile.bg/', '_blank')}
-                  className="hover-scale shadow-lg text-lg px-8 py-6 uppercase"
+                  className="hover-scale shadow-lg text-lg px-8 py-6 uppercase bg-white text-primary border-white hover:bg-white/90 hover:text-primary font-bold"
                 >
                   <Search className="mr-2 h-5 w-5" />
                   {language === 'bg' ? 'Виж Обявите в Mobile.bg' : 'View Listings on Mobile.bg'}
