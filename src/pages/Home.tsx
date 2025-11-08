@@ -143,6 +143,20 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Transparency Section */}
+      <section className="py-20 bg-card">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-[43px] md:text-[54px] font-bold text-primary mb-6">
+              {language === 'bg' ? 'Предоставяме 100% от информацията, която притежаваме.' : 'We provide 100% of the information we have.'}
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              {language === 'bg' ? 'без празни обещания за "здрави" автомобили.' : 'without empty promises of "healthy" cars.'}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Mobile.bg Listings Section */}
       <section className="py-20 relative overflow-hidden">
         <div 
