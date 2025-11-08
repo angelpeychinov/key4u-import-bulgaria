@@ -139,15 +139,6 @@ export default function Home() {
                   />
                 </div>
                 
-                <h2 className="text-4xl font-bold mb-4 text-primary">
-                  {language === 'bg' ? 'Вижте Нашите Обяви' : 'View Our Listings'}
-                </h2>
-                <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  {language === 'bg' 
-                    ? 'Разгледайте актуалните ни обяви за автомобили от Канада и САЩ на mobile.bg'
-                    : 'Browse our current car listings from Canada and USA on mobile.bg'}
-                </p>
-                
                 <Button 
                   variant="default" 
                   size="lg"
