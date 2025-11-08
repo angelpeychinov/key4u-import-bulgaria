@@ -131,7 +131,7 @@ export default function Home() {
                     alt="KEY4U Logo" 
                     className="h-[91px] w-auto translate-y-[5%]"
                   />
-                  <div className="text-3xl font-bold text-muted-foreground">×</div>
+                  <div className="text-3xl font-bold text-primary">×</div>
                   <img 
                     src={mobileBgLogo} 
                     alt="Mobile.bg Logo" 
