@@ -22,7 +22,7 @@ export const Footer = () => {
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
                 <Instagram size={24} />
               </a>
-              <a href="viber://chat?number=%2B359XXXXXXXXX" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
+              <a href="viber://chat?number=%2B359898252434" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
                 <MessageCircle size={24} />
               </a>
             </div>
@@ -44,7 +44,7 @@ export const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Contacts</h3>
             <ul className="space-y-2 text-sm opacity-90">
               <li>Email: info@key4u.bg</li>
-              <li>Phone: +359 XXX XXX XXX</li>
+              <li>Phone: 0898 252 434</li>
             </ul>
           </div>
         </div>

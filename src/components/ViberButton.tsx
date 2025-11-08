@@ -2,8 +2,7 @@ import { MessageCircle } from "lucide-react";
 
 export const ViberButton = () => {
   const handleViberClick = () => {
-    // Replace with actual Viber contact link
-    window.open('viber://chat?number=%2B359XXXXXXXXX', '_blank');
+    window.open('viber://chat?number=%2B359898252434', '_blank');
   };
 
   return (

@@ -10,8 +10,8 @@ export default function Contact() {
     {
       icon: <Phone className="w-8 h-8 text-primary" />,
       label: t('contact.phone'),
-      value: "+359 XXX XXX XXX",
-      href: "tel:+359XXXXXXXXX",
+      value: "0898 252 434",
+      href: "tel:+359898252434",
     },
     {
       icon: <Mail className="w-8 h-8 text-primary" />,
@@ -28,7 +28,7 @@ export default function Contact() {
   ];
 
   const handleViber = () => {
-    window.open('viber://chat?number=%2B359XXXXXXXXX', '_blank');
+    window.open('viber://chat?number=%2B359898252434', '_blank');
   };
 
   return (
