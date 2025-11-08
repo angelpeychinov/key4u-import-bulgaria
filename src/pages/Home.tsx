@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Car, Shield, MapPin, Gavel, FileCheck } from "lucide-react";
+import { CheckCircle2, Car, Shield, MapPin, FileCheck } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -28,9 +28,6 @@ import dodgeLogo from "@/assets/brands/dodge-logo.png";
 import toyotaLogo from "@/assets/brands/toyota-logo.png";
 import jeepLogo from "@/assets/brands/jeep-logo.png";
 import kiaLogo from "@/assets/brands/kia-logo.png";
-import bmw528Image from "@/assets/listings/bmw-528i.jpg";
-import mercedesGlbImage from "@/assets/listings/mercedes-glb-amg.jpg";
-import audiQ8Image from "@/assets/listings/audi-q8.jpg";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -118,115 +115,6 @@ export default function Home() {
       {/* Car Brands Carousel */}
       <section className="py-20 bg-background">
 ...
-      </section>
-
-      {/* Our Listings Section */}
-      <section className="py-20 bg-card">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-primary">
-            {language === 'bg' ? 'Нашите Обяви' : 'Our Listings'}
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
-              <div className="aspect-video overflow-hidden">
-                <img 
-                  src={bmw528Image} 
-                  alt="BMW 528 528i xDrive" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="pt-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-bold text-card-foreground">BMW 528 528i xDrive</h3>
-                  <span className="text-xs bg-amber-500/10 text-amber-600 px-2 py-1 rounded flex items-center gap-1">
-                    <Gavel className="w-3 h-3" />
-                    Аукцион
-                  </span>
-                </div>
-                <div className="space-y-2 text-sm text-muted-foreground mb-4">
-                  <p>🗓️ Януари 2014 г.</p>
-                  <p>📍 207 633 км</p>
-                  <p>⛽ Бензинов • Седан • 245 к.с.</p>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-2xl font-bold text-primary">14 400 лв.</p>
-                    <p className="text-sm text-muted-foreground">7 362.60 €</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
-              <div className="aspect-video overflow-hidden">
-                <img 
-                  src={mercedesGlbImage} 
-                  alt="Mercedes-Benz GLB 35 AMG" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="pt-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-bold text-card-foreground">Mercedes-Benz GLB 35 AMG</h3>
-                  <span className="text-xs bg-amber-500/10 text-amber-600 px-2 py-1 rounded flex items-center gap-1">
-                    <Gavel className="w-3 h-3" />
-                    Аукцион
-                  </span>
-                </div>
-                <div className="space-y-2 text-sm text-muted-foreground mb-4">
-                  <p>🗓️ Август 2022 г.</p>
-                  <p>📍 104 000 км</p>
-                  <p>⛽ Бензинов • Джип • 302 к.с.</p>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-2xl font-bold text-primary">54 200 лв.</p>
-                    <p className="text-sm text-muted-foreground">27 712.02 €</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-card hover:shadow-elegant transition-smooth overflow-hidden">
-              <div className="aspect-video overflow-hidden">
-                <img 
-                  src={audiQ8Image} 
-                  alt="Audi Q8 3.0T S-LINE" 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="pt-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-bold text-card-foreground">Audi Q8 3.0T S-LINE</h3>
-                  <span className="text-xs bg-amber-500/10 text-amber-600 px-2 py-1 rounded flex items-center gap-1">
-                    <Gavel className="w-3 h-3" />
-                    Аукцион
-                  </span>
-                </div>
-                <div className="space-y-2 text-sm text-muted-foreground mb-4">
-                  <p>🗓️ Април 2019 г.</p>
-                  <p>📍 126 000 км</p>
-                  <p>⛽ Бензинов • Джип • 335 к.с.</p>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-2xl font-bold text-primary">49 300 лв.</p>
-                    <p className="text-sm text-muted-foreground">25 206.69 €</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="text-center mt-12">
-            <Button 
-              variant="default" 
-              size="lg" 
-              onClick={() => window.open('https://key4u.mobile.bg', '_blank')}
-            >
-              {language === 'bg' ? 'Виж Всички Обяви' : 'View All Listings'}
-            </Button>
-          </div>
-        </div>
       </section>
 
       {/* FAQ Preview Section */}
