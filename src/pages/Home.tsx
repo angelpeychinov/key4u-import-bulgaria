@@ -119,7 +119,7 @@ export default function Home() {
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-5xl md:text-6xl font-bold text-primary mb-6">
+            <h2 className="text-[43px] md:text-[54px] font-bold text-primary mb-6">
               {language === 'bg' ? 'Такса услуга е единствената такса, която ще заплатиш към нас!' : 'Service fee is the only fee you will pay to us!'}
             </h2>
             <p className="text-xl text-muted-foreground">
@@ -133,7 +133,7 @@ export default function Home() {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-5xl md:text-6xl font-bold text-primary mb-6">
+            <h2 className="text-[43px] md:text-[54px] font-bold text-primary mb-6">
               {language === 'bg' ? 'Над 100 внесени автомобила за последната година!' : 'Over 100 imported cars in the last year!'}
             </h2>
             <p className="text-xl text-muted-foreground">
