@@ -115,11 +115,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Car Brands Carousel */}
-      <section className="py-20 bg-background">
-...
-      </section>
-
       {/* Mobile.bg Listings Section */}
       <section className="py-20 relative overflow-hidden">
         <div 
