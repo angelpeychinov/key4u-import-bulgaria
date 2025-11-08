@@ -115,6 +115,20 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-5xl md:text-6xl font-bold text-primary mb-6">
+              {language === 'bg' ? 'Над 100 внесени автомобила за последната година!' : 'Over 100 imported cars in the last year!'}
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              {language === 'bg' ? 'Доверие, което се доказва с всеки внесен автомобил' : 'Trust proven with every imported vehicle'}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Mobile.bg Listings Section */}
       <section className="py-20 relative overflow-hidden">
         <div 
