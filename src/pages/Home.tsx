@@ -30,6 +30,7 @@ import jeepLogo from "@/assets/brands/jeep-logo.png";
 import kiaLogo from "@/assets/brands/kia-logo.png";
 import logo from "@/assets/logo.png";
 import mobileBgLogo from "@/assets/mobile-bg-logo.png";
+import mobileBgSectionBg from "@/assets/mobile-bg-section-background.jpg";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -120,10 +121,17 @@ export default function Home() {
       </section>
 
       {/* Mobile.bg Listings Section */}
-      <section className="py-20 bg-gradient-to-br from-background via-card to-background">
-        <div className="container mx-auto px-4">
+      <section className="py-20 relative overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${mobileBgSectionBg})` }}
+        >
+          <div className="absolute inset-0 bg-background/90 backdrop-blur-sm" />
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto">
-            <Card className="shadow-elegant hover:shadow-2xl transition-smooth overflow-hidden border-2 border-primary/20">
+            <Card className="shadow-elegant hover:shadow-2xl transition-smooth overflow-hidden border-2 border-primary/20 bg-card/95 backdrop-blur-md">
               <CardContent className="p-12 text-center">
                 <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
                   <img 
