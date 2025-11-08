@@ -28,6 +28,7 @@ import dodgeLogo from "@/assets/brands/dodge-logo.png";
 import toyotaLogo from "@/assets/brands/toyota-logo.png";
 import jeepLogo from "@/assets/brands/jeep-logo.png";
 import kiaLogo from "@/assets/brands/kia-logo.png";
+import logoFooter from "@/assets/logo-footer.png";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -115,6 +116,48 @@ export default function Home() {
       {/* Car Brands Carousel */}
       <section className="py-20 bg-background">
 ...
+      </section>
+
+      {/* Mobile.bg Listings Section */}
+      <section className="py-20 bg-gradient-to-br from-background via-card to-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <Card className="shadow-elegant hover:shadow-2xl transition-smooth overflow-hidden border-2 border-primary/20">
+              <CardContent className="p-12 text-center">
+                <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
+                  <img 
+                    src={logoFooter} 
+                    alt="KEY4U Logo" 
+                    className="h-20 w-auto opacity-90"
+                  />
+                  <div className="text-3xl font-bold text-muted-foreground">×</div>
+                  <div className="text-3xl font-bold" style={{ color: '#FF6B00' }}>
+                    mobile.bg
+                  </div>
+                </div>
+                
+                <h2 className="text-4xl font-bold mb-4 text-primary">
+                  {language === 'bg' ? 'Вижте Нашите Обяви' : 'View Our Listings'}
+                </h2>
+                <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                  {language === 'bg' 
+                    ? 'Разгледайте актуалните ни обяви за автомобили от Канада и САЩ на mobile.bg'
+                    : 'Browse our current car listings from Canada and USA on mobile.bg'}
+                </p>
+                
+                <Button 
+                  variant="default" 
+                  size="lg"
+                  onClick={() => window.open('https://key4u.mobile.bg/', '_blank')}
+                  className="hover-scale shadow-lg text-lg px-8 py-6"
+                >
+                  <Car className="mr-2 h-5 w-5" />
+                  {language === 'bg' ? 'Виж Обявите в Mobile.bg' : 'View Listings on Mobile.bg'}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </section>
 
       {/* FAQ Preview Section */}
