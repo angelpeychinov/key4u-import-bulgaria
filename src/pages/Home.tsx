@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Car, Shield, MapPin, FileCheck } from "lucide-react";
+import { CheckCircle2, Car, Shield, MapPin, FileCheck, Search } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -143,9 +143,9 @@ export default function Home() {
                   variant="default" 
                   size="lg"
                   onClick={() => window.open('https://key4u.mobile.bg/', '_blank')}
-                  className="hover-scale shadow-lg text-lg px-8 py-6"
+                  className="hover-scale shadow-lg text-lg px-8 py-6 uppercase"
                 >
-                  <Car className="mr-2 h-5 w-5" />
+                  <Search className="mr-2 h-5 w-5" />
                   {language === 'bg' ? 'Виж Обявите в Mobile.bg' : 'View Listings on Mobile.bg'}
                 </Button>
               </CardContent>
