@@ -147,7 +147,7 @@ export default function Home() {
                   />
                 </div>
                 
-                <p className="text-[21px] text-card-foreground mb-6 font-medium">
+                <p className="text-[25px] text-card-foreground mb-6 font-medium">
                   {language === 'bg' ? 'Тук можете да намерите нашите актуални предложения.' : 'Here you can find our current offers.'}
                 </p>
 
