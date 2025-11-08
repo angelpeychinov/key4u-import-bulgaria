@@ -28,7 +28,7 @@ import dodgeLogo from "@/assets/brands/dodge-logo.png";
 import toyotaLogo from "@/assets/brands/toyota-logo.png";
 import jeepLogo from "@/assets/brands/jeep-logo.png";
 import kiaLogo from "@/assets/brands/kia-logo.png";
-import logoFooter from "@/assets/logo-footer.png";
+import logo from "@/assets/logo.png";
 import mobileBgLogo from "@/assets/mobile-bg-logo.png";
 
 export default function Home() {
@@ -127,9 +127,9 @@ export default function Home() {
               <CardContent className="p-12 text-center">
                 <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
                   <img 
-                    src={logoFooter} 
+                    src={logo} 
                     alt="KEY4U Logo" 
-                    className="h-20 w-auto opacity-90"
+                    className="h-20 w-auto"
                   />
                   <div className="text-3xl font-bold text-muted-foreground">×</div>
                   <img 
