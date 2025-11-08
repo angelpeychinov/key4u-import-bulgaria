@@ -147,11 +147,11 @@ export default function Home() {
                   />
                 </div>
                 
-                <p className="text-lg text-card-foreground mb-6 font-medium">
+                <p className="text-[21px] text-card-foreground mb-6 font-medium">
                   {language === 'bg' ? 'Тук можете да намерите нашите актуални предложения.' : 'Here you can find our current offers.'}
                 </p>
 
-                <Button 
+                <Button
                   variant="outline" 
                   size="lg"
                   onClick={() => window.open('https://key4u.mobile.bg/', '_blank')}
