@@ -131,7 +131,7 @@ export default function Home() {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto">
-            <Card className="shadow-elegant hover:shadow-2xl transition-smooth overflow-hidden border-2 border-primary/20 bg-card/95 backdrop-blur-md">
+            <Card className="shadow-none border-none bg-transparent">
               <CardContent className="p-12 text-center">
                 <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
                   <img 
