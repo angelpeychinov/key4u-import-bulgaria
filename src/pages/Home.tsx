@@ -151,7 +151,7 @@ export default function Home() {
               {language === 'bg' ? 'Предоставяме 100% от информацията, която притежаваме.' : 'We provide 100% of the information we have.'}
             </h2>
             <p className="text-xl text-muted-foreground">
-              {language === 'bg' ? 'Без празни обещания за "здрави" автомобили.' : 'Without empty promises of "healthy" cars.'}
+              {language === 'bg' ? 'Без празни обещания за "здрави" автомобили' : 'Without empty promises of "healthy" cars'}
             </p>
           </div>
         </div>
