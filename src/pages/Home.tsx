@@ -126,7 +126,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${mobileBgSectionBg})` }}
         >
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-background/55 backdrop-blur-[2px]" />
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
