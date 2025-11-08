@@ -129,13 +129,13 @@ export default function Home() {
                   <img 
                     src={logo} 
                     alt="KEY4U Logo" 
-                    className="h-20 w-auto"
+                    className="h-[91px] w-auto"
                   />
                   <div className="text-3xl font-bold text-muted-foreground">×</div>
                   <img 
                     src={mobileBgLogo} 
                     alt="Mobile.bg Logo" 
-                    className="h-16 w-auto"
+                    className="h-[73px] w-auto"
                   />
                 </div>
                 
