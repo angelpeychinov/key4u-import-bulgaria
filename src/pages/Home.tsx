@@ -29,6 +29,7 @@ import toyotaLogo from "@/assets/brands/toyota-logo.png";
 import jeepLogo from "@/assets/brands/jeep-logo.png";
 import kiaLogo from "@/assets/brands/kia-logo.png";
 import logoFooter from "@/assets/logo-footer.png";
+import mobileBgLogo from "@/assets/mobile-bg-logo.png";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -131,9 +132,11 @@ export default function Home() {
                     className="h-20 w-auto opacity-90"
                   />
                   <div className="text-3xl font-bold text-muted-foreground">×</div>
-                  <div className="text-3xl font-bold" style={{ color: '#FF6B00' }}>
-                    mobile.bg
-                  </div>
+                  <img 
+                    src={mobileBgLogo} 
+                    alt="Mobile.bg Logo" 
+                    className="h-16 w-auto"
+                  />
                 </div>
                 
                 <h2 className="text-4xl font-bold mb-4 text-primary">
