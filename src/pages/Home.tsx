@@ -129,7 +129,7 @@ export default function Home() {
                   <img 
                     src={logo} 
                     alt="KEY4U Logo" 
-                    className="h-16 w-auto"
+                    className="h-20 w-auto"
                   />
                   <div className="text-3xl font-bold text-muted-foreground">×</div>
                   <img 
