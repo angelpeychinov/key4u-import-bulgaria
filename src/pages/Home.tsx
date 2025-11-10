@@ -38,22 +38,22 @@ export default function Home() {
 
   const features = [
     {
-      icon: <CheckCircle2 className="w-12 h-12 text-primary" />,
+      icon: <CheckCircle2 className="w-12 h-12" />,
       title: t('features.endToEnd'),
       description: t('features.endToEndDesc'),
     },
     {
-      icon: <FileCheck className="w-12 h-12 text-primary" />,
+      icon: <FileCheck className="w-12 h-12" />,
       title: t('features.realKm'),
       description: t('features.realKmDesc'),
     },
     {
-      icon: <Car className="w-12 h-12 text-primary" />,
+      icon: <Car className="w-12 h-12" />,
       title: t('features.affordable'),
       description: t('features.affordableDesc'),
     },
     {
-      icon: <Shield className="w-12 h-12 text-primary" />,
+      icon: <Shield className="w-12 h-12" />,
       title: t('features.trust'),
       description: t('features.trustDesc'),
     },
@@ -96,13 +96,13 @@ export default function Home() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="shadow-card hover:shadow-elegant transition-smooth">
+              <Card key={index} className="bg-primary shadow-card hover:shadow-elegant transition-smooth border-primary">
                 <CardContent className="pt-6 text-center">
-                  <div className="flex justify-center mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2 text-card-foreground">
+                  <div className="flex justify-center mb-4 text-primary-foreground">{feature.icon}</div>
+                  <h3 className="text-xl font-semibold mb-2 text-primary-foreground">
                     {feature.title}
                   </h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
+                  <p className="text-primary-foreground/90">{feature.description}</p>
                 </CardContent>
               </Card>
             ))}
