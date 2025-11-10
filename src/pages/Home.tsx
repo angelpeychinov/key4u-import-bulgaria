@@ -81,9 +81,6 @@ export default function Home() {
             <Button variant="hero" size="lg" onClick={() => navigate('/find-car')}>
               {t('hero.cta')}
             </Button>
-            <Button variant="outline" size="lg" onClick={() => navigate('/process')}>
-              {t('hero.learn')}
-            </Button>
           </div>
         </div>
       </section>
@@ -283,14 +280,6 @@ export default function Home() {
                   className="hover-scale shadow-lg"
                 >
                   {t('hero.cta')}
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  onClick={() => navigate('/process')}
-                  className="hover-scale"
-                >
-                  {t('hero.learn')}
                 </Button>
               </div>
             </CardContent>
