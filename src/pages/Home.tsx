@@ -118,7 +118,7 @@ export default function Home() {
               {language === 'bg' ? 'Такса услуга е единствената такса, която ще заплатиш към нас!' : 'Service fee is the only fee you will pay to us!'}
             </h2>
             <p className="text-xl text-muted-foreground">
-              {language === 'bg' ? 'Прозрачно ценообразуване без скрити такси' : 'Transparent pricing with no hidden fees'}
+              {language === 'bg' ? 'Прозрачно ценообразуване, без скрити такси' : 'Transparent pricing with no hidden fees'}
             </p>
           </div>
         </div>
