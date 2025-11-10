@@ -93,7 +93,7 @@ export default function Process() {
           >
             <a href="tel:0898252434" className="flex items-center gap-3">
               <Phone className="w-5 h-5" />
-              ОБАДИ СЕ СЕГА - 0898252434
+              0898252434
             </a>
           </Button>
         </div>
