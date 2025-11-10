@@ -149,7 +149,7 @@ const translations = {
     // Features
     'features.title': 'Защо да изберете KEY4U?',
     'features.endToEnd': 'Пълна Услуга',
-    'features.endToEndDesc': 'От заявка до регистрация, можем да се грижим за всичко',
+    'features.endToEndDesc': 'От заявка до регистрация, можем да се погрижим за всичко',
     'features.realKm': 'Реални Километри',
     'features.realKmDesc': 'Проверени километри от официални източници - без манипулация',
     'features.affordable': 'Достъпен Лукс',
