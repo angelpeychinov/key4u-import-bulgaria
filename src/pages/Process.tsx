@@ -1,6 +1,7 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
-import { ClipboardList, Search, Wrench, FileCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ClipboardList, Search, Wrench, FileCheck, Phone } from "lucide-react";
 
 export default function Process() {
   const { t } = useLanguage();
@@ -82,6 +83,19 @@ export default function Process() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-12 text-center max-w-4xl mx-auto">
+          <Button
+            asChild
+            size="lg"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all"
+          >
+            <a href="tel:0898252434" className="flex items-center gap-3">
+              <Phone className="w-5 h-5" />
+              ОБАДИ СЕ СЕГА - 0898252434
+            </a>
+          </Button>
         </div>
 
         <div className="mt-16 bg-primary rounded-lg p-8 max-w-4xl mx-auto shadow-card border-primary">
