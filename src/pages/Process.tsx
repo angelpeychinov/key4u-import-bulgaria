@@ -44,22 +44,43 @@ export default function Process() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {steps.map((step, index) => (
-            <Card
-              key={index}
-              className="relative bg-primary shadow-card hover:shadow-elegant transition-smooth border-primary"
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center text-center relative z-10">
-                  <div className="mb-4 text-primary-foreground">{step.icon}</div>
-                  <h3 className="text-2xl font-semibold mb-3 text-primary-foreground">
-                    {step.title}
-                  </h3>
-                  <p className="text-primary-foreground/90">{step.description}</p>
+            <div key={index} className="relative">
+              {/* Timeline line */}
+              {index !== steps.length - 1 && (
+                <div className="absolute left-8 top-24 w-0.5 h-full bg-primary/30 -z-10" />
+              )}
+              
+              {/* Timeline step */}
+              <div className="flex gap-6 pb-12">
+                {/* Icon circle */}
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg relative z-10">
+                    <div className="text-primary-foreground scale-75">
+                      {step.icon}
+                    </div>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+                
+                {/* Content card */}
+                <Card className="flex-1 bg-primary border-primary shadow-card hover:shadow-elegant transition-smooth">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start gap-4">
+                      <span className="text-4xl font-bold text-primary-foreground/30">
+                        {step.number}
+                      </span>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-semibold mb-3 text-primary-foreground">
+                          {step.title}
+                        </h3>
+                        <p className="text-primary-foreground/90">{step.description}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           ))}
         </div>
 
