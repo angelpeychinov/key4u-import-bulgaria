@@ -38,7 +38,7 @@ export const ViberOffersDialog = () => {
         <div className="flex flex-col gap-4 py-4">
           <Button
             onClick={handleViberClick}
-            className="w-full bg-gradient-accent text-accent-foreground hover:opacity-90 transition-smooth flex items-center gap-2 py-6 text-lg font-semibold"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-smooth flex items-center gap-2 py-6 text-lg font-semibold shadow-elegant"
           >
             <MessageCircle size={24} />
             Join Viber Group
