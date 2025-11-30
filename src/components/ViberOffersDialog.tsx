@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export const ViberOffersDialog = () => {
   const [open, setOpen] = useState(false);
@@ -19,7 +20,7 @@ export const ViberOffersDialog = () => {
   }, []);
 
   const handleViberClick = () => {
-    window.open('viber://chat?number=%2B359898252434', '_blank');
+    window.open('https://invite.viber.com/?g2=AQBBYt8YUvNSclPkalAfJbQHTCgsYQCUoqTYEaki53CW%2FthpASyMvSk9yxEHGBS7', '_blank');
     setOpen(false);
   };
 
@@ -27,12 +28,12 @@ export const ViberOffersDialog = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
+          <div className="flex justify-center mb-4">
+            <img src={logo} alt="KEY4U Logo" className="h-16 w-auto" />
+          </div>
           <DialogTitle className="text-2xl font-bold text-center">
             Get our latest offers
           </DialogTitle>
-          <DialogDescription className="text-center pt-2">
-            Join our Viber group to receive exclusive deals and updates on available cars.
-          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
           <Button
