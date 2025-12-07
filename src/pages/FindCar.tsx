@@ -93,7 +93,7 @@ export default function FindCar() {
             <Car className="w-10 h-10 text-primary-foreground" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
-            {t('form.title')}
+            Кажи ни какво търсиш
           </h1>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             Първа стъпка към намирането на мечтания автомобил
