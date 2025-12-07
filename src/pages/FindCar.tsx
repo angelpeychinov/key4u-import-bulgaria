@@ -183,7 +183,7 @@ export default function FindCar() {
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/10">
-                        <Search className="w-4 h-4 text-accent" />
+                        <Car className="w-4 h-4 text-accent" />
                       </div>
                       <h3 className="font-semibold text-foreground">Детайли за автомобила</h3>
                     </div>
