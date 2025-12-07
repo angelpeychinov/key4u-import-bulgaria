@@ -82,39 +82,27 @@ export default function Process() {
                 <div className={`flex flex-col md:flex-row ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-8`}>
                   {/* Card side */}
                   <div className={`w-full md:w-1/2 ${isEven ? 'md:pr-16 md:text-right' : 'md:pl-16 md:text-left'}`}>
-                    <div className={`
+                    <div className="
                       relative p-8 rounded-2xl border backdrop-blur-sm
-                      ${isPrimary 
-                        ? 'bg-primary/5 border-primary/20 hover:border-primary/40' 
-                        : 'bg-accent/5 border-accent/20 hover:border-accent/40'
-                      }
+                      bg-accent/5 border-accent/20 hover:border-accent/40
                       transition-all duration-300 hover:shadow-lg group
-                    `}>
+                    ">
                       {/* Number badge */}
-                      <div className={`
-                        absolute -top-4 ${isEven ? 'md:right-8 left-8 md:left-auto' : 'left-8'}
+                      <div className="
+                        absolute -top-4 left-8
                         w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm
-                        ${isPrimary 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-accent text-accent-foreground'
-                        }
+                        bg-accent text-accent-foreground
                         shadow-lg
-                      `}>
+                      ">
                         {step.number}
                       </div>
 
                       {/* Icon - mobile only */}
-                      <div className={`
-                        md:hidden w-14 h-14 rounded-xl flex items-center justify-center mb-4
-                        ${isPrimary 
-                          ? 'bg-primary/10' 
-                          : 'bg-accent/10'
-                        }
-                      `}>
-                        <Icon className={`w-7 h-7 ${isPrimary ? 'text-primary' : 'text-accent'}`} />
+                      <div className="md:hidden w-14 h-14 rounded-xl flex items-center justify-center mb-4 bg-primary/10">
+                        <Icon className="w-7 h-7 text-primary" />
                       </div>
 
-                      <h3 className={`text-2xl font-bold mb-3 ${isPrimary ? 'text-primary' : 'text-accent'}`}>
+                      <h3 className="text-2xl font-bold mb-3 text-primary">
                         {step.title}
                       </h3>
                       <p className="text-muted-foreground leading-relaxed">
