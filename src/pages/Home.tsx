@@ -72,7 +72,11 @@ export default function Home() {
 
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary">
-            {t('hero.title')}
+            {language === 'bg' ? (
+              <>Внос на Автомобили<br />от Канада и САЩ</>
+            ) : (
+              <>Car Import<br />from Canada and USA</>
+            )}
           </h1>
           <p className="text-lg md:text-xl text-foreground font-medium mb-12 max-w-2xl mx-auto bg-background/50 backdrop-blur-sm px-3 py-2 rounded-lg inline-block">
             {t('hero.description')}
