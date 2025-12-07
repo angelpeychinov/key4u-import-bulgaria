@@ -2,7 +2,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Car, Shield, FileCheck, Search, Clock } from "lucide-react";
+import { CheckCircle2, Car, Shield, FileCheck, Search, Clock, ArrowRight, Phone } from "lucide-react";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import {
   Carousel,
@@ -306,33 +306,68 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-4xl mx-auto shadow-elegant hover:shadow-2xl transition-all duration-300 animate-fade-in">
-            <CardContent className="pt-16 pb-16 px-8 text-center">
-              <div className="mb-6 flex justify-center">
-                <div className="bg-primary/10 p-4 rounded-full">
-                  <CheckCircle2 className="w-16 h-16 text-primary" />
+      <section className="py-24 relative overflow-hidden">
+        {/* Background with gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/80" />
+        
+        {/* Decorative elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-20 -right-20 w-80 h-80 bg-primary-foreground/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-primary-foreground/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-primary-foreground/10 rounded-full" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-primary-foreground/10 rounded-full" />
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Icon */}
+            <div className="mb-8 inline-flex">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary-foreground/20 rounded-full blur-xl scale-150" />
+                <div className="relative bg-primary-foreground/10 backdrop-blur-sm p-6 rounded-full border border-primary-foreground/20">
+                  <Car className="w-12 h-12 text-primary-foreground" />
                 </div>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
-                {t('contact.subtitle')}
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                {t('hero.description') || 'Let us handle everything from finding your perfect car to delivering it to your doorstep in Bulgaria.'}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button 
-                  variant="default" 
-                  size="lg" 
-                  onClick={() => navigate('/find-car')}
-                  className="hover-scale shadow-lg"
-                >
-                  {t('hero.cta')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+            
+            {/* Headline */}
+            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-primary-foreground leading-tight">
+              {language === 'bg' ? (
+                <>Готови ли сте за<br /><span className="text-primary-foreground/80">мечтания автомобил?</span></>
+              ) : (
+                <>Ready for your<br /><span className="text-primary-foreground/80">dream car?</span></>
+              )}
+            </h2>
+            
+            {/* Subtitle */}
+            <p className="text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
+              {language === 'bg' 
+                ? 'Ние се грижим за всичко - от намирането до доставката на вашия перфектен автомобил.' 
+                : 'We handle everything - from finding to delivering your perfect car.'}
+            </p>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button 
+                size="lg" 
+                onClick={() => navigate('/find-car')}
+                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-2xl hover:shadow-primary-foreground/25 hover:scale-105 transition-all duration-300 text-lg px-8 py-6 rounded-full font-semibold group"
+              >
+                {t('hero.cta')}
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              
+              <a 
+                href="tel:0898252434"
+                className="inline-flex items-center gap-2 text-primary-foreground/90 hover:text-primary-foreground transition-colors text-lg font-medium group"
+              >
+                <Phone className="w-5 h-5" />
+                <span className="border-b border-primary-foreground/30 group-hover:border-primary-foreground transition-colors">
+                  0898 252 434
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
       </section>
     </div>
