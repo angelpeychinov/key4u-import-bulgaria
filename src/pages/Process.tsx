@@ -75,7 +75,7 @@ export default function Process() {
               <div key={index} className="relative mb-12 last:mb-0">
                 {/* Timeline dot - centered on desktop */}
                 <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-8 z-20">
-                  <div className={`w-5 h-5 rounded-full border-4 ${isPrimary ? 'bg-primary border-primary/30' : 'bg-accent border-accent/30'} shadow-lg`} />
+                  <div className="w-5 h-5 rounded-full border-4 bg-accent border-accent/30 shadow-lg" />
                 </div>
 
                 {/* Content wrapper - alternating sides on desktop */}
