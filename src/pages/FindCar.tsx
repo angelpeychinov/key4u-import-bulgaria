@@ -96,7 +96,7 @@ export default function FindCar() {
             {t('form.title')}
           </h1>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            {t('form.subtitle')}
+            Първа стъпка към намирането на мечтания автомобил
           </p>
         </div>
 
