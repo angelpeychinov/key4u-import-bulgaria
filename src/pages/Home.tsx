@@ -82,7 +82,7 @@ export default function Home() {
             {t('hero.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="hero" size="lg" onClick={() => navigate('/find-car')}>
+            <Button variant="default" size="lg" onClick={() => navigate('/find-car')}>
               {t('hero.cta')}
             </Button>
           </div>
