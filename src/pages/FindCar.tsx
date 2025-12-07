@@ -265,7 +265,7 @@ export default function FindCar() {
                         name="additional"
                         value={formData.additional}
                         onChange={handleChange}
-                        placeholder="Any specific requirements or preferences..."
+                        placeholder="Имате ли някакви допълнителни желания или забележки?"
                         rows={4}
                         maxLength={1000}
                         className="bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 transition-all resize-none"
