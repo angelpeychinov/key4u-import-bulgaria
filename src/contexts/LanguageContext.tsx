@@ -72,7 +72,7 @@ const translations = {
     'contact.viber': 'Chat on Viber',
     
     // Features
-    'features.title': 'Why Choose KEY4U?',
+    'features.title': 'Why Choose Key4U?',
     'features.endToEnd': 'Full Service',
     'features.endToEndDesc': 'From request to registration, we handle everything',
     'features.realKm': 'Real Mileage',
@@ -147,7 +147,7 @@ const translations = {
     'contact.viber': 'Чат във Viber',
     
     // Features
-    'features.title': 'Защо да изберете KEY4U?',
+    'features.title': 'Защо да изберете Key4U?',
     'features.endToEnd': 'Пълна Услуга',
     'features.endToEndDesc': 'От заявка до регистрация, можем да се погрижим за всичко',
     'features.realKm': 'Реални Километри',

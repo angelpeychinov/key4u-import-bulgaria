@@ -90,7 +90,7 @@ export default function Contact() {
                     rel="noopener noreferrer"
                     className="hover:text-primary transition-smooth"
                   >
-                    @KEY4U
+                    @Key4U
                   </a>
                 </p>
                 <p>
@@ -101,7 +101,7 @@ export default function Contact() {
                     rel="noopener noreferrer"
                     className="hover:text-primary transition-smooth"
                   >
-                    @KEY4U
+                    @Key4U
                   </a>
                 </p>
               </div>

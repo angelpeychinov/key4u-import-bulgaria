@@ -9,7 +9,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div>
-            <img src={logoFooter} alt="KEY4U" className="h-24 w-auto mb-4" />
+            <img src={logoFooter} alt="Key4U" className="h-24 w-auto mb-4" />
             <div className="flex gap-4">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
                 <Facebook size={24} />
@@ -45,7 +45,7 @@ export const Footer = () => {
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-6 text-center text-sm opacity-90">
-          <p>&copy; {new Date().getFullYear()} KEY4U. Всички права запазени.</p>
+          <p>&copy; {new Date().getFullYear()} Key4U. Всички права запазени.</p>
         </div>
       </div>
     </footer>
