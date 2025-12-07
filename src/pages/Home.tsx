@@ -161,7 +161,7 @@ export default function Home() {
                 {language === 'bg' ? 'Доволни клиенти' : 'Happy Clients'}
               </p>
               <p className="text-primary-foreground/70 text-sm mt-2">
-                {language === 'bg' ? 'препоръчват ни' : 'recommend us'}
+                {language === 'bg' ? 'ни препоръчват' : 'recommend us'}
               </p>
             </div>
             
