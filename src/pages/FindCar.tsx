@@ -179,16 +179,7 @@ export default function FindCar() {
                   </div>
 
                   {/* Divider */}
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-border/50" />
-                    </div>
-                    <div className="relative flex justify-center">
-                      <span className="bg-card px-4">
-                        <Sparkles className="w-5 h-5 text-accent" />
-                      </span>
-                    </div>
-                  </div>
+                  <div className="w-full border-t border-border/50" />
 
                   {/* Car Details Section */}
                   <div className="space-y-6">
