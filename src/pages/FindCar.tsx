@@ -108,8 +108,6 @@ export default function FindCar() {
             
             {/* Main card */}
             <div className="relative bg-card/80 backdrop-blur-xl rounded-2xl border border-border/50 shadow-elegant overflow-hidden">
-              {/* Card header accent */}
-              <div className="h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
               
               <div className="p-8 md:p-10">
                 <form onSubmit={handleSubmit} className="space-y-8">
