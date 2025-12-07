@@ -216,7 +216,7 @@ export default function FindCar() {
                           name="year"
                           value={formData.year}
                           onChange={handleChange}
-                          placeholder="2020"
+                          placeholder="2019, 2020..."
                           maxLength={4}
                           className="h-12 bg-background/50 border-border/50 focus:border-primary focus:ring-primary/20 transition-all"
                         />
