@@ -73,7 +73,7 @@ export default function Home() {
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary">
             {language === 'bg' ? (
-              <>Внос на Автомобили<br />от Канада и САЩ</>
+              <>Внос на автомобили<br />от Канада и САЩ</>
             ) : (
               <>Car Import<br />from Canada and USA</>
             )}
