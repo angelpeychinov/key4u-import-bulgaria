@@ -171,7 +171,7 @@ export default function Home() {
                 <FileCheck className="w-8 h-8 text-primary-foreground" />
               </div>
               <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
-                <AnimatedCounter end={8} suffix=" седм." />
+                <AnimatedCounter end={60} suffix=" дни" />
               </div>
               <p className="text-primary-foreground/90 text-lg font-medium">
                 {language === 'bg' ? 'Средно време' : 'Average Time'}
