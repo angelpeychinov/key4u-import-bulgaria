@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Car, Shield, FileCheck, Search } from "lucide-react";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 import {
   Carousel,
   CarouselContent,
@@ -113,15 +114,72 @@ export default function Home() {
 
 
       {/* Stats Section */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-[43px] md:text-[54px] font-bold text-primary mb-6">
-              {language === 'bg' ? 'Над 100 внесени автомобила за последната година!' : 'Over 100 imported cars in the last year!'}
+      <section className="py-24 bg-primary relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary-foreground rounded-full" />
+          <div className="absolute bottom-10 right-10 w-48 h-48 border-2 border-primary-foreground rounded-full" />
+          <div className="absolute top-1/2 left-1/4 w-20 h-20 border-2 border-primary-foreground rounded-full" />
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
+              {language === 'bg' ? 'Нашият опит в цифри' : 'Our Experience in Numbers'}
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg text-primary-foreground/80">
               {language === 'bg' ? 'Доверие, което се доказва с всеки внесен автомобил' : 'Trust proven with every imported vehicle'}
             </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Stat 1 - Cars Imported */}
+            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Car className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
+                <AnimatedCounter end={100} suffix="+" />
+              </div>
+              <p className="text-primary-foreground/90 text-lg font-medium">
+                {language === 'bg' ? 'Внесени автомобила' : 'Cars Imported'}
+              </p>
+              <p className="text-primary-foreground/70 text-sm mt-2">
+                {language === 'bg' ? 'за последната година' : 'in the last year'}
+              </p>
+            </div>
+            
+            {/* Stat 2 - Happy Clients */}
+            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Shield className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
+                <AnimatedCounter end={100} suffix="%" />
+              </div>
+              <p className="text-primary-foreground/90 text-lg font-medium">
+                {language === 'bg' ? 'Доволни клиенти' : 'Happy Clients'}
+              </p>
+              <p className="text-primary-foreground/70 text-sm mt-2">
+                {language === 'bg' ? 'препоръчват ни' : 'recommend us'}
+              </p>
+            </div>
+            
+            {/* Stat 3 - Countries */}
+            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle2 className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
+                <AnimatedCounter end={2} />
+              </div>
+              <p className="text-primary-foreground/90 text-lg font-medium">
+                {language === 'bg' ? 'Държави' : 'Countries'}
+              </p>
+              <p className="text-primary-foreground/70 text-sm mt-2">
+                {language === 'bg' ? 'Канада и САЩ' : 'Canada & USA'}
+              </p>
+            </div>
           </div>
         </div>
       </section>
