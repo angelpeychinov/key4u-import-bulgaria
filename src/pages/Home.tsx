@@ -152,7 +152,7 @@ export default function Home() {
                 <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
                   <img 
                     src={logo} 
-                    alt="KEY4U Logo" 
+                    alt="Key4U Logo" 
                     className="h-[143px] w-auto translate-y-[5%]"
                   />
                   <div className="text-3xl font-bold text-primary">×</div>

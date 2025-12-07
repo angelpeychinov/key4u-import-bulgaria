@@ -29,7 +29,7 @@ export const ViberOffersDialog = () => {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex justify-center mb-4">
-            <img src={logo} alt="KEY4U Logo" className="h-24 w-auto" />
+            <img src={logo} alt="Key4U Logo" className="h-24 w-auto" />
           </div>
           <DialogTitle className="text-2xl font-bold text-center">
             Get our latest offers
