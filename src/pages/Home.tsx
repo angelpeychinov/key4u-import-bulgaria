@@ -107,19 +107,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Single Fee Section */}
-      <section className="py-20 bg-card">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-[43px] md:text-[54px] font-bold text-primary mb-6">
-              {language === 'bg' ? 'Такса услуга е единствената такса, която ще заплатиш към нас!' : 'Service fee is the only fee you will pay to us!'}
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              {language === 'bg' ? 'Прозрачно ценообразуване, без скрити такси' : 'Transparent pricing with no hidden fees'}
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* Stats Section */}
       <section className="py-20 bg-background">
