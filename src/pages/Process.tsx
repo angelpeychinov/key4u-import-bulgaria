@@ -120,15 +120,12 @@ export default function Process() {
 
                   {/* Icon side - desktop only */}
                   <div className={`hidden md:flex w-1/2 ${isEven ? 'pl-16 justify-start' : 'pr-16 justify-end'}`}>
-                    <div className={`
+                    <div className="
                       w-24 h-24 rounded-2xl flex items-center justify-center
-                      ${isPrimary 
-                        ? 'bg-gradient-to-br from-primary to-primary/80' 
-                        : 'bg-gradient-to-br from-accent to-accent/80'
-                      }
+                      bg-gradient-to-br from-primary to-primary/80
                       shadow-xl group-hover:scale-105 transition-transform duration-300
-                    `}>
-                      <Icon className={`w-12 h-12 ${isPrimary ? 'text-primary-foreground' : 'text-accent-foreground'}`} />
+                    ">
+                      <Icon className="w-12 h-12 text-primary-foreground" />
                     </div>
                   </div>
                 </div>
