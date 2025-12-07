@@ -64,7 +64,7 @@ export default function Process() {
         {/* Timeline */}
         <div className="max-w-5xl mx-auto relative">
           {/* Central timeline line - hidden on mobile */}
-          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-accent" />
+          <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-primary/50 via-accent/50 to-primary/50" />
 
           {steps.map((step, index) => {
             const Icon = step.icon;
@@ -75,7 +75,7 @@ export default function Process() {
               <div key={index} className="relative mb-12 last:mb-0">
                 {/* Timeline dot - centered on desktop */}
                 <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-8 z-20">
-                  <div className={`w-5 h-5 rounded-full border-4 ${isPrimary ? 'bg-primary border-primary/30' : 'bg-gradient-accent border-[#7C3AED]/30'} shadow-lg`} />
+                  <div className={`w-5 h-5 rounded-full border-4 ${isPrimary ? 'bg-primary border-primary/30' : 'bg-accent border-accent/30'} shadow-lg`} />
                 </div>
 
                 {/* Content wrapper - alternating sides on desktop */}
@@ -86,7 +86,7 @@ export default function Process() {
                       relative p-8 rounded-2xl border backdrop-blur-sm
                       ${isPrimary 
                         ? 'bg-primary/5 border-primary/20 hover:border-primary/40' 
-                        : 'bg-[#7C3AED]/5 border-[#7C3AED]/20 hover:border-[#7C3AED]/40'
+                        : 'bg-accent/5 border-accent/20 hover:border-accent/40'
                       }
                       transition-all duration-300 hover:shadow-lg group
                     `}>
@@ -96,7 +96,7 @@ export default function Process() {
                         w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm
                         ${isPrimary 
                           ? 'bg-primary text-primary-foreground' 
-                          : 'bg-gradient-accent text-white'
+                          : 'bg-accent text-accent-foreground'
                         }
                         shadow-lg
                       `}>
@@ -108,13 +108,13 @@ export default function Process() {
                         md:hidden w-14 h-14 rounded-xl flex items-center justify-center mb-4
                         ${isPrimary 
                           ? 'bg-primary/10' 
-                          : 'bg-[#7C3AED]/10'
+                          : 'bg-accent/10'
                         }
                       `}>
-                        <Icon className={`w-7 h-7 ${isPrimary ? 'text-primary' : 'text-[#7C3AED]'}`} />
+                        <Icon className={`w-7 h-7 ${isPrimary ? 'text-primary' : 'text-accent'}`} />
                       </div>
 
-                      <h3 className={`text-2xl font-bold mb-3 ${isPrimary ? 'text-primary' : 'text-[#7C3AED]'}`}>
+                      <h3 className={`text-2xl font-bold mb-3 ${isPrimary ? 'text-primary' : 'text-accent'}`}>
                         {step.title}
                       </h3>
                       <p className="text-muted-foreground leading-relaxed">
@@ -136,11 +136,11 @@ export default function Process() {
                       w-24 h-24 rounded-2xl flex items-center justify-center
                       ${isPrimary 
                         ? 'bg-gradient-to-br from-primary to-primary/80' 
-                        : 'bg-gradient-accent'
+                        : 'bg-gradient-to-br from-accent to-accent/80'
                       }
                       shadow-xl group-hover:scale-105 transition-transform duration-300
                     `}>
-                      <Icon className={`w-12 h-12 ${isPrimary ? 'text-primary-foreground' : 'text-white'}`} />
+                      <Icon className={`w-12 h-12 ${isPrimary ? 'text-primary-foreground' : 'text-accent-foreground'}`} />
                     </div>
                   </div>
                 </div>
@@ -181,7 +181,7 @@ export default function Process() {
         {/* Trust Section */}
         <div className="mt-20 max-w-4xl mx-auto">
           <div className="relative p-10 rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-card">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-gradient-accent text-white font-semibold text-sm">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-accent text-accent-foreground font-semibold text-sm">
               {t('features.trust')}
             </div>
             <p className="text-center text-muted-foreground text-lg leading-relaxed pt-4">
