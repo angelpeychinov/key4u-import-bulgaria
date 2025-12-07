@@ -93,7 +93,7 @@ const translations = {
     'nav.contact': 'Контакт',
     
     // Hero
-    'hero.title': 'Автомобили от Канада и САЩ',
+    'hero.title': 'Внос на Автомобили от Канада и САЩ',
     'hero.subtitle': 'Лесно, Бързо, Достъпно',
     'hero.description': 'Вашата мечтана кола е наша работа!',
     'hero.cta': 'Намери Автомобил',
