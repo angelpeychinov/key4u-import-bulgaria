@@ -227,7 +227,7 @@ export default function Home() {
                 
                 <div className="bg-white/90 backdrop-blur-sm rounded-lg px-4 md:px-6 py-4 mb-6 inline-block max-w-full">
                   <p className="text-base md:text-[18px] text-card-foreground font-medium">
-                    {language === 'bg' ? 'Тук може да намерите нашите актуални предложения.' : 'Here you can find our current offers.'}
+                    {language === 'bg' ? 'Тук може да намерите нашите предложения.' : 'Here you can find our offers.'}
                   </p>
                 </div>
 
