@@ -210,18 +210,18 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto">
             <Card className="shadow-none border-none bg-transparent">
-              <CardContent className="p-12 text-center">
-                <div className="flex items-center justify-center gap-6 mb-8 flex-wrap">
+              <CardContent className="p-6 md:p-12 text-center">
+                <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-8">
                   <img 
                     src={logo} 
                     alt="Key4U Logo" 
-                    className="h-[143px] w-auto translate-y-[5%]"
+                    className="h-[80px] md:h-[143px] w-auto translate-y-[5%]"
                   />
-                  <div className="text-3xl font-bold text-primary">×</div>
+                  <div className="text-2xl md:text-3xl font-bold text-primary">×</div>
                   <img 
                     src={mobileBgLogo} 
                     alt="Mobile.bg Logo" 
-                    className="h-[114px] w-auto"
+                    className="h-[60px] md:h-[114px] w-auto"
                   />
                 </div>
                 
