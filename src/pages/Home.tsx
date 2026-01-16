@@ -225,21 +225,23 @@ export default function Home() {
                   />
                 </div>
                 
-                <div className="bg-white/90 backdrop-blur-sm rounded-lg px-6 py-4 mb-6 inline-block">
-                  <p className="text-[18px] text-card-foreground font-medium">
+                <div className="bg-white/90 backdrop-blur-sm rounded-lg px-4 md:px-6 py-4 mb-6 inline-block max-w-full">
+                  <p className="text-base md:text-[18px] text-card-foreground font-medium">
                     {language === 'bg' ? 'Тук може да намерите нашите актуални предложения.' : 'Here you can find our current offers.'}
                   </p>
                 </div>
 
-                <Button
-                  variant="outline" 
-                  size="lg"
-                  onClick={() => window.open('https://key4u.mobile.bg/', '_blank')}
-                  className="hover-scale shadow-lg text-lg px-8 py-6 uppercase bg-white text-primary border-white hover:bg-white/90 hover:text-primary font-bold"
-                >
-                  <Search className="mr-2 h-5 w-5" />
-                  {language === 'bg' ? 'Виж Обявите в Mobile.bg' : 'View Listings on Mobile.bg'}
-                </Button>
+                <div className="flex justify-center w-full">
+                  <Button
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => window.open('https://key4u.mobile.bg/', '_blank')}
+                    className="hover-scale shadow-lg text-sm md:text-lg px-4 md:px-8 py-4 md:py-6 uppercase bg-white text-primary border-white hover:bg-white/90 hover:text-primary font-bold whitespace-normal text-center"
+                  >
+                    <Search className="mr-2 h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
+                    {language === 'bg' ? 'Виж Обявите в Mobile.bg' : 'View Listings on Mobile.bg'}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
