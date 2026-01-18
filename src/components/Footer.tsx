@@ -11,7 +11,7 @@ export const Footer = () => {
           <div>
             <img src={logoFooter} alt="Key4U" className="h-24 w-auto mb-4" />
             <div className="flex gap-4">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
+              <a href="https://www.facebook.com/Key4UCarImport/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
                 <Facebook size={24} />
               </a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-smooth">
