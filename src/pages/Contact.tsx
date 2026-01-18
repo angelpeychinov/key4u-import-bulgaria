@@ -85,7 +85,7 @@ export default function Contact() {
                 <p>
                   <strong className="text-card-foreground">Facebook:</strong>{" "}
                   <a
-                    href="https://facebook.com/key4u"
+                    href="https://www.facebook.com/Key4UCarImport/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-primary transition-smooth"
