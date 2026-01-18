@@ -16,8 +16,8 @@ export default function Contact() {
     {
       icon: <Mail className="w-8 h-8 text-primary" />,
       label: t('contact.email'),
-      value: "info@key4u.bg",
-      href: "mailto:info@key4u.bg",
+      value: "key4u.import@gmail.com",
+      href: "mailto:key4u.import@gmail.com",
     },
     {
       icon: <MapPin className="w-8 h-8 text-primary" />,

@@ -38,7 +38,7 @@ export const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Контакти</h3>
             <ul className="space-y-2 text-sm opacity-90">
-              <li>Имейл: info@key4u.bg</li>
+              <li>Имейл: key4u.import@gmail.com</li>
               <li>Телефон: 0898 252 434</li>
             </ul>
           </div>
