@@ -329,8 +329,8 @@ export default function Home() {
             {/* Subtitle */}
             <p className="text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
               {language === 'bg' 
-                ? 'Ние се грижим за всичко - от намирането до доставката на вашия перфектен автомобил.' 
-                : 'We handle everything - from finding to delivering your perfect car.'}
+                ? 'Ние се грижим за всичко - от намирането до доставката.' 
+                : 'We handle everything - from finding to delivery.'}
             </p>
             
             {/* CTA Buttons */}
