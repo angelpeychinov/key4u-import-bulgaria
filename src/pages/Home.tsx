@@ -136,7 +136,7 @@ export default function Home() {
             {/* Stat 1 - Cars Imported */}
             <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
               <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Car className="w-8 h-8 text-primary-foreground" />
+                <img src={logo} alt="Key4U" className="w-10 h-10 object-contain" />
               </div>
               <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
                 <AnimatedCounter end={100} suffix="+" />
@@ -152,7 +152,7 @@ export default function Home() {
             {/* Stat 2 - Happy Clients */}
             <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
               <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Shield className="w-8 h-8 text-primary-foreground" />
+                <img src={logo} alt="Key4U" className="w-10 h-10 object-contain" />
               </div>
               <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
                 <AnimatedCounter end={100} suffix="%" />
@@ -168,7 +168,7 @@ export default function Home() {
             {/* Stat 3 - Delivery Time */}
             <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
               <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Clock className="w-8 h-8 text-primary-foreground" />
+                <img src={logo} alt="Key4U" className="w-10 h-10 object-contain" />
               </div>
               <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
                 <AnimatedCounter end={60} suffix=" дни" />
