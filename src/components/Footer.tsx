@@ -29,7 +29,7 @@ export const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li><a href="/" className="opacity-90 hover:opacity-100 transition-smooth">Начало</a></li>
               <li><a href="/process" className="opacity-90 hover:opacity-100 transition-smooth">Процес</a></li>
-              <li><a href="/find-car" className="opacity-90 hover:opacity-100 transition-smooth">Намери Кола</a></li>
+              <li><a href="/find-car" className="opacity-90 hover:opacity-100 transition-smooth">Намери кола</a></li>
               <li><a href="/faq" className="opacity-90 hover:opacity-100 transition-smooth">Въпроси</a></li>
             </ul>
           </div>
