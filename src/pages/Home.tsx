@@ -115,12 +115,6 @@ export default function Home() {
 
       {/* Stats Section */}
       <section className="py-24 bg-primary relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 border-2 border-primary-foreground rounded-full" />
-          <div className="absolute bottom-10 right-10 w-48 h-48 border-2 border-primary-foreground rounded-full" />
-          <div className="absolute top-1/2 left-1/4 w-20 h-20 border-2 border-primary-foreground rounded-full" />
-        </div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
@@ -135,9 +129,6 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Stat 1 - Cars Imported */}
             <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <img src={logo} alt="Key4U" className="w-10 h-10 object-contain" />
-              </div>
               <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
                 <AnimatedCounter end={100} suffix="+" />
               </div>
@@ -151,9 +142,6 @@ export default function Home() {
             
             {/* Stat 2 - Happy Clients */}
             <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <img src={logo} alt="Key4U" className="w-10 h-10 object-contain" />
-              </div>
               <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
                 <AnimatedCounter end={100} suffix="%" />
               </div>
@@ -167,9 +155,6 @@ export default function Home() {
             
             {/* Stat 3 - Delivery Time */}
             <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
-              <div className="w-16 h-16 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <img src={logo} alt="Key4U" className="w-10 h-10 object-contain" />
-              </div>
               <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
                 <AnimatedCounter end={60} suffix=" дни" />
               </div>
