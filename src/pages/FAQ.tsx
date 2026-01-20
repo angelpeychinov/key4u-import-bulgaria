@@ -33,8 +33,8 @@ export default function FAQ() {
       />
       <FAQSchema faqs={faqSchemaData} />
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
+        <div className="mb-12">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-foreground text-left">
             {t('faq.title')}
           </h1>
         </div>
