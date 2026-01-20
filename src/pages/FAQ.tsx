@@ -39,18 +39,18 @@ export default function FAQ() {
           </h1>
         </div>
 
-        <div className="max-w-3xl mx-auto px-2 md:px-0">
-          <Accordion type="single" collapsible className="space-y-4">
+        <div className="max-w-3xl mx-auto px-2 md:px-0 text-left">
+          <Accordion type="single" collapsible className="w-full space-y-4">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="bg-card rounded-lg px-4 md:px-6 shadow-card"
+                className="w-full bg-card rounded-lg px-4 md:px-6 shadow-card"
               >
-                <AccordionTrigger className="text-base md:text-lg font-semibold text-card-foreground hover:text-primary text-left">
+                <AccordionTrigger className="text-base md:text-lg font-semibold text-card-foreground hover:text-primary !text-left">
                   {t(faq.q)}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-left">
+                <AccordionContent className="text-muted-foreground !text-left">
                   {t(faq.a)}
                 </AccordionContent>
               </AccordionItem>
