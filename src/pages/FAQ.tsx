@@ -34,23 +34,23 @@ export default function FAQ() {
       <FAQSchema faqs={faqSchemaData} />
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4 text-foreground">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
             {t('faq.title')}
           </h1>
         </div>
 
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto px-2 md:px-0">
           <Accordion type="single" collapsible className="space-y-4">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="bg-card rounded-lg px-6 shadow-card"
+                className="bg-card rounded-lg px-4 md:px-6 shadow-card"
               >
-                <AccordionTrigger className="text-lg font-semibold text-card-foreground hover:text-primary">
+                <AccordionTrigger className="text-base md:text-lg font-semibold text-card-foreground hover:text-primary text-left">
                   {t(faq.q)}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
+                <AccordionContent className="text-muted-foreground text-left">
                   {t(faq.a)}
                 </AccordionContent>
               </AccordionItem>
