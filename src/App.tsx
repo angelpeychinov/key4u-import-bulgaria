@@ -9,6 +9,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { ViberButton } from "@/components/ViberButton";
 import { ViberOffersDialog } from "@/components/ViberOffersDialog";
+import { CookieConsent } from "@/components/CookieConsent";
 import { LocalBusinessSchema, CarImportServiceSchema } from "@/components/SEO";
 import Home from "./pages/Home";
 import Process from "./pages/Process";
@@ -43,6 +44,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <Footer />
+              <CookieConsent />
             </div>
           </BrowserRouter>
         </LanguageProvider>
