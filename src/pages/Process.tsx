@@ -40,7 +40,7 @@ export default function Process() {
   return (
     <div className="min-h-screen pt-20 pb-16 relative overflow-hidden">
       <SEO 
-        title="Как работи вносът на автомобили"
+        title="Key4U | Как работи вносът на коли от Канада"
         description="Научете как Key4U внася автомобили от Канада и САЩ в България. Лесен 4-стъпков процес: заявка, търсене, транспорт и доставка. Прозрачни цени и пълна подкрепа."
         canonicalUrl="https://key4u.bg/process"
       />

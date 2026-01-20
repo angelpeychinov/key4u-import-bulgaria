@@ -64,7 +64,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <SEO 
-        title="Внос на автомобили от Канада и САЩ"
+        title="Key4U България | Внос на автомобили от Канада и САЩ"
         description="Key4U внася луксозни автомобили от Канада и САЩ в България. Пълна услуга от заявка до доставка - BMW, Mercedes, Audi, Tesla. 100+ внесени автомобила, 100% доволни клиенти."
         canonicalUrl="https://key4u.bg"
       />
