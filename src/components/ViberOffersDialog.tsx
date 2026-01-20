@@ -32,7 +32,7 @@ export const ViberOffersDialog = () => {
             <img src={logo} alt="Key4U Logo" className="h-24 w-auto" />
           </div>
           <DialogTitle className="text-2xl font-bold text-center">
-            Get our latest offers
+            Получавайте най-новите оферти
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
@@ -41,7 +41,7 @@ export const ViberOffersDialog = () => {
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-smooth flex items-center gap-2 py-6 text-lg font-semibold shadow-elegant"
           >
             <MessageCircle size={24} />
-            Join Viber Group
+            Присъедини се към Viber групата
           </Button>
         </div>
       </DialogContent>
