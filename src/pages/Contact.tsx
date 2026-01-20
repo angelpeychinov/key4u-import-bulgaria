@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,11 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen pt-24 pb-16 bg-card">
+      <SEO 
+        title="Контакти - Свържете се с нас"
+        description="Свържете се с Key4U за внос на автомобили от Канада и САЩ. Телефон: 0898 252 434, Email: key4u.import@gmail.com. Viber, Facebook, Instagram. София, България."
+        canonicalUrl="https://key4u.bg/contact"
+      />
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4 text-foreground">

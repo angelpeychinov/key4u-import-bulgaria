@@ -1,3 +1,4 @@
+import { SEO, FAQSchema } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Accordion,
@@ -17,8 +18,20 @@ export default function FAQ() {
     { q: 'faq.q5', a: 'faq.a5' },
   ];
 
+  // Prepare FAQ data for schema
+  const faqSchemaData = faqs.map(faq => ({
+    question: t(faq.q),
+    answer: t(faq.a)
+  }));
+
   return (
     <div className="min-h-screen pt-24 pb-16 bg-background">
+      <SEO 
+        title="Често задавани въпроси за внос на автомобили"
+        description="Отговори на най-честите въпроси за внос на автомобили от Канада и САЩ в България. Цени, срокове, гаранции и процес на доставка от Key4U."
+        canonicalUrl="https://key4u.bg/faq"
+      />
+      <FAQSchema faqs={faqSchemaData} />
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4 text-foreground">

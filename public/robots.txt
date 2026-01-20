@@ -1,3 +1,6 @@
+# Key4U - Внос на автомобили от Канада и САЩ
+# https://key4u.bg
+
 User-agent: Googlebot
 Allow: /
 
@@ -12,3 +15,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://key4u.bg/sitemap.xml

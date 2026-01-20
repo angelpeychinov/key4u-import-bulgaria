@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -62,7 +63,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      <SEO 
+        title="Внос на автомобили от Канада и САЩ"
+        description="Key4U внася луксозни автомобили от Канада и САЩ в България. Пълна услуга от заявка до доставка - BMW, Mercedes, Audi, Tesla. 100+ внесени автомобила, 100% доволни клиенти."
+        canonicalUrl="https://key4u.bg"
+      />
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"

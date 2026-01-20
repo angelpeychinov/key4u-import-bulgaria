@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,7 +76,11 @@ export default function FindCar() {
 
   return (
     <div className="min-h-screen pt-20 pb-16 relative overflow-hidden">
-      {/* Background with gradient */}
+      <SEO 
+        title="Намерете мечтания автомобил"
+        description="Поръчайте внос на автомобил от Канада или САЩ. Кажете ни какъв автомобил търсите - BMW, Mercedes, Audi, Tesla - и ние ще го намерим за вас. Безплатна консултация."
+        canonicalUrl="https://key4u.bg/find-car"
+      />
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
       
       {/* Decorative elements */}
