@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, Search, Wrench, FileCheck, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
@@ -38,7 +39,11 @@ export default function Process() {
 
   return (
     <div className="min-h-screen pt-20 pb-16 relative overflow-hidden">
-      {/* Background elements */}
+      <SEO 
+        title="Как работи вносът на автомобили"
+        description="Научете как Key4U внася автомобили от Канада и САЩ в България. Лесен 4-стъпков процес: заявка, търсене, транспорт и доставка. Прозрачни цени и пълна подкрепа."
+        canonicalUrl="https://key4u.bg/process"
+      />
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
       <div className="absolute top-40 -left-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute bottom-40 -right-20 w-96 h-96 bg-accent/15 rounded-full blur-3xl" />
