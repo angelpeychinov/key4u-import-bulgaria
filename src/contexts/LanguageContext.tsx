@@ -83,6 +83,13 @@ const translations = {
     'features.trustDesc': 'Clear pricing and honest communication',
     'features.local': 'Local Expertise',
     'features.localDesc': 'Bulgarian team that knows the process',
+    
+    // Footer
+    'footer.quickLinks': 'Quick Links',
+    'footer.contacts': 'Contact',
+    'footer.emailLabel': 'Email:',
+    'footer.phoneLabel': 'Phone:',
+    'footer.allRightsReserved': 'All rights reserved.',
   },
   bg: {
     // Navigation
@@ -158,6 +165,13 @@ const translations = {
     'features.trustDesc': 'Ясно ценообразуване и честна комуникация',
     'features.local': 'Местна Експертиза',
     'features.localDesc': 'Български екип, който познава процеса',
+    
+    // Footer
+    'footer.quickLinks': 'Бързи Връзки',
+    'footer.contacts': 'Контакти',
+    'footer.emailLabel': 'Имейл:',
+    'footer.phoneLabel': 'Телефон:',
+    'footer.allRightsReserved': 'Всички права запазени.',
   },
 };
 
