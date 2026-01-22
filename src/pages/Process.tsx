@@ -56,7 +56,7 @@ export default function Process() {
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
             <CheckCircle2 className="w-4 h-4" />
-            Лесен и прозрачен процес
+            {t('process.badge')}
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground via-foreground/80 to-foreground bg-clip-text">
             {t('process.title')}
@@ -148,10 +148,10 @@ export default function Process() {
             
             <div className="relative z-10">
               <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-2">
-                Готови ли сте да започнете?
+                {t('process.ctaTitle')}
               </h2>
               <p className="text-primary-foreground/80 mb-6">
-                Обадете се сега и нека намерим мечтания ви автомобил
+                {t('process.ctaSubtitle')}
               </p>
               <Button
                 asChild
@@ -160,7 +160,7 @@ export default function Process() {
               >
                 <a href="tel:0898252434" className="flex items-center gap-3">
                   <Phone className="w-5 h-5 group-hover:animate-pulse" />
-                  ОБАДИ СЕ СЕГА
+                  {t('process.ctaButton')}
                   <span className="text-primary/70">0898252434</span>
                 </a>
               </Button>

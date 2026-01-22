@@ -124,10 +124,10 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-              {language === 'bg' ? 'Нашият опит в цифри' : 'Our Experience in Numbers'}
+              {t('stats.title')}
             </h2>
             <p className="text-lg text-primary-foreground/80">
-              {language === 'bg' ? 'Доверие, което се доказва с всеки внесен автомобил' : 'Trust proven with every imported vehicle'}
+              {t('stats.subtitle')}
             </p>
           </div>
           
@@ -138,10 +138,10 @@ export default function Home() {
                 <AnimatedCounter end={100} suffix="+" />
               </div>
               <p className="text-primary-foreground/90 text-lg font-medium">
-                {language === 'bg' ? 'Внесени автомобила' : 'Cars Imported'}
+                {t('stats.carsImported')}
               </p>
               <p className="text-primary-foreground/70 text-sm mt-2">
-                {language === 'bg' ? 'за последната година' : 'in the last year'}
+                {t('stats.inLastYear')}
               </p>
             </div>
             
@@ -151,23 +151,23 @@ export default function Home() {
                 <AnimatedCounter end={100} suffix="%" />
               </div>
               <p className="text-primary-foreground/90 text-lg font-medium">
-                {language === 'bg' ? 'Доволни клиенти' : 'Happy Clients'}
+                {t('stats.happyClients')}
               </p>
               <p className="text-primary-foreground/70 text-sm mt-2">
-                {language === 'bg' ? 'ни препоръчват' : 'recommend us'}
+                {t('stats.recommendUs')}
               </p>
             </div>
             
             {/* Stat 3 - Delivery Time */}
             <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
               <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
-                <AnimatedCounter end={60} suffix=" дни" />
+                <AnimatedCounter end={60} suffix={` ${t('stats.days')}`} />
               </div>
               <p className="text-primary-foreground/90 text-lg font-medium">
-                {language === 'bg' ? 'Средно време' : 'Average Time'}
+                {t('stats.averageTime')}
               </p>
               <p className="text-primary-foreground/70 text-sm mt-2">
-                {language === 'bg' ? 'за доставка' : 'for delivery'}
+                {t('stats.forDelivery')}
               </p>
             </div>
           </div>
@@ -179,10 +179,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-[43px] md:text-[54px] font-bold text-primary mb-6">
-              {language === 'bg' ? 'Предоставяме 100% от информацията, която притежаваме.' : 'We provide 100% of the information we have.'}
+              {t('transparency.title')}
             </h2>
             <p className="text-xl text-muted-foreground">
-              {language === 'bg' ? 'Без празни обещания за "здрави" автомобили' : 'Without empty promises of "healthy" cars'}
+              {t('transparency.subtitle')}
             </p>
           </div>
         </div>
@@ -217,7 +217,7 @@ export default function Home() {
                 
                 <div className="bg-white/90 backdrop-blur-sm rounded-lg px-4 md:px-6 py-4 mb-6 inline-block max-w-full">
                   <p className="text-base md:text-[18px] text-card-foreground font-medium">
-                    {language === 'bg' ? 'Тук може да намерите нашите предложения.' : 'Here you can find our offers.'}
+                    {t('mobile.offers')}
                   </p>
                 </div>
 
@@ -229,7 +229,7 @@ export default function Home() {
                     className="hover-scale shadow-lg text-sm md:text-lg px-4 md:px-8 py-4 md:py-6 uppercase bg-white text-primary border-white hover:bg-white/90 hover:text-primary font-bold whitespace-normal text-center"
                   >
                     <Search className="mr-2 h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
-                    {language === 'bg' ? 'Виж Обявите в Mobile.bg' : 'View Listings on Mobile.bg'}
+                    {t('mobile.viewListings')}
                   </Button>
                 </div>
               </CardContent>
@@ -324,18 +324,12 @@ export default function Home() {
             
             {/* Headline */}
             <h2 className="text-4xl md:text-6xl font-bold mb-6 text-primary-foreground leading-tight">
-              {language === 'bg' ? (
-                <>Готови ли сте за<br /><span className="text-primary-foreground/80">мечтания автомобил?</span></>
-              ) : (
-                <>Ready for your<br /><span className="text-primary-foreground/80">dream car?</span></>
-              )}
+              {t('cta.title')}<br /><span className="text-primary-foreground/80">{t('cta.titleHighlight')}</span>
             </h2>
             
             {/* Subtitle */}
             <p className="text-xl text-primary-foreground/80 mb-10 max-w-2xl mx-auto">
-              {language === 'bg' 
-                ? 'Ние се грижим за всичко - от намирането до доставката.' 
-                : 'We handle everything - from finding to delivery.'}
+              {t('cta.subtitle')}
             </p>
             
             {/* CTA Buttons */}
