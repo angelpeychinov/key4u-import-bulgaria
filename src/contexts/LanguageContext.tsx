@@ -35,6 +35,10 @@ const translations = {
     'process.step3desc': 'Shipping, Tehnotest, and conversions',
     'process.step4': 'Registration & Delivery',
     'process.step4desc': 'We handle paperwork and deliver to you',
+    'process.badge': 'Easy and transparent process',
+    'process.ctaTitle': 'Ready to get started?',
+    'process.ctaSubtitle': 'Call now and let\'s find your dream car',
+    'process.ctaButton': 'CALL NOW',
     
     // Find Car Form
     'form.title': 'Find My Car',
@@ -84,6 +88,30 @@ const translations = {
     'features.local': 'Local Expertise',
     'features.localDesc': 'Bulgarian team that knows the process',
     
+    // Stats
+    'stats.title': 'Our Experience in Numbers',
+    'stats.subtitle': 'Trust proven with every imported vehicle',
+    'stats.carsImported': 'Cars Imported',
+    'stats.inLastYear': 'in the last year',
+    'stats.happyClients': 'Happy Clients',
+    'stats.recommendUs': 'recommend us',
+    'stats.averageTime': 'Average Time',
+    'stats.forDelivery': 'for delivery',
+    'stats.days': 'days',
+    
+    // Transparency
+    'transparency.title': 'We provide 100% of the information we have.',
+    'transparency.subtitle': 'No empty promises about "healthy" cars',
+    
+    // Mobile.bg
+    'mobile.offers': 'Here you can find our offers.',
+    'mobile.viewListings': 'View Listings on Mobile.bg',
+    
+    // CTA
+    'cta.title': 'Ready for your',
+    'cta.titleHighlight': 'dream car?',
+    'cta.subtitle': 'We handle everything - from finding to delivery.',
+    
     // Footer
     'footer.quickLinks': 'Quick Links',
     'footer.contacts': 'Contact',
@@ -117,6 +145,10 @@ const translations = {
     'process.step3desc': 'Ние ще се погрижим за доставката и цялата документация',
     'process.step4': 'Получаване на автомобила',
     'process.step4desc': 'Честито! И безаварийно шофиране!',
+    'process.badge': 'Лесен и прозрачен процес',
+    'process.ctaTitle': 'Готови ли сте да започнете?',
+    'process.ctaSubtitle': 'Обадете се сега и нека намерим мечтания ви автомобил',
+    'process.ctaButton': 'ОБАДИ СЕ СЕГА',
     
     // Find Car Form
     'form.title': 'Намери Автомобил',
@@ -165,6 +197,30 @@ const translations = {
     'features.trustDesc': 'Ясно ценообразуване и честна комуникация',
     'features.local': 'Местна Експертиза',
     'features.localDesc': 'Български екип, който познава процеса',
+    
+    // Stats
+    'stats.title': 'Нашият опит в цифри',
+    'stats.subtitle': 'Доверие, което се доказва с всеки внесен автомобил',
+    'stats.carsImported': 'Внесени автомобила',
+    'stats.inLastYear': 'за последната година',
+    'stats.happyClients': 'Доволни клиенти',
+    'stats.recommendUs': 'ни препоръчват',
+    'stats.averageTime': 'Средно време',
+    'stats.forDelivery': 'за доставка',
+    'stats.days': 'дни',
+    
+    // Transparency
+    'transparency.title': 'Предоставяме 100% от информацията, която притежаваме.',
+    'transparency.subtitle': 'Без празни обещания за "здрави" автомобили',
+    
+    // Mobile.bg
+    'mobile.offers': 'Тук може да намерите нашите предложения.',
+    'mobile.viewListings': 'Виж Обявите в Mobile.bg',
+    
+    // CTA
+    'cta.title': 'Готови ли сте за',
+    'cta.titleHighlight': 'мечтания автомобил?',
+    'cta.subtitle': 'Ние се грижим за всичко - от намирането до доставката.',
     
     // Footer
     'footer.quickLinks': 'Бързи Връзки',
