@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Car, Search, Sparkles, User, Mail, Phone, Calendar, Palette, Settings, MessageSquare } from "lucide-react";
+import { Car, Search, User, Mail, Phone, Calendar, Palette, Settings, MessageSquare } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const carRequestSchema = z.object({
   name: z.string().trim().min(1, { message: "Name is required" }).max(100),
@@ -40,8 +41,16 @@ export default function FindCar() {
 
     try {
       const validated = carRequestSchema.parse(formData);
-      console.log("Form submitted:", validated);
-      toast.success(t('form.success'));
+      
+      const { data, error } = await supabase.functions.invoke('send-car-request', {
+        body: validated,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success("Заявката е изпратена успешно. Ще се свържем с вас.");
       setFormData({
         name: "",
         email: "",
@@ -58,7 +67,8 @@ export default function FindCar() {
           toast.error(err.message);
         });
       } else {
-        toast.error("An error occurred. Please try again.");
+        console.error("Error sending request:", error);
+        toast.error("Възникна грешка. Моля, опитайте отново или се свържете с нас директно.");
       }
     } finally {
       setLoading(false);
