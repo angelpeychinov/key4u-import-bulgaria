@@ -16,7 +16,7 @@ export const ViberSection = () => {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-2xl mx-auto text-center flex flex-col items-center">
           {/* Logo - white version using brightness filter */}
           <div className="flex justify-center mb-6">
             <img 
@@ -27,12 +27,12 @@ export const ViberSection = () => {
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4 text-center">
             Получавайте най-новите оферти
           </h2>
 
           {/* Description */}
-          <p className="text-primary-foreground/80 text-lg mb-8">
+          <p className="text-primary-foreground/80 text-lg mb-8 text-center px-2">
             Присъединете се към нашата Viber група за ексклузивни оферти и новини за автомобили
           </p>
 
@@ -40,9 +40,9 @@ export const ViberSection = () => {
           <Button
             onClick={handleViberClick}
             size="lg"
-            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-2xl hover:scale-105 transition-all duration-300 text-lg px-8 py-6 rounded-full font-semibold group"
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-2xl hover:scale-105 transition-all duration-300 text-lg px-6 md:px-8 py-6 rounded-full font-semibold group whitespace-normal text-center"
           >
-            <MessageCircle className="mr-2 h-6 w-6" />
+            <MessageCircle className="mr-2 h-6 w-6 flex-shrink-0" />
             Присъедини се към Viber групата
           </Button>
         </div>
