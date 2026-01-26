@@ -156,14 +156,14 @@ export default function Process() {
               <Button
                 asChild
                 size="lg"
-                className="bg-white hover:bg-white/90 text-primary font-bold text-base md:text-lg px-6 md:px-10 py-6 md:py-7 rounded-full shadow-lg hover:shadow-xl transition-all group whitespace-normal"
+                className="bg-white hover:bg-white/90 text-primary font-bold text-sm md:text-base px-8 md:px-12 py-5 md:py-6 rounded-full shadow-lg hover:shadow-xl transition-all group whitespace-normal"
               >
-                <a href="tel:0898252434" className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center">
+                <a href="tel:0898252434" className="flex flex-col md:flex-row items-center gap-3 md:gap-4 text-center">
                   <span className="flex items-center gap-2">
-                    <Phone className="w-5 h-5 group-hover:animate-pulse" />
+                    <Phone className="w-4 h-4 md:w-5 md:h-5 group-hover:animate-pulse" />
                     {t('process.ctaButton')}
                   </span>
-                  <span className="text-primary/70">0898252434</span>
+                  <span className="text-primary/70 text-sm">{t('process.ctaPhone')}</span>
                 </a>
               </Button>
             </div>
