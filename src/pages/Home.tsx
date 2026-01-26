@@ -239,6 +239,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Viber Section */}
+      <ViberSection />
+
       {/* FAQ Preview Section */}
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
@@ -297,9 +300,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Viber Section */}
-      <ViberSection />
 
       {/* CTA Section */}
       <section className="py-24 relative overflow-hidden">
