@@ -140,27 +140,29 @@ export default function Process() {
         </div>
 
         {/* CTA Section */}
-        <div className="mt-20 text-center">
-          <div className="inline-flex flex-col items-center gap-6 p-10 rounded-3xl bg-gradient-to-br from-primary to-primary/90 shadow-elegant relative overflow-hidden">
+        <div className="mt-20 flex justify-center px-4">
+          <div className="inline-flex flex-col items-center gap-6 p-6 md:p-10 rounded-3xl bg-gradient-to-br from-primary to-primary/90 shadow-elegant relative overflow-hidden text-center w-full max-w-xl">
             {/* Decorative elements */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-accent/20 rounded-full blur-2xl" />
             
-            <div className="relative z-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-2">
+            <div className="relative z-10 flex flex-col items-center">
+              <h2 className="text-2xl md:text-3xl font-bold text-primary-foreground mb-2 text-center">
                 {t('process.ctaTitle')}
               </h2>
-              <p className="text-primary-foreground/80 mb-6">
+              <p className="text-primary-foreground/80 mb-6 text-center">
                 {t('process.ctaSubtitle')}
               </p>
               <Button
                 asChild
                 size="lg"
-                className="bg-white hover:bg-white/90 text-primary font-bold text-lg px-10 py-7 rounded-full shadow-lg hover:shadow-xl transition-all group"
+                className="bg-white hover:bg-white/90 text-primary font-bold text-base md:text-lg px-6 md:px-10 py-6 md:py-7 rounded-full shadow-lg hover:shadow-xl transition-all group whitespace-normal"
               >
-                <a href="tel:0898252434" className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 group-hover:animate-pulse" />
-                  {t('process.ctaButton')}
+                <a href="tel:0898252434" className="flex flex-col md:flex-row items-center gap-2 md:gap-3 text-center">
+                  <span className="flex items-center gap-2">
+                    <Phone className="w-5 h-5 group-hover:animate-pulse" />
+                    {t('process.ctaButton')}
+                  </span>
                   <span className="text-primary/70">0898252434</span>
                 </a>
               </Button>
