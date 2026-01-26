@@ -33,6 +33,7 @@ import kiaLogo from "@/assets/brands/kia-logo.png";
 import logo from "@/assets/logo.png";
 import mobileBgLogo from "@/assets/mobile-bg-logo.png";
 import mobileBgSectionBg from "@/assets/mobile-bg-section-background.jpg";
+import { ViberSection } from "@/components/ViberSection";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -296,6 +297,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Viber Section */}
+      <ViberSection />
 
       {/* CTA Section */}
       <section className="py-24 relative overflow-hidden">

@@ -8,7 +8,6 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { ViberButton } from "@/components/ViberButton";
-import { ViberOffersDialog } from "@/components/ViberOffersDialog";
 import { CookieConsent } from "@/components/CookieConsent";
 import { LocalBusinessSchema, CarImportServiceSchema } from "@/components/SEO";
 import Home from "./pages/Home";
@@ -33,7 +32,6 @@ const App = () => (
             <div className="flex flex-col min-h-screen">
               <Navigation />
               <ViberButton />
-              <ViberOffersDialog />
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/process" element={<Process />} />
