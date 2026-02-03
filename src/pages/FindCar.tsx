@@ -8,7 +8,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Car, Search, User, Mail, Phone, Calendar, Palette, Settings, MessageSquare } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import emailjs from "@emailjs/browser";
+
+// EmailJS configuration
+const EMAILJS_SERVICE_ID = "service_ps9dj9p";
+const EMAILJS_TEMPLATE_ID = "template_abcd1234";
+const EMAILJS_PUBLIC_KEY = "5Sx9gtquwmWQJUt_W";
 
 const carRequestSchema = z.object({
   name: z.string().trim().min(1, { message: "Name is required" }).max(100),
@@ -42,13 +47,25 @@ export default function FindCar() {
     try {
       const validated = carRequestSchema.parse(formData);
       
-      const { data, error } = await supabase.functions.invoke('send-car-request', {
-        body: validated,
-      });
+      // Prepare template parameters for EmailJS
+      const templateParams = {
+        from_name: validated.name,
+        from_email: validated.email,
+        phone: validated.phone,
+        model: validated.model,
+        year: validated.year || "Не е посочено",
+        color: validated.color || "Не е посочено",
+        trim: validated.trim || "Не е посочено",
+        additional: validated.additional || "Няма",
+        to_email: "key4u.import@gmail.com",
+      };
 
-      if (error) {
-        throw error;
-      }
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        EMAILJS_PUBLIC_KEY
+      );
 
       toast.success("Заявката е изпратена успешно. Ще се свържем с вас.");
       setFormData({
