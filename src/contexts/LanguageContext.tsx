@@ -107,6 +107,11 @@ const translations = {
     'mobile.offers': 'Here you can find our offers.',
     'mobile.viewListings': 'View Listings on Mobile.bg',
     
+    // Licensed Importer
+    'licensed.badge': 'Licensed Importer',
+    'licensed.title': 'Licensed Car Importer from Canada and USA',
+    'licensed.subtitle': 'We work with the largest and most trusted auto auction and sales platforms in North America.',
+    
     // CTA
     'cta.title': 'Ready for your',
     'cta.titleHighlight': 'dream car?',
@@ -216,6 +221,11 @@ const translations = {
     // Mobile.bg
     'mobile.offers': 'Тук може да намерите нашите предложения.',
     'mobile.viewListings': 'Виж Обявите в Mobile.bg',
+    
+    // Licensed Importer
+    'licensed.badge': 'Лицензиран Вносител',
+    'licensed.title': 'Лицензиран вносител на автомобили от Канада и САЩ',
+    'licensed.subtitle': 'Работим с най-големите и доверени платформи за автомобилни търгове и продажби в Северна Америка.',
     
     // CTA
     'cta.title': 'Готови ли сте за',

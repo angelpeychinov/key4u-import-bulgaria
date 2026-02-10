@@ -34,6 +34,7 @@ import logo from "@/assets/logo.png";
 import mobileBgLogo from "@/assets/mobile-bg-logo.png";
 import mobileBgSectionBg from "@/assets/mobile-bg-section-background.jpg";
 import { ViberSection } from "@/components/ViberSection";
+import { LicensedImporterSection } from "@/components/LicensedImporterSection";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -188,6 +189,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Licensed Importer Section */}
+      <LicensedImporterSection />
 
       {/* Mobile.bg Listings Section */}
       <section className="py-20 relative overflow-hidden">
