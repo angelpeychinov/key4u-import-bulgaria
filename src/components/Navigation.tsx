@@ -46,7 +46,7 @@ export const Navigation = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button variant="ghost" size="sm" className="text-[#4CAF50] hover:text-[#388E3C] hover:bg-[#4CAF50]/10 font-semibold">
+              <Button variant="ghost" size="sm" className="text-[#1a472a] hover:text-[#0f2d1a] hover:bg-[#1a472a]/10 font-semibold">
                 Key4U VIBER
               </Button>
             </a>
@@ -95,7 +95,7 @@ export const Navigation = () => {
               rel="noopener noreferrer"
               className="block"
             >
-              <Button variant="ghost" size="sm" className="text-[#4CAF50] hover:text-[#388E3C] hover:bg-[#4CAF50]/10 font-semibold w-full justify-start">
+              <Button variant="ghost" size="sm" className="text-[#1a472a] hover:text-[#0f2d1a] hover:bg-[#1a472a]/10 font-semibold w-full justify-start">
                 Key4U VIBER
               </Button>
             </a>
