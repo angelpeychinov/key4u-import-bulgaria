@@ -16,11 +16,11 @@ export const LicensedImporterSection = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="py-16 md:py-20 bg-background">
+    <section className="py-16 md:py-20 bg-primary">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 bg-primary-foreground/20 text-primary-foreground px-4 py-2 rounded-full mb-6">
             <BadgeCheck className="w-5 h-5" />
             <span className="text-sm font-semibold uppercase tracking-wide">
               {t('licensed.badge')}
@@ -28,12 +28,12 @@ export const LicensedImporterSection = () => {
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
             {t('licensed.title')}
           </h2>
 
           {/* Subtitle */}
-          <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-lg text-primary-foreground/80 mb-12 max-w-2xl mx-auto">
             {t('licensed.subtitle')}
           </p>
 
@@ -42,7 +42,7 @@ export const LicensedImporterSection = () => {
             {platforms.map((platform) => (
               <div
                 key={platform.name}
-                className="bg-card rounded-xl p-4 md:p-6 flex items-center justify-center h-24 md:h-28 border border-border/50 hover:shadow-elegant transition-smooth"
+                className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 md:p-6 flex items-center justify-center h-24 md:h-28 border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-smooth"
               >
                 <img
                   src={platform.logo}
