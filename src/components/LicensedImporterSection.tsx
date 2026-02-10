@@ -2,14 +2,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { BadgeCheck } from "lucide-react";
 import manheimLogo from "@/assets/brands/manheim-logo.png";
 import openlaneLogo from "@/assets/brands/openlane-logo.svg";
-import autotraderLogo from "@/assets/brands/autotrader-logo.png";
-import cargurusLogo from "@/assets/brands/cargurus-logo.jpg";
+import iaaiLogo from "@/assets/brands/iaai-logo.png";
+import copartLogo from "@/assets/brands/copart-logo.png";
 
 const platforms = [
   { name: "Manheim", logo: manheimLogo },
   { name: "OPENLANE", logo: openlaneLogo },
-  { name: "AutoTrader", logo: autotraderLogo },
-  { name: "CarGurus", logo: cargurusLogo },
+  { name: "IAAI", logo: iaaiLogo },
+  { name: "Copart", logo: copartLogo },
 ];
 
 export const LicensedImporterSection = () => {
