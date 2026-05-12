@@ -1,7 +1,7 @@
 import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, Search, Gavel, CreditCard, Ship, Anchor, Truck, FileCheck, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ClipboardList, Search, Gavel, CreditCard, Ship, Camera, Anchor, Truck, FileCheck, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function Process() {
   const { t } = useLanguage();
@@ -12,9 +12,10 @@ export default function Process() {
     { icon: Gavel, title: t('process.step3'), description: t('process.step3desc'), number: "03", accent: "primary" as const },
     { icon: CreditCard, title: t('process.step4'), description: t('process.step4desc'), number: "04", accent: "accent" as const },
     { icon: Ship, title: t('process.step5'), description: t('process.step5desc'), number: "05", accent: "primary" as const },
-    { icon: Anchor, title: t('process.step6'), description: t('process.step6desc'), number: "06", accent: "accent" as const },
-    { icon: Truck, title: t('process.step7'), description: t('process.step7desc'), number: "07", accent: "primary" as const },
-    { icon: FileCheck, title: t('process.step8'), description: t('process.step8desc'), number: "08", accent: "accent" as const },
+    { icon: Camera, title: t('process.step5b'), description: t('process.step5bdesc'), number: "06", accent: "accent" as const },
+    { icon: Anchor, title: t('process.step6'), description: t('process.step6desc'), number: "07", accent: "primary" as const },
+    { icon: Truck, title: t('process.step7'), description: t('process.step7desc'), number: "08", accent: "accent" as const },
+    { icon: FileCheck, title: t('process.step8'), description: t('process.step8desc'), number: "09", accent: "primary" as const },
   ];
 
   return (
