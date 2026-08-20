@@ -191,8 +191,13 @@ export default function CarSearch() {
         )}
 
         {searched && !loading && listings.length === 0 && (
-          <p className="mt-10 text-center text-muted-foreground">No listings matched your filters.</p>
+          <p className="mt-10 text-center text-muted-foreground">
+            {unavailable
+              ? "The listings provider is temporarily unavailable. Please try again later."
+              : "No listings matched your filters."}
+          </p>
         )}
+
       </div>
 
       <ListingDialog listing={selected} onClose={() => setSelected(null)} />
