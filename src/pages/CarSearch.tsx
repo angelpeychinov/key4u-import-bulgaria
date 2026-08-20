@@ -36,14 +36,18 @@ export default function CarSearch() {
   const set = (key: keyof SearchFilters) => (value: string) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
 
+  const [unavailable, setUnavailable] = useState(false);
+
   const runSearch = async (nextPage: number, append: boolean) => {
     setLoading(true);
     try {
-      const { listings: results } = await searchListings(filters, nextPage, PAGE_SIZE);
+      const { listings: results, unavailable: down } = await searchListings(filters, nextPage, PAGE_SIZE);
       setListings((prev) => (append ? [...prev, ...results] : results));
       setPage(nextPage);
       setHasMore(results.length === PAGE_SIZE);
+      setUnavailable(!!down);
       setSearched(true);
+      if (down) toast.error("The listings provider is temporarily unavailable.");
     } catch (err) {
       console.error(err);
       toast.error("Could not load listings. Please try again.");
@@ -51,6 +55,7 @@ export default function CarSearch() {
       setLoading(false);
     }
   };
+
 
   return (
     <main className="flex-1 bg-background">
