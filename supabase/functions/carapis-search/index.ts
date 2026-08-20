@@ -87,11 +87,12 @@ Deno.serve(async (req) => {
 
     const ok = responses.filter((r) => r.status === 200);
     if (ok.length === 0) {
-      return new Response(JSON.stringify({ error: "Could not load listings", results: [], count: 0 }), {
-        status: 502,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ results: [], count: 0, page, limit, unavailable: true }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
+
 
     let results = responses.flatMap((r) =>
       (r.results as Record<string, unknown>[]).map((item) => ({ source: r.source, ...item })),
