@@ -142,7 +142,7 @@ export const searchListings = async (
   filters: SearchFilters,
   page: number,
   limit = 24,
-): Promise<{ listings: Listing[]; total?: number }> => {
+): Promise<{ listings: Listing[]; total?: number; unavailable?: boolean }> => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (value && value !== "all") params.set(key, value);
@@ -155,18 +155,15 @@ export const searchListings = async (
   });
 
   if (error) throw error;
-  if (data && typeof data === "object" && "error" in (data as Record<string, unknown>)) {
-    throw new Error(String((data as Record<string, unknown>).error));
-  }
+  const obj = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+  if ("error" in obj) throw new Error(String(obj.error));
 
   const items = extractItems(data);
-  const totalRaw =
-    data && typeof data === "object"
-      ? toNumber(pick(data as Record<string, unknown>, ["count", "total", "total_count", "totalResults"]))
-      : undefined;
+  const totalRaw = toNumber(pick(obj, ["count", "total", "total_count", "totalResults"]));
 
-  return { listings: items.map(normalizeListing), total: totalRaw };
+  return { listings: items.map(normalizeListing), total: totalRaw, unavailable: obj.unavailable === true };
 };
+
 
 export const SOURCE_LABELS: Record<string, string> = {
   encar: "Encar",
