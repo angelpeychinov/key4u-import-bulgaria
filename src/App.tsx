@@ -13,6 +13,7 @@ import { LocalBusinessSchema, CarImportServiceSchema } from "@/components/SEO";
 import Home from "./pages/Home";
 import Process from "./pages/Process";
 import FindCar from "./pages/FindCar";
+import CarSearch from "./pages/CarSearch";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
@@ -36,6 +37,7 @@ const App = () => (
                 <Route path="/" element={<Home />} />
                 <Route path="/process" element={<Process />} />
                 <Route path="/find-car" element={<FindCar />} />
+                <Route path="/car-search" element={<CarSearch />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<Contact />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

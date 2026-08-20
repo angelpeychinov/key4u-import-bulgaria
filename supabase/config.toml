@@ -1,1 +1,4 @@
 project_id = "sssvzaihbrqegckdywzu"
+
+[functions.carapis-search]
+verify_jwt = false
