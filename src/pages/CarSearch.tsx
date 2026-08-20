@@ -55,7 +55,7 @@ export default function CarSearch() {
   return (
     <main className="flex-1 bg-background">
       <SEO
-        title="Key4U | Car Search — Encar, AUTO1 & OpenLane listings"
+        title="Car Search — Encar, AUTO1 & OpenLane"
         description="Search live car listings from Encar, AUTO1 and OpenLane.ca. Filter by brand, model, year, price and mileage."
       />
 
