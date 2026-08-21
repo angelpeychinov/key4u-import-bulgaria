@@ -16,6 +16,46 @@ import { SearchFilters, TaxonomyItem, fetchTaxonomy } from "@/lib/carapis";
 
 const BRAND_GREEN = "#183e32";
 
+// Encar brand slugs (the upstream /brands/ endpoint is rate limited and noisy).
+const BRAND_OPTIONS: [string, string][] = [
+  ["hyundai", "Hyundai"],
+  ["kia", "Kia"],
+  ["genesis", "Genesis"],
+  ["chevrolet", "Chevrolet"],
+  ["ssangyong", "SsangYong / KG Mobility"],
+  ["renault", "Renault"],
+  ["bmw", "BMW"],
+  ["mercedes-benz", "Mercedes-Benz"],
+  ["audi", "Audi"],
+  ["volkswagen", "Volkswagen"],
+  ["volvo", "Volvo"],
+  ["porsche", "Porsche"],
+  ["mini", "MINI"],
+  ["land-rover", "Land Rover"],
+  ["jaguar", "Jaguar"],
+  ["lexus", "Lexus"],
+  ["toyota", "Toyota"],
+  ["honda", "Honda"],
+  ["nissan", "Nissan"],
+  ["infiniti", "Infiniti"],
+  ["mazda", "Mazda"],
+  ["ford", "Ford"],
+  ["jeep", "Jeep"],
+  ["cadillac", "Cadillac"],
+  ["lincoln", "Lincoln"],
+  ["chrysler", "Chrysler"],
+  ["dodge", "Dodge"],
+  ["tesla", "Tesla"],
+  ["peugeot", "Peugeot"],
+  ["citroen", "Citroen"],
+  ["fiat", "Fiat"],
+  ["maserati", "Maserati"],
+  ["bentley", "Bentley"],
+  ["ferrari", "Ferrari"],
+  ["lamborghini", "Lamborghini"],
+  ["rolls-royce", "Rolls-Royce"],
+];
+
 const FUEL_OPTIONS: [string, string][] = [
   ["gasoline", "Бензин"],
   ["diesel", "Дизел"],
@@ -63,22 +103,8 @@ interface Props {
 
 export function CatalogFilters({ filters, onChange, onApply, onReset, loading }: Props) {
   const [open, setOpen] = useState(false);
-  const [brands, setBrands] = useState<TaxonomyItem[]>([]);
   const [models, setModels] = useState<TaxonomyItem[]>([]);
-  const [loadingBrands, setLoadingBrands] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    setLoadingBrands(true);
-    fetchTaxonomy("brands")
-      .then((items) => active && setBrands(items))
-      .catch((err) => console.error(err))
-      .finally(() => active && setLoadingBrands(false));
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -136,13 +162,13 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
             }
           >
             <SelectTrigger>
-              <SelectValue placeholder={loadingBrands ? "Зареждане..." : "Всички марки"} />
+              <SelectValue placeholder="Всички марки" />
             </SelectTrigger>
             <SelectContent className="max-h-72">
               <SelectItem value="all">Всички марки</SelectItem>
-              {brands.map((brand) => (
-                <SelectItem key={brand.slug} value={brand.slug}>
-                  {brand.name}
+              {BRAND_OPTIONS.map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
                 </SelectItem>
               ))}
             </SelectContent>
