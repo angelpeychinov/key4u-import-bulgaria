@@ -7,120 +7,83 @@ const corsHeaders = {
 const API_ROOT = "https://api.carapis.com/apix/catalog_api";
 const SOURCE = "encar";
 
-// Carapis taxonomy endpoints contain noisy junk entries; keep only plausible names.
-const ALPHABET = "abcdefghijklmnopqrstuvwxyz".split("");
-const CLEAN_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+){0,2}$/;
+// Upstream taxonomy data is noisy (test rows with junk names) — keep plausible entries only.
 const CLEAN_NAME = /^[A-Za-z0-9][A-Za-z0-9 .\-+&']*$/;
+const CLEAN_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+){0,3}$/;
+
+// Cached per isolate: the upstream API is aggressively rate limited.
+const modelCache = new Map<string, { name: string; slug: string }[]>();
+
+const clean = (items: unknown[]): { name: string; slug: string }[] => {
+  const seen = new Set<string>();
+  return items
+    .map((item) => {
+      const o = (item ?? {}) as Record<string, unknown>;
+      return { name: String(o.name ?? "").trim(), slug: String(o.slug ?? "").trim() };
+    })
+    .filter(({ name, slug }) => {
+      if (!name || !slug) return false;
+      if (name.length > 24) return false;
+      if (name.split(/\s+/).length > 3) return false;
+      if (!CLEAN_NAME.test(name)) return false;
+      if (!CLEAN_SLUG.test(slug)) return false;
+      if (seen.has(slug)) return false;
+      seen.add(slug);
+      return true;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, "en"));
+};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const json = (payload: unknown) =>
+    new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
   try {
     const apiKey = Deno.env.get("CARAPIS_API_KEY");
-    if (!apiKey) {
-      return new Response(JSON.stringify({ results: [], unavailable: true }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (!apiKey) return json({ results: [], unavailable: true });
 
     const incoming = new URL(req.url).searchParams;
-
-    const counts = incoming.get("counts");
-    if (counts) {
-      const slugs = counts.split(",");
-      const out = await Promise.all(
-        slugs.map(async (slug) => {
-          const r = await fetch(
-            `${API_ROOT}/vehicles/?source=${SOURCE}&brand=${encodeURIComponent(slug)}&page_size=1`,
-            { headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" } },
-          );
-          const j = await r.json().catch(() => ({}));
-          return `${slug}:${j?.count ?? "err"}`;
-        }),
-      );
-      return new Response(JSON.stringify({ counts: out }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (incoming.get("kind") !== "models") {
+      // Brands are served from a static list: the upstream /brands/ endpoint is both
+      // rate limited and polluted with junk rows.
+      return json({ results: [] });
     }
 
-    const probe = incoming.get("probe");
-    if (probe) {
-      const probeRes = await fetch(`${API_ROOT}/${probe}`, {
-        headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
-      });
-      const text = await probeRes.text();
-      return new Response(JSON.stringify({ status: probeRes.status, body: text.slice(0, 3000) }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    const kind = incoming.get("kind") === "models" ? "models" : "brands";
-    const brand = (incoming.get("brand") ?? "").trim();
-    const authHeaders = { Authorization: `Bearer ${apiKey}`, Accept: "application/json" };
+    const brand = (incoming.get("brand") ?? "").trim().toLowerCase();
+    if (!brand) return json({ results: [] });
 
-    const fetchList = async (query: string): Promise<Record<string, unknown>[]> => {
-      const target = new URL(`${API_ROOT}/${kind}/`);
-      target.searchParams.set("source", SOURCE);
-      target.searchParams.set("page_size", "100");
-      if (kind === "models") target.searchParams.set("brand", brand);
-      if (query) target.searchParams.set("search", query);
-      const res = await fetch(target.toString(), { headers: authHeaders });
-      if (!res.ok) {
-        console.error(`carapis ${kind} error ${res.status}: ${(await res.text()).slice(0, 200)}`);
-        return [];
-      }
-      const json = await res.json().catch(() => null);
-      if (Array.isArray(json)) return json;
-      if (Array.isArray(json?.results)) return json.results;
-      return [];
-    };
+    const cached = modelCache.get(brand);
+    if (cached) return json({ results: cached });
 
-    if (kind === "models" && !brand) {
-      return new Response(JSON.stringify({ results: [] }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const target = new URL(`${API_ROOT}/models/`);
+    target.searchParams.set("source", SOURCE);
+    target.searchParams.set("brand", brand);
+    target.searchParams.set("page_size", "200");
 
-    // The upstream taxonomy endpoints cap responses at ~50 rows and contain noisy
-    // junk rows, so we sweep the alphabet with `search` and clean the results.
-    const queries = kind === "brands" ? ["", ...ALPHABET] : [""];
-    const batches = await Promise.all(queries.map((q) => fetchList(q)));
-    const collected = batches.flat();
-
-    const seen = new Set<string>();
-    const results = collected
-      .filter((item) => {
-        const name = String((item as Record<string, unknown>)?.name ?? "").trim();
-        const slug = String((item as Record<string, unknown>)?.slug ?? "").trim();
-        if (!name || !slug) return false;
-        if (name.length > 20) return false;
-        if (name.split(/\s+/).length > 3) return false;
-        if (!CLEAN_NAME.test(name)) return false;
-        if (!CLEAN_SLUG.test(slug)) return false;
-        if (seen.has(slug)) return false;
-        seen.add(slug);
-        return true;
-      })
-      .map((item) => ({
-        name: String((item as Record<string, unknown>).name),
-        slug: String((item as Record<string, unknown>).slug),
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name, "en"));
-
-    return new Response(JSON.stringify({ results }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const res = await fetch(target.toString(), {
+      headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
     });
+
+    if (!res.ok) {
+      console.error(`carapis models error ${res.status}: ${(await res.text()).slice(0, 200)}`);
+      return json({ results: [], unavailable: true });
+    }
+
+    const body = await res.json().catch(() => null);
+    const items = Array.isArray(body) ? body : Array.isArray(body?.results) ? body.results : [];
+    const results = clean(items);
+    modelCache.set(brand, results);
+
+    return json({ results });
   } catch (err) {
     console.error("carapis-taxonomy failed", err);
-    return new Response(JSON.stringify({ results: [], unavailable: true }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ results: [], unavailable: true });
   }
 });
