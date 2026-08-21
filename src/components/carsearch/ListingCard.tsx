@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Gauge, MapPin, Car } from "lucide-react";
-import { Listing, SOURCE_LABELS, formatMileage, formatPrice } from "@/lib/carapis";
+import { Listing, SOURCE_LABELS, formatMileage, formatApproxEur } from "@/lib/carapis";
 
 interface Props {
   listing: Listing;
@@ -21,7 +21,7 @@ export const ListingCard = ({ listing, onOpen }: Props) => {
         {photo ? (
           <img
             src={photo}
-            alt={`${listing.title} photo`}
+            alt={`${listing.title} снимка`}
             loading="lazy"
             className="h-full w-full object-cover transition-smooth group-hover:scale-105"
           />
@@ -39,7 +39,11 @@ export const ListingCard = ({ listing, onOpen }: Props) => {
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground">{listing.title}</h3>
-        <p className="text-xl font-bold text-primary">{formatPrice(listing.price, listing.currency)}</p>
+
+        <div>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Цена до България</p>
+          <p className="text-xl font-bold text-[#183e32]">{formatApproxEur(listing.importPrice?.total)}</p>
+        </div>
 
         <div className="mt-auto space-y-1 text-sm text-muted-foreground">
           <p className="flex items-center gap-2">
@@ -53,14 +57,13 @@ export const ListingCard = ({ listing, onOpen }: Props) => {
         </div>
 
         <Button
-          variant="outline"
-          className="w-full"
+          className="w-full bg-[#183e32] text-white hover:bg-[#183e32]/90"
           onClick={(e) => {
             e.stopPropagation();
             onOpen(listing);
           }}
         >
-          View Details
+          Повече информация
         </Button>
       </div>
     </Card>

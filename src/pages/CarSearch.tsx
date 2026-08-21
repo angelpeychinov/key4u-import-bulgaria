@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { Listing, SearchFilters, searchListings } from "@/lib/carapis";
@@ -14,7 +13,6 @@ import { ListingDialog } from "@/components/carsearch/ListingDialog";
 const PAGE_SIZE = 24;
 
 const emptyFilters: SearchFilters = {
-  source: "all",
   brand: "",
   model: "",
   year_from: "",
@@ -32,13 +30,11 @@ export default function CarSearch() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [selected, setSelected] = useState<Listing | null>(null);
+  const [unavailable, setUnavailable] = useState(false);
+  const [pages, setPages] = useState<number | undefined>(undefined);
 
   const set = (key: keyof SearchFilters) => (value: string) =>
     setFilters((prev) => ({ ...prev, [key]: value }));
-
-  const [unavailable, setUnavailable] = useState(false);
-
-  const [pages, setPages] = useState<number | undefined>(undefined);
 
   const runSearch = async (nextPage: number, append: boolean) => {
     setLoading(true);
@@ -51,28 +47,27 @@ export default function CarSearch() {
       setHasMore(hasNext);
       setUnavailable(!!down);
       setSearched(true);
-      if (down) toast.error("The listings provider is temporarily unavailable.");
+      if (down) toast.error("Каталогът е временно недостъпен.");
     } catch (err) {
       console.error(err);
-      toast.error("Could not load listings. Please try again.");
+      toast.error("Обявите не можаха да бъдат заредени. Опитайте отново.");
     } finally {
       setLoading(false);
     }
   };
 
-
   return (
     <main className="flex-1 bg-background">
       <SEO
-        title="Car Search — Encar, AUTO1 & OpenLane"
-        description="Search live car listings from Encar, AUTO1 and OpenLane.ca. Filter by brand, model, year, price and mileage."
+        title="Корея — каталог автомобили от Encar | Key4U"
+        description="Разгледай автомобили от Корея (Encar) с изчислена цена до България. Филтрирай по марка, модел, година, цена и пробег."
       />
 
       <section className="border-b border-border bg-secondary/50 py-10 md:py-14">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Car Search</h1>
+          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Корея</h1>
           <p className="mt-2 max-w-2xl text-muted-foreground">
-            Browse live listings from Encar, AUTO1 and OpenLane.ca in one place.
+            Актуални обяви от каталога на Encar с прогнозна цена до България.
           </p>
         </div>
       </section>
@@ -87,42 +82,27 @@ export default function CarSearch() {
             }}
           >
             <div className="space-y-2">
-              <Label>Source</Label>
-              <Select value={filters.source} onValueChange={set("source")}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All sources" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All sources</SelectItem>
-                  <SelectItem value="encar">Encar</SelectItem>
-                  <SelectItem value="auto1">AUTO1</SelectItem>
-                  <SelectItem value="openlane">OpenLane.ca</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="brand">Brand</Label>
+              <Label htmlFor="brand">Марка</Label>
               <Input id="brand" placeholder="BMW" value={filters.brand} onChange={(e) => set("brand")(e.target.value)} />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="model">Model</Label>
+              <Label htmlFor="model">Модел</Label>
               <Input id="model" placeholder="X5" value={filters.model} onChange={(e) => set("model")(e.target.value)} />
             </div>
 
             <div className="space-y-2">
-              <Label>Year range</Label>
+              <Label>Година</Label>
               <div className="flex gap-2">
                 <Input
                   inputMode="numeric"
-                  placeholder="From"
+                  placeholder="От"
                   value={filters.year_from}
                   onChange={(e) => set("year_from")(e.target.value)}
                 />
                 <Input
                   inputMode="numeric"
-                  placeholder="To"
+                  placeholder="До"
                   value={filters.year_to}
                   onChange={(e) => set("year_to")(e.target.value)}
                 />
@@ -130,17 +110,17 @@ export default function CarSearch() {
             </div>
 
             <div className="space-y-2">
-              <Label>Price range</Label>
+              <Label>Цена</Label>
               <div className="flex gap-2">
                 <Input
                   inputMode="numeric"
-                  placeholder="From"
+                  placeholder="От"
                   value={filters.price_from}
                   onChange={(e) => set("price_from")(e.target.value)}
                 />
                 <Input
                   inputMode="numeric"
-                  placeholder="To"
+                  placeholder="До"
                   value={filters.price_to}
                   onChange={(e) => set("price_to")(e.target.value)}
                 />
@@ -148,7 +128,7 @@ export default function CarSearch() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="mileage">Max mileage (km)</Label>
+              <Label htmlFor="mileage">Макс. пробег (км)</Label>
               <Input
                 id="mileage"
                 inputMode="numeric"
@@ -161,15 +141,10 @@ export default function CarSearch() {
             <div className="flex items-end gap-2 sm:col-span-2">
               <Button type="submit" className="flex-1" disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-                Search
+                Търси
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setFilters(emptyFilters)}
-                disabled={loading}
-              >
-                Reset
+              <Button type="button" variant="outline" onClick={() => setFilters(emptyFilters)} disabled={loading}>
+                Изчисти
               </Button>
             </div>
           </form>
@@ -186,13 +161,13 @@ export default function CarSearch() {
             <div className="mt-8 flex flex-col items-center gap-3">
               {pages ? (
                 <p className="text-sm text-muted-foreground">
-                  Page {page} of {pages}
+                  Страница {page} от {pages}
                 </p>
               ) : null}
               {hasMore && (
                 <Button variant="outline" size="lg" onClick={() => runSearch(page + 1, true)} disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Load more
+                  Зареди още
                 </Button>
               )}
             </div>
@@ -202,11 +177,10 @@ export default function CarSearch() {
         {searched && !loading && listings.length === 0 && (
           <p className="mt-10 text-center text-muted-foreground">
             {unavailable
-              ? "The listings provider is temporarily unavailable. Please try again later."
-              : "No listings matched your filters."}
+              ? "Каталогът е временно недостъпен. Моля, опитайте по-късно."
+              : "Няма намерени обяви по избраните критерии."}
           </p>
         )}
-
       </div>
 
       <ListingDialog listing={selected} onClose={() => setSelected(null)} />

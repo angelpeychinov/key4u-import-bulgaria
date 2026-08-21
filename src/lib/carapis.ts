@@ -1,6 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type CarSource = "encar" | "auto1" | "openlane";
+export interface ImportPrice {
+  price: number;
+  transport: number;
+  handling: number;
+  total: number;
+}
 
 export interface Listing {
   id: string;
@@ -18,10 +23,10 @@ export interface Listing {
   photos: string[];
   url?: string;
   specs: Record<string, string>;
+  importPrice?: ImportPrice;
 }
 
 export interface SearchFilters {
-  source?: string;
   brand?: string;
   model?: string;
   year_from?: string;
@@ -63,12 +68,12 @@ const toUrl = (v: unknown): string | undefined => {
 };
 
 const SPEC_KEYS: [string, string][] = [
-  ["fuel_type", "fuel"],
-  ["transmission", "transmission"],
-  ["body_type", "body type"],
-  ["color", "color"],
-  ["trim", "trim"],
-  ["region", "region"],
+  ["fuel_type", "гориво"],
+  ["transmission", "скоростна кутия"],
+  ["body_type", "тип каросерия"],
+  ["color", "цвят"],
+  ["trim", "ниво на оборудване"],
+  ["region", "регион"],
 ];
 
 export const normalizeListing = (raw: Record<string, unknown>, index: number): Listing => {
@@ -87,13 +92,24 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
     }
   }
   if (typeof raw.has_accident === "boolean") {
-    specs["accident"] = raw.has_accident ? "yes" : "no";
+    specs["щети"] = raw.has_accident ? "да" : "не";
   }
 
   const thumb = toUrl(raw.thumb);
   const photos = Array.isArray(raw.photos)
     ? (raw.photos.map(toUrl).filter((u): u is string => !!u) as string[])
     : [];
+
+  const ip = raw.import_price as Record<string, unknown> | undefined;
+  const importPrice =
+    ip && typeof ip === "object"
+      ? {
+          price: toNumber(ip.price) ?? 0,
+          transport: toNumber(ip.transport) ?? 0,
+          handling: toNumber(ip.handling) ?? 0,
+          total: toNumber(ip.total) ?? 0,
+        }
+      : undefined;
 
   return {
     id: String(raw.id ?? `listing-${index}`),
@@ -111,6 +127,7 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
     photos: photos.length ? photos : thumb ? [thumb] : [],
     url: (raw.listing_url as string | undefined) ?? undefined,
     specs,
+    importPrice,
   };
 };
 
@@ -148,16 +165,14 @@ export const searchListings = async (
 
 export const SOURCE_LABELS: Record<string, string> = {
   encar: "Encar",
-  auto1: "AUTO1",
-  openlane: "OpenLane.ca",
 };
 
-export const formatPrice = (price?: number, currency = "USD") =>
-  price === undefined
+export const formatEur = (value?: number) =>
+  value === undefined
     ? "—"
-    : new Intl.NumberFormat("en-US", { style: "currency", currency: currency || "USD", maximumFractionDigits: 0 }).format(
-        price,
-      );
+    : new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+
+export const formatApproxEur = (value?: number) => (value === undefined ? "—" : `~${formatEur(value)}`);
 
 export const formatMileage = (mileage?: number) =>
   mileage === undefined ? "—" : `${new Intl.NumberFormat("en-US").format(mileage)} km`;
