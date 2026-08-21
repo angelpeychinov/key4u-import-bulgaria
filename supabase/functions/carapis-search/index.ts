@@ -124,6 +124,7 @@ Deno.serve(async (req) => {
     target.searchParams.set("page_size", String(pageSize));
     target.searchParams.set("page", String(page));
 
+    console.log(`carapis request: ${target.search}`);
     const res = await fetch(target.toString(), { headers: authHeaders });
 
     if (!res.ok) {
