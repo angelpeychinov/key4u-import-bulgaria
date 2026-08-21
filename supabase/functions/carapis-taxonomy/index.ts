@@ -29,7 +29,8 @@ Deno.serve(async (req) => {
     const brand = (incoming.get("brand") ?? "").trim();
 
     const target = new URL(`${API_ROOT}/${kind}/`);
-    target.searchParams.set("source", SOURCE);
+    if (incoming.get("nosource") !== "1") target.searchParams.set("source", SOURCE);
+    const raw = incoming.get("raw") === "1";
     target.searchParams.set("page_size", "500");
     if (kind === "models") {
       if (!brand) {
@@ -70,6 +71,7 @@ Deno.serve(async (req) => {
     const seen = new Set<string>();
     const results = collected
       .filter((item) => {
+        if (raw) return true;
         const name = String((item as Record<string, unknown>)?.name ?? "").trim();
         const slug = String((item as Record<string, unknown>)?.slug ?? "").trim();
         if (!name || !slug) return false;
