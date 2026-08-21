@@ -94,13 +94,14 @@ Deno.serve(async (req) => {
         if (sourceCode !== "openlane") return true;
 
         const loc = item?.source_location as Record<string, unknown> | undefined;
-        const region = item?.region;
-        console.log("OPENLANE region:", JSON.stringify(region), "location:", JSON.stringify(loc));
-        if (!loc || typeof loc !== "object") return false;
+        if (loc && typeof loc === "object") {
+          const iso2 = String(loc?.iso2 ?? "").toUpperCase();
+          const countryName = String(loc?.country_name ?? "").toLowerCase();
+          if (iso2 === "CA" || countryName.includes("canada")) return true;
+        }
 
-        const iso2 = String(loc?.iso2 ?? "").toUpperCase();
-        const countryName = String(loc?.country_name ?? "").toLowerCase();
-        return iso2 === "CA" || countryName.includes("canada");
+        const region = String(item?.region ?? "").toLowerCase();
+        return region === "canada" || region.includes("canada");
       });
     }
 
