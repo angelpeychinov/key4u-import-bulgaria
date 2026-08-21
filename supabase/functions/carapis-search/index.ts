@@ -98,10 +98,14 @@ Deno.serve(async (req) => {
     const target = new URL(API_BASE);
     target.searchParams.set("source", SOURCE);
 
-    const brand = textParam(incoming, "brand");
-    const model = textParam(incoming, "model");
-    if (brand) target.searchParams.set("brand", brand);
-    if (model) target.searchParams.set("model", model);
+    for (const key of ["brand", "model", "fuel_type", "transmission", "body_type"]) {
+      const value = textParam(incoming, key);
+      if (value) target.searchParams.set(key, value);
+    }
+
+    if (incoming.get("has_accident") === "false") {
+      target.searchParams.set("has_accident", "false");
+    }
 
     const numMap: Record<string, string> = {
       year_from: "min_year",
