@@ -94,6 +94,7 @@ Deno.serve(async (req) => {
         if (sourceCode !== "openlane") return true;
 
         const loc = item?.source_location as Record<string, unknown> | undefined;
+        console.log("OPENLANE item keys:", Object.keys(item).join(", "));
         console.log("OPENLANE location:", JSON.stringify(loc));
         if (!loc || typeof loc !== "object") return false;
 
