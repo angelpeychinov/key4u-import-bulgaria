@@ -177,27 +177,40 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
 
         <div className="space-y-2">
           <Label>Модел</Label>
-          <Select
-            value={selectValue(filters.model)}
-            onValueChange={(value) => set("model", value === "all" ? "" : value)}
-            disabled={!filters.brand || loadingModels}
-          >
-            <SelectTrigger>
-              <SelectValue
-                placeholder={
-                  !filters.brand ? "Изберете марка" : loadingModels ? "Зареждане..." : "Всички модели"
-                }
-              />
-            </SelectTrigger>
-            <SelectContent className="max-h-72">
-              <SelectItem value="all">Всички модели</SelectItem>
-              {models.map((model) => (
-                <SelectItem key={model.slug} value={model.slug}>
-                  {model.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {filters.brand && !loadingModels && models.length === 0 ? (
+            <Input
+              placeholder="Напр. sportage"
+              aria-label="Модел"
+              value={filters.model ?? ""}
+              onChange={(e) => set("model", e.target.value)}
+            />
+          ) : (
+            <Select
+              value={selectValue(filters.model)}
+              onValueChange={(value) => set("model", value === "all" ? "" : value)}
+              disabled={!filters.brand || loadingModels}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={
+                    !filters.brand
+                      ? "Изберете марка"
+                      : loadingModels
+                        ? "Зареждане..."
+                        : "Всички модели"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent className="max-h-72">
+                <SelectItem value="all">Всички модели</SelectItem>
+                {models.map((model) => (
+                  <SelectItem key={model.slug} value={model.slug}>
+                    {model.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <div className="space-y-2">
