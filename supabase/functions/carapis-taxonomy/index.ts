@@ -25,6 +25,18 @@ Deno.serve(async (req) => {
     }
 
     const incoming = new URL(req.url).searchParams;
+
+    const probe = incoming.get("probe");
+    if (probe) {
+      const probeRes = await fetch(`${API_ROOT}/${probe}`, {
+        headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
+      });
+      const text = await probeRes.text();
+      return new Response(JSON.stringify({ status: probeRes.status, body: text.slice(0, 3000) }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const kind = incoming.get("kind") === "models" ? "models" : "brands";
     const brand = (incoming.get("brand") ?? "").trim();
 
