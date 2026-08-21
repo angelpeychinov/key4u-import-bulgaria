@@ -88,7 +88,6 @@ Deno.serve(async (req) => {
     const json = await res.json().catch(() => ({}));
     let results = Array.isArray(json?.results) ? json.results : Array.isArray(json) ? json : [];
 
-    const requestedSource = incoming.get("source")?.toLowerCase();
     if (requestedSource === "openlane" || requestedSource === "all") {
       results = results.filter((item: Record<string, unknown>) => {
         const sourceCode = String(item?.source_code ?? "").toLowerCase();
