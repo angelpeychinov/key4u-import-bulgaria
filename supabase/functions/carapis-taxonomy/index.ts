@@ -8,7 +8,7 @@ const API_ROOT = "https://api.carapis.com/apix/catalog_api";
 const SOURCE = "encar";
 
 // Carapis taxonomy endpoints contain noisy junk entries; keep only plausible names.
-const CLEAN_NAME = /^[A-Za-z0-9\u3131-\uD79D][A-Za-z0-9\u3131-\uD79D .\-+&/']*$/;
+const CLEAN_NAME = /^[A-Za-z0-9\uAC00-\uD7A3][A-Za-z0-9\uAC00-\uD7A3 .\-+&/']*$/;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
