@@ -2,3 +2,6 @@ project_id = "sssvzaihbrqegckdywzu"
 
 [functions.carapis-search]
 verify_jwt = false
+
+[functions.carapis-taxonomy]
+verify_jwt = false

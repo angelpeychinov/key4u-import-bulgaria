@@ -34,6 +34,15 @@ export interface SearchFilters {
   price_from?: string;
   price_to?: string;
   mileage_max?: string;
+  fuel_type?: string;
+  transmission?: string;
+  body_type?: string;
+  no_accident?: boolean;
+}
+
+export interface TaxonomyItem {
+  name: string;
+  slug: string;
 }
 
 export interface SearchResult {
@@ -138,7 +147,11 @@ export const searchListings = async (
 ): Promise<SearchResult> => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
-    if (value && value !== "all") params.set(key, value);
+    if (key === "no_accident") {
+      if (value === true) params.set("has_accident", "false");
+      return;
+    }
+    if (typeof value === "string" && value && value !== "all") params.set(key, value);
   });
   params.set("page", String(page));
   params.set("limit", String(limit));
@@ -176,3 +189,25 @@ export const formatApproxEur = (value?: number) => (value === undefined ? "—" 
 
 export const formatMileage = (mileage?: number) =>
   mileage === undefined ? "—" : `${new Intl.NumberFormat("en-US").format(mileage)} km`;
+
+export const fetchTaxonomy = async (
+  kind: "brands" | "models",
+  brandSlug?: string,
+): Promise<TaxonomyItem[]> => {
+  const params = new URLSearchParams({ kind });
+  if (kind === "models") {
+    if (!brandSlug) return [];
+    params.set("brand", brandSlug);
+  }
+
+  const { data, error } = await supabase.functions.invoke(`carapis-taxonomy?${params.toString()}`, {
+    method: "GET",
+  });
+  if (error) throw error;
+
+  const obj = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+  const items = Array.isArray(obj.results) ? (obj.results as Record<string, unknown>[]) : [];
+  return items
+    .map((item) => ({ name: String(item.name ?? ""), slug: String(item.slug ?? "") }))
+    .filter((item) => item.name && item.slug);
+};
