@@ -46,11 +46,18 @@ const toNumber = (v: unknown): number | undefined => {
   return Number.isFinite(n) ? n : undefined;
 };
 
+const MEDIA_BASE = "https://api.carapis.com";
+
+const absolute = (url: string): string => (url.startsWith("http") ? url : `${MEDIA_BASE}${url}`);
+
 const toUrl = (v: unknown): string | undefined => {
-  if (typeof v === "string" && v) return v;
+  if (typeof v === "string" && v) return absolute(v);
   if (v && typeof v === "object") {
-    const url = (v as Record<string, unknown>).url;
-    if (typeof url === "string" && url) return url;
+    const o = v as Record<string, unknown>;
+    for (const key of ["url", "original_url", "thumb_url"]) {
+      const url = o[key];
+      if (typeof url === "string" && url) return absolute(url);
+    }
   }
   return undefined;
 };
