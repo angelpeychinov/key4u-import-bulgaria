@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const ListingCard = ({ listing, onOpen }: Props) => {
-  const photo = listing.photos[0];
+  const photo = listing.thumb ?? listing.photos[0];
 
   return (
     <Card

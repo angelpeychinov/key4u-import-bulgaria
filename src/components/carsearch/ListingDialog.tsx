@@ -45,6 +45,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => (
                 ["Year", listing.year?.toString()],
                 ["Brand", listing.brand],
                 ["Model", listing.model],
+                ["Trim", listing.trim],
                 ["Mileage", formatMileage(listing.mileage)],
                 ["Location", listing.location],
                 ...Object.entries(listing.specs),

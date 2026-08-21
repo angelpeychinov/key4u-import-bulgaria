@@ -38,13 +38,17 @@ export default function CarSearch() {
 
   const [unavailable, setUnavailable] = useState(false);
 
+  const [pages, setPages] = useState<number | undefined>(undefined);
+
   const runSearch = async (nextPage: number, append: boolean) => {
     setLoading(true);
     try {
-      const { listings: results, unavailable: down } = await searchListings(filters, nextPage, PAGE_SIZE);
+      const { listings: results, unavailable: down, hasNext, page: current, pages: totalPages } =
+        await searchListings(filters, nextPage, PAGE_SIZE);
       setListings((prev) => (append ? [...prev, ...results] : results));
-      setPage(nextPage);
-      setHasMore(results.length === PAGE_SIZE);
+      setPage(current ?? nextPage);
+      setPages(totalPages);
+      setHasMore(hasNext);
       setUnavailable(!!down);
       setSearched(true);
       if (down) toast.error("The listings provider is temporarily unavailable.");
@@ -179,14 +183,19 @@ export default function CarSearch() {
               ))}
             </div>
 
-            {hasMore && (
-              <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex flex-col items-center gap-3">
+              {pages ? (
+                <p className="text-sm text-muted-foreground">
+                  Page {page} of {pages}
+                </p>
+              ) : null}
+              {hasMore && (
                 <Button variant="outline" size="lg" onClick={() => runSearch(page + 1, true)} disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Load more
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
 
