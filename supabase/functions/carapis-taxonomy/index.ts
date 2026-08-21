@@ -28,6 +28,25 @@ Deno.serve(async (req) => {
 
     const incoming = new URL(req.url).searchParams;
 
+    const counts = incoming.get("counts");
+    if (counts) {
+      const slugs = counts.split(",");
+      const out = await Promise.all(
+        slugs.map(async (slug) => {
+          const r = await fetch(
+            `${API_ROOT}/vehicles/?source=${SOURCE}&brand=${encodeURIComponent(slug)}&page_size=1`,
+            { headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" } },
+          );
+          const j = await r.json().catch(() => ({}));
+          return `${slug}:${j?.count ?? "err"}`;
+        }),
+      );
+      return new Response(JSON.stringify({ counts: out }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const probe = incoming.get("probe");
     if (probe) {
       const probeRes = await fetch(`${API_ROOT}/${probe}`, {
