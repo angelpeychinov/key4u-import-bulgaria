@@ -4,7 +4,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
-const API_URL = "https://api.carapis.com/v2/listings";
+const API_URL = "https://api.carapis.com/apix/catalog_api/vehicles/";
 const ALLOWED_SOURCES = ["encar", "auto1", "openlane"];
 
 const numParam = (params: URLSearchParams, key: string): number | undefined => {
@@ -35,82 +35,67 @@ Deno.serve(async (req) => {
 
     const incoming = new URL(req.url).searchParams;
 
+    const target = new URL(API_URL);
+
     const requestedSource = incoming.get("source")?.toLowerCase();
-    const sources =
-      requestedSource && ALLOWED_SOURCES.includes(requestedSource) ? [requestedSource] : ALLOWED_SOURCES;
-
-    const limit = Math.min(numParam(incoming, "limit") ?? 24, 50);
-    const page = numParam(incoming, "page") ?? 1;
-    const mileageMax = numParam(incoming, "mileage_max");
-
-    const shared = new URLSearchParams();
-    const make = textParam(incoming, "brand");
-    const model = textParam(incoming, "model");
-    if (make) shared.set("make", make);
-    if (model) shared.set("model", model);
-    const map: Record<string, string> = {
-      year_from: "year_min",
-      year_to: "year_max",
-      price_from: "price_min",
-      price_to: "price_max",
-    };
-    for (const [from, to] of Object.entries(map)) {
-      const value = numParam(incoming, from);
-      if (value !== undefined) shared.set(to, String(value));
+    if (requestedSource && ALLOWED_SOURCES.includes(requestedSource)) {
+      target.searchParams.set("source", requestedSource);
     }
 
-    const perSource = sources.length > 1 ? Math.max(Math.ceil(limit / sources.length), 4) : limit;
+    const brand = textParam(incoming, "brand");
+    const model = textParam(incoming, "model");
+    if (brand) target.searchParams.set("brand", brand);
+    if (model) target.searchParams.set("model", model);
 
-    const responses = await Promise.all(
-      sources.map(async (source) => {
-        const target = new URL(API_URL);
-        shared.forEach((value, key) => target.searchParams.set(key, value));
-        target.searchParams.set("source", source);
-        target.searchParams.set("limit", String(perSource));
-        target.searchParams.set("page", String(page));
+    const numMap: Record<string, string> = {
+      year_from: "min_year",
+      year_to: "max_year",
+      price_from: "min_price",
+      price_to: "max_price",
+      mileage_max: "max_mileage",
+    };
+    for (const [from, to] of Object.entries(numMap)) {
+      const value = numParam(incoming, from);
+      if (value !== undefined) target.searchParams.set(to, String(value));
+    }
 
-        const res = await fetch(target.toString(), {
-          headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
-        });
+    const pageSize = Math.min(numParam(incoming, "limit") ?? 24, 50);
+    const page = numParam(incoming, "page") ?? 1;
+    target.searchParams.set("page_size", String(pageSize));
+    target.searchParams.set("page", String(page));
 
-        if (!res.ok) {
-          const body = await res.text();
-          console.error(`Carapis ${source} error ${res.status}: ${body.slice(0, 300)}`);
-          return { source, status: res.status, results: [] as unknown[], count: 0 };
-        }
+    const res = await fetch(target.toString(), {
+      headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
+    });
 
-        const json = await res.json().catch(() => ({}));
-        const results = Array.isArray(json?.results) ? json.results : Array.isArray(json) ? json : [];
-        return { source, status: 200, results, count: Number(json?.count) || results.length };
-      }),
-    );
-
-    const ok = responses.filter((r) => r.status === 200);
-    if (ok.length === 0) {
+    if (!res.ok) {
+      const body = await res.text();
+      console.error(`Carapis error ${res.status}: ${body.slice(0, 300)}`);
       return new Response(
-        JSON.stringify({ results: [], count: 0, page, limit, unavailable: true }),
+        JSON.stringify({
+          results: [],
+          count: 0,
+          page,
+          pages: 0,
+          page_size: pageSize,
+          has_next: false,
+          unavailable: true,
+        }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-
-    let results = responses.flatMap((r) =>
-      (r.results as Record<string, unknown>[]).map((item) => ({ source: r.source, ...item })),
-    );
-
-    if (mileageMax !== undefined) {
-      results = results.filter((item) => {
-        const m = Number((item as Record<string, unknown>).mileage);
-        return !Number.isFinite(m) || m <= mileageMax;
-      });
-    }
+    const json = await res.json().catch(() => ({}));
+    const results = Array.isArray(json?.results) ? json.results : Array.isArray(json) ? json : [];
 
     return new Response(
       JSON.stringify({
-        count: ok.reduce((sum, r) => sum + r.count, 0),
-        page,
-        limit,
-        results: results.slice(0, limit),
+        count: Number(json?.count) || results.length,
+        page: Number(json?.page) || page,
+        pages: Number(json?.pages) || 0,
+        page_size: Number(json?.page_size) || pageSize,
+        has_next: json?.has_next === true,
+        results,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );

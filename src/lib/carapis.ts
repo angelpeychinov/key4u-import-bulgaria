@@ -7,12 +7,14 @@ export interface Listing {
   title: string;
   brand?: string;
   model?: string;
+  trim?: string;
   year?: number;
   price?: number;
   currency?: string;
   mileage?: number;
   location?: string;
   source?: string;
+  thumb?: string;
   photos: string[];
   url?: string;
   specs: Record<string, string>;
@@ -29,120 +31,87 @@ export interface SearchFilters {
   mileage_max?: string;
 }
 
-const pick = (obj: Record<string, unknown>, keys: string[]): unknown => {
-  for (const k of keys) {
-    const v = obj[k];
-    if (v !== undefined && v !== null && v !== "") return v;
-  }
-  return undefined;
-};
+export interface SearchResult {
+  listings: Listing[];
+  count?: number;
+  page: number;
+  pages?: number;
+  hasNext: boolean;
+  unavailable?: boolean;
+}
 
 const toNumber = (v: unknown): number | undefined => {
+  if (v === null || v === undefined || v === "") return undefined;
   const n = typeof v === "string" ? Number(v.replace(/[^\d.]/g, "")) : Number(v);
   return Number.isFinite(n) ? n : undefined;
 };
 
-const collectPhotos = (raw: Record<string, unknown>): string[] => {
-  const candidates = [
-    raw.photos,
-    raw.images,
-    raw.image_urls,
-    raw.pictures,
-    (raw.media as Record<string, unknown> | undefined)?.photos,
-  ];
-  for (const c of candidates) {
-    if (Array.isArray(c) && c.length) {
-      return c
-        .map((item) =>
-          typeof item === "string"
-            ? item
-            : ((item as Record<string, unknown>)?.url as string) ??
-              ((item as Record<string, unknown>)?.image as string) ??
-              ((item as Record<string, unknown>)?.src as string),
-        )
-        .filter((u): u is string => typeof u === "string" && u.length > 0);
-    }
+const toUrl = (v: unknown): string | undefined => {
+  if (typeof v === "string" && v) return v;
+  if (v && typeof v === "object") {
+    const url = (v as Record<string, unknown>).url;
+    if (typeof url === "string" && url) return url;
   }
-  const single = pick(raw, ["photo", "image", "thumbnail", "main_photo", "image_url"]);
-  return typeof single === "string" ? [single] : [];
+  return undefined;
 };
 
-const SPEC_KEYS = [
-  "fuel",
-  "fuel_type",
-  "transmission",
-  "gearbox",
-  "body_type",
-  "body",
-  "engine",
-  "engine_volume",
-  "engine_size",
-  "power",
-  "horsepower",
-  "color",
-  "drive",
-  "drive_type",
-  "vin",
-  "condition",
-  "seats",
-  "doors",
-  "registration_date",
+const SPEC_KEYS: [string, string][] = [
+  ["fuel_type", "fuel"],
+  ["transmission", "transmission"],
+  ["body_type", "body type"],
+  ["color", "color"],
+  ["trim", "trim"],
+  ["region", "region"],
 ];
 
 export const normalizeListing = (raw: Record<string, unknown>, index: number): Listing => {
-  const brand = pick(raw, ["brand", "make", "manufacturer", "brand_name"]) as string | undefined;
-  const model = pick(raw, ["model", "model_name"]) as string | undefined;
-  const year = toNumber(pick(raw, ["year", "production_year", "model_year"]));
-  const title =
-    (pick(raw, ["title", "name", "full_name"]) as string | undefined) ??
-    [year, brand, model].filter(Boolean).join(" ") ??
-    "Listing";
+  const brand = (raw.brand_name as string | undefined) ?? undefined;
+  const model = (raw.model_name as string | undefined) ?? undefined;
+  const trim = (raw.trim as string | undefined) ?? undefined;
+  const year = toNumber(raw.year);
+
+  const title = [year, brand, model, trim].filter(Boolean).join(" ") || "Listing";
 
   const specs: Record<string, string> = {};
-  for (const key of SPEC_KEYS) {
+  for (const [key, label] of SPEC_KEYS) {
     const v = raw[key];
     if (v !== undefined && v !== null && v !== "" && typeof v !== "object") {
-      specs[key.replace(/_/g, " ")] = String(v);
+      specs[label] = String(v);
     }
   }
+  if (typeof raw.has_accident === "boolean") {
+    specs["accident"] = raw.has_accident ? "yes" : "no";
+  }
+
+  const thumb = toUrl(raw.thumb);
+  const photos = Array.isArray(raw.photos)
+    ? (raw.photos.map(toUrl).filter((u): u is string => !!u) as string[])
+    : [];
 
   return {
-    id: String(pick(raw, ["id", "listing_id", "uuid", "vin", "url"]) ?? `listing-${index}`),
-    title: title || "Listing",
+    id: String(raw.id ?? `listing-${index}`),
+    title,
     brand,
     model,
+    trim,
     year,
-    price: toNumber(pick(raw, ["price", "price_eur", "price_usd", "amount", "final_price"])),
-    currency: (pick(raw, ["currency", "price_currency"]) as string | undefined) ?? "EUR",
-    mileage: toNumber(pick(raw, ["mileage", "odometer", "km", "mileage_km"])),
-    location: pick(raw, ["location", "city", "country", "region", "location_name"]) as string | undefined,
-    source: (pick(raw, ["source", "provider", "site", "marketplace"]) as string | undefined)?.toLowerCase(),
-    photos: collectPhotos(raw),
-    url: pick(raw, ["url", "link", "source_url", "original_url", "detail_url"]) as string | undefined,
+    price: toNumber(raw.price_usd),
+    currency: "USD",
+    mileage: toNumber(raw.mileage),
+    location: (raw.region as string | undefined) ?? undefined,
+    source: (raw.source_code as string | undefined)?.toLowerCase(),
+    thumb,
+    photos: photos.length ? photos : thumb ? [thumb] : [],
+    url: (raw.listing_url as string | undefined) ?? undefined,
     specs,
   };
-};
-
-export const extractItems = (data: unknown): Record<string, unknown>[] => {
-  if (Array.isArray(data)) return data as Record<string, unknown>[];
-  if (data && typeof data === "object") {
-    const obj = data as Record<string, unknown>;
-    for (const key of ["results", "data", "items", "listings"]) {
-      const v = obj[key];
-      if (Array.isArray(v)) return v as Record<string, unknown>[];
-      if (v && typeof v === "object" && Array.isArray((v as Record<string, unknown>).results)) {
-        return (v as Record<string, unknown>).results as Record<string, unknown>[];
-      }
-    }
-  }
-  return [];
 };
 
 export const searchListings = async (
   filters: SearchFilters,
   page: number,
   limit = 24,
-): Promise<{ listings: Listing[]; total?: number; unavailable?: boolean }> => {
+): Promise<SearchResult> => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (value && value !== "all") params.set(key, value);
@@ -158,12 +127,17 @@ export const searchListings = async (
   const obj = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
   if ("error" in obj) throw new Error(String(obj.error));
 
-  const items = extractItems(data);
-  const totalRaw = toNumber(pick(obj, ["count", "total", "total_count", "totalResults"]));
+  const items = Array.isArray(obj.results) ? (obj.results as Record<string, unknown>[]) : [];
 
-  return { listings: items.map(normalizeListing), total: totalRaw, unavailable: obj.unavailable === true };
+  return {
+    listings: items.map(normalizeListing),
+    count: toNumber(obj.count),
+    page: toNumber(obj.page) ?? page,
+    pages: toNumber(obj.pages),
+    hasNext: obj.has_next === true,
+    unavailable: obj.unavailable === true,
+  };
 };
-
 
 export const SOURCE_LABELS: Record<string, string> = {
   encar: "Encar",
@@ -171,10 +145,10 @@ export const SOURCE_LABELS: Record<string, string> = {
   openlane: "OpenLane.ca",
 };
 
-export const formatPrice = (price?: number, currency = "EUR") =>
+export const formatPrice = (price?: number, currency = "USD") =>
   price === undefined
     ? "—"
-    : new Intl.NumberFormat("en-US", { style: "currency", currency: currency || "EUR", maximumFractionDigits: 0 }).format(
+    : new Intl.NumberFormat("en-US", { style: "currency", currency: currency || "USD", maximumFractionDigits: 0 }).format(
         price,
       );
 
