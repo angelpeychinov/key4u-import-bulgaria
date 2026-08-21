@@ -86,11 +86,26 @@ Deno.serve(async (req) => {
     }
 
     const json = await res.json().catch(() => ({}));
-    const results = Array.isArray(json?.results) ? json.results : Array.isArray(json) ? json : [];
+    let results = Array.isArray(json?.results) ? json.results : Array.isArray(json) ? json : [];
+
+    const requestedSource = incoming.get("source")?.toLowerCase();
+    if (requestedSource === "openlane" || requestedSource === "all") {
+      results = results.filter((item: Record<string, unknown>) => {
+        const sourceCode = String(item?.source_code ?? "").toLowerCase();
+        if (sourceCode !== "openlane") return true;
+
+        const loc = item?.source_location as Record<string, unknown> | undefined;
+        if (!loc || typeof loc !== "object") return false;
+
+        const iso2 = String(loc?.iso2 ?? "").toUpperCase();
+        const countryName = String(loc?.country_name ?? "").toLowerCase();
+        return iso2 === "CA" || countryName.includes("canada");
+      });
+    }
 
     return new Response(
       JSON.stringify({
-        count: Number(json?.count) || results.length,
+        count: results.length,
         page: Number(json?.page) || page,
         pages: Number(json?.pages) || 0,
         page_size: Number(json?.page_size) || pageSize,
