@@ -88,7 +88,6 @@ Deno.serve(async (req) => {
         }
         const body = await res.json().catch(() => null);
         const items = Array.isArray(body) ? body : Array.isArray(body?.results) ? body.results : [];
-        console.log("brands fetched", items.length);
         raw.push(...items);
       }
 
