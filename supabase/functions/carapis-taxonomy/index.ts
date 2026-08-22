@@ -14,6 +14,22 @@ const CLEAN_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+){0,3}$/;
 
 // Cached per isolate: the upstream API is aggressively rate limited.
 const modelCache = new Map<string, { name: string; slug: string }[]>();
+let brandCache: { name: string; slug: string }[] | null = null;
+
+// Pinned brands (in this order) shown before the alphabetical list, matched by slug.
+const PINNED_BRAND_SLUGS = [
+  "mercedes-benz",
+  "bmw",
+  "audi",
+  "volvo",
+  "volkswagen",
+  "toyota",
+  "hyundai",
+  "kia",
+  "mazda",
+  "porsche",
+  "lexus",
+];
 
 const clean = (items: unknown[]): { name: string; slug: string }[] => {
   const seen = new Set<string>();
@@ -51,11 +67,35 @@ Deno.serve(async (req) => {
     if (!apiKey) return json({ results: [], unavailable: true });
 
     const incoming = new URL(req.url).searchParams;
-    if (incoming.get("kind") !== "models") {
-      // Brands are served from a static list: the upstream /brands/ endpoint is both
-      // rate limited and polluted with junk rows.
-      return json({ results: [] });
+    const kind = incoming.get("kind");
+
+    if (kind === "brands") {
+      if (brandCache) return json({ results: brandCache });
+
+      const target = new URL(`${API_ROOT}/brands/`);
+      target.searchParams.set("limit", "500");
+      const res = await fetch(target.toString(), {
+        headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
+      });
+      if (!res.ok) {
+        console.error(`carapis brands error ${res.status}: ${(await res.text()).slice(0, 200)}`);
+        return json({ results: [], unavailable: true });
+      }
+      const body = await res.json().catch(() => null);
+      const items = Array.isArray(body?.results) ? body.results : [];
+      const cleaned = clean(items);
+
+      const pinned = PINNED_BRAND_SLUGS.map((slug) =>
+        cleaned.find((b) => b.slug.toLowerCase() === slug),
+      ).filter(Boolean) as { name: string; slug: string }[];
+      const pinnedSlugs = new Set(pinned.map((b) => b.slug.toLowerCase()));
+      const rest = cleaned.filter((b) => !pinnedSlugs.has(b.slug.toLowerCase()));
+
+      brandCache = [...pinned, ...rest];
+      return json({ results: brandCache, pinned_count: pinned.length });
     }
+
+    if (kind !== "models") return json({ results: [] });
 
     const brand = (incoming.get("brand") ?? "").trim().toLowerCase();
     if (!brand) return json({ results: [] });
