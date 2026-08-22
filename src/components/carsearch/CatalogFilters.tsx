@@ -16,7 +16,22 @@ import { SearchFilters, TaxonomyItem, fetchTaxonomy } from "@/lib/carapis";
 
 const BRAND_GREEN = "#183e32";
 
-// Encar brand slugs (the upstream /brands/ endpoint is rate limited and noisy).
+// Brands pinned at the top of the dropdown, in this exact order (matched by slug).
+const PINNED_BRAND_SLUGS = [
+  "mercedes-benz",
+  "bmw",
+  "audi",
+  "volvo",
+  "volkswagen",
+  "toyota",
+  "hyundai",
+  "kia",
+  "mazda",
+  "porsche",
+  "lexus",
+];
+
+// Fallback Encar brand slugs (the upstream /brands/ endpoint is rate limited and noisy).
 const BRAND_OPTIONS: [string, string][] = [
   ["hyundai", "Hyundai"],
   ["kia", "Kia"],
@@ -101,10 +116,46 @@ interface Props {
   loading?: boolean;
 }
 
+const FALLBACK_BRANDS: TaxonomyItem[] = BRAND_OPTIONS.map(([slug, name]) => ({ slug, name }));
+
+// Pinned brands first (in the configured order), then everything else alphabetically.
+const orderBrands = (items: TaxonomyItem[]) => {
+  const bySlug = new Map(items.map((b) => [b.slug.toLowerCase(), b]));
+  const pinned = PINNED_BRAND_SLUGS.map((slug) => bySlug.get(slug)).filter(
+    (b): b is TaxonomyItem => Boolean(b),
+  );
+  const pinnedSlugs = new Set(pinned.map((b) => b.slug.toLowerCase()));
+  const rest = items
+    .filter((b) => !pinnedSlugs.has(b.slug.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name, "en"));
+  return { pinned, rest };
+};
+
 export function CatalogFilters({ filters, onChange, onApply, onReset, loading }: Props) {
   const [open, setOpen] = useState(false);
+  const [brands, setBrands] = useState<TaxonomyItem[]>(FALLBACK_BRANDS);
   const [models, setModels] = useState<TaxonomyItem[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    fetchTaxonomy("brands")
+      .then((items) => {
+        if (!active || items.length === 0) return;
+        // Merge upstream brands with the curated fallback so pinned brands are always present.
+        const merged = new Map(items.map((b) => [b.slug.toLowerCase(), b]));
+        for (const b of FALLBACK_BRANDS) {
+          if (!merged.has(b.slug.toLowerCase())) merged.set(b.slug.toLowerCase(), b);
+        }
+        setBrands([...merged.values()]);
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const { pinned: pinnedBrands, rest: otherBrands } = orderBrands(brands);
 
   useEffect(() => {
     let active = true;
@@ -166,9 +217,17 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
             </SelectTrigger>
             <SelectContent className="max-h-72">
               <SelectItem value="all">Всички марки</SelectItem>
-              {BRAND_OPTIONS.map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
+              {pinnedBrands.map((brand) => (
+                <SelectItem key={brand.slug} value={brand.slug}>
+                  {brand.name}
+                </SelectItem>
+              ))}
+              {pinnedBrands.length > 0 && otherBrands.length > 0 && (
+                <div className="my-1 h-px bg-border" role="separator" />
+              )}
+              {otherBrands.map((brand) => (
+                <SelectItem key={brand.slug} value={brand.slug}>
+                  {brand.name}
                 </SelectItem>
               ))}
             </SelectContent>
