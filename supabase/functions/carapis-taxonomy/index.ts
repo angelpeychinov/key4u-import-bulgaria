@@ -90,6 +90,7 @@ Deno.serve(async (req) => {
         }
         const body = await res.json().catch(() => null);
         const items = Array.isArray(body) ? body : Array.isArray(body?.results) ? body.results : [];
+        console.log("brands page", page, items.length, JSON.stringify(items[0]?.slug ?? null));
         raw.push(...items);
         if (items.length < 200) break;
       }
