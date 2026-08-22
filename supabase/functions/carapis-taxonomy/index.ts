@@ -75,16 +75,17 @@ Deno.serve(async (req) => {
 
       // /brands/ answers with a plain array (max ~200 rows per call), so page via offset.
       const raw: unknown[] = [];
-      for (let offset = 0; offset < 1000; offset += 200) {
+      for (let page = 1; page <= 15; page++) {
         const target = new URL(`${API_ROOT}/brands/`);
         target.searchParams.set("limit", "200");
-        target.searchParams.set("offset", String(offset));
+        target.searchParams.set("page", String(page));
+        target.searchParams.set("offset", String((page - 1) * 200));
         const res = await fetch(target.toString(), {
           headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
         });
         if (!res.ok) {
           console.error(`carapis brands error ${res.status}: ${(await res.text()).slice(0, 200)}`);
-          if (offset === 0) return json({ results: [], unavailable: true });
+          if (page === 1) return json({ results: [], unavailable: true });
           break;
         }
         const body = await res.json().catch(() => null);
