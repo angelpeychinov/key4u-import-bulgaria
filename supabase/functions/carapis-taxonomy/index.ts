@@ -5,6 +5,7 @@ const corsHeaders = {
 };
 
 const API_ROOT = "https://api.carapis.com/apix/catalog_api";
+const SOURCE = "encar";
 
 
 // Upstream taxonomy data is noisy (test rows with junk names) — keep plausible entries only.
