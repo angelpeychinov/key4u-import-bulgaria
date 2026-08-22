@@ -5,6 +5,7 @@ const corsHeaders = {
 };
 
 const API_ROOT = "https://api.carapis.com/apix/catalog_api";
+const SOURCE = "encar";
 
 
 // Upstream taxonomy data is noisy (test rows with junk names) — keep plausible entries only.
@@ -62,23 +63,38 @@ Deno.serve(async (req) => {
     const cached = modelCache.get(brand);
     if (cached) return json({ results: cached });
 
-    // NOTE: /models/ accepts only brand, limit, ordering, search — no `source` filter.
-    const target = new URL(`${API_ROOT}/models/`);
-    target.searchParams.set("brand", brand);
-    target.searchParams.set("limit", "200");
+    // Models are derived from real Encar vehicle rows: /models/ isn't scoped to a source
+    // and lists models never offered on Encar.
+    const PAGE_SIZE = 100;
+    const MAX_VEHICLES = 500;
+    const collected: unknown[] = [];
 
-    const res = await fetch(target.toString(), {
-      headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
-    });
+    for (let page = 1; page <= MAX_VEHICLES / PAGE_SIZE; page++) {
+      const target = new URL(`${API_ROOT}/vehicles/`);
+      target.searchParams.set("source", SOURCE);
+      target.searchParams.set("brand", brand);
+      target.searchParams.set("page_size", String(PAGE_SIZE));
+      target.searchParams.set("page", String(page));
 
-    if (!res.ok) {
-      console.error(`carapis models error ${res.status}: ${(await res.text()).slice(0, 200)}`);
-      return json({ results: [], unavailable: true });
+      const res = await fetch(target.toString(), {
+        headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
+      });
+
+      if (!res.ok) {
+        console.error(`carapis vehicles error ${res.status}: ${(await res.text()).slice(0, 200)}`);
+        if (page === 1) return json({ results: [], unavailable: true });
+        break;
+      }
+
+      const body = await res.json().catch(() => null);
+      const items = Array.isArray(body?.results) ? body.results : [];
+      collected.push(
+        ...items.map((v: Record<string, unknown>) => ({ name: v.model_name, slug: v.model_slug })),
+      );
+      if (body?.has_next !== true || items.length === 0) break;
     }
 
-    const body = await res.json().catch(() => null);
-    const items = Array.isArray(body) ? body : Array.isArray(body?.results) ? body.results : [];
-    const results = clean(items);
+    const results = clean(collected);
     modelCache.set(brand, results);
 
     return json({ results });
