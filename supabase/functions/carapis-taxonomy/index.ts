@@ -83,6 +83,7 @@ Deno.serve(async (req) => {
       }
       const body = await res.json().catch(() => null);
       const items = Array.isArray(body?.results) ? body.results : [];
+      console.log("brands raw", items.length, JSON.stringify(items.slice(0, 3)), JSON.stringify(Object.keys(body ?? {})));
       const cleaned = clean(items);
 
       const pinned = PINNED_BRAND_SLUGS.map((slug) =>
