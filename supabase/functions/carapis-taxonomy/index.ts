@@ -15,6 +15,7 @@ const CLEAN_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+){0,3}$/;
 // Cached per isolate: the upstream API is aggressively rate limited.
 const modelCache = new Map<string, { name: string; slug: string }[]>();
 let brandCache: { name: string; slug: string }[] | null = null;
+let brandPinnedCount = 0;
 
 // Pinned brands (in this order) shown before the alphabetical list, matched by slug.
 const PINNED_BRAND_SLUGS = [
@@ -70,22 +71,29 @@ Deno.serve(async (req) => {
     const kind = incoming.get("kind");
 
     if (kind === "brands") {
-      if (brandCache) return json({ results: brandCache });
+      if (brandCache) return json({ results: brandCache, pinned_count: brandPinnedCount });
 
-      const target = new URL(`${API_ROOT}/brands/`);
-      target.searchParams.set("limit", "500");
-      const res = await fetch(target.toString(), {
-        headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
-      });
-      if (!res.ok) {
-        console.error(`carapis brands error ${res.status}: ${(await res.text()).slice(0, 200)}`);
-        return json({ results: [], unavailable: true });
+      // /brands/ answers with a plain array (max ~200 rows per call), so page via offset.
+      const raw: unknown[] = [];
+      for (let offset = 0; offset < 1000; offset += 200) {
+        const target = new URL(`${API_ROOT}/brands/`);
+        target.searchParams.set("limit", "200");
+        target.searchParams.set("offset", String(offset));
+        const res = await fetch(target.toString(), {
+          headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
+        });
+        if (!res.ok) {
+          console.error(`carapis brands error ${res.status}: ${(await res.text()).slice(0, 200)}`);
+          if (offset === 0) return json({ results: [], unavailable: true });
+          break;
+        }
+        const body = await res.json().catch(() => null);
+        const items = Array.isArray(body) ? body : Array.isArray(body?.results) ? body.results : [];
+        raw.push(...items);
+        if (items.length < 200) break;
       }
-      const body = await res.json().catch(() => null);
-      const items = Array.isArray(body?.results) ? body.results : [];
-      console.log("brands raw", items.length, JSON.stringify(items.slice(0, 3)), JSON.stringify(Object.keys(body ?? {})));
-      const cleaned = clean(items);
 
+      const cleaned = clean(raw);
       const pinned = PINNED_BRAND_SLUGS.map((slug) =>
         cleaned.find((b) => b.slug.toLowerCase() === slug),
       ).filter(Boolean) as { name: string; slug: string }[];
@@ -93,7 +101,8 @@ Deno.serve(async (req) => {
       const rest = cleaned.filter((b) => !pinnedSlugs.has(b.slug.toLowerCase()));
 
       brandCache = [...pinned, ...rest];
-      return json({ results: brandCache, pinned_count: pinned.length });
+      brandPinnedCount = pinned.length;
+      return json({ results: brandCache, pinned_count: brandPinnedCount });
     }
 
     if (kind !== "models") return json({ results: [] });
