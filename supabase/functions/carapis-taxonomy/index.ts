@@ -62,10 +62,10 @@ Deno.serve(async (req) => {
     const cached = modelCache.get(brand);
     if (cached) return json({ results: cached });
 
+    // NOTE: /models/ accepts only brand, limit, ordering, search — no `source` filter.
     const target = new URL(`${API_ROOT}/models/`);
-    target.searchParams.set("source", SOURCE);
     target.searchParams.set("brand", brand);
-    target.searchParams.set("page_size", "200");
+    target.searchParams.set("limit", "200");
 
     const res = await fetch(target.toString(), {
       headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
