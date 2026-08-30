@@ -5,3 +5,7 @@ verify_jwt = false
 
 [functions.listings-taxonomy]
 verify_jwt = false
+
+[functions.listings-ingest]
+verify_jwt = false
+
