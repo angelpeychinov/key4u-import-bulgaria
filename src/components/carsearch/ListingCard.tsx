@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Gauge, MapPin, Car } from "lucide-react";
-import { Listing, SOURCE_LABELS, formatMileage, formatApproxEur } from "@/lib/carapis";
+import { Listing, SOURCE_LABELS, formatMileage, formatApproxEur } from "@/lib/listings";
 
 interface Props {
   listing: Listing;

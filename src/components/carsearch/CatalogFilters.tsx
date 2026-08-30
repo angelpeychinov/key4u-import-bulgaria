@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, RotateCcw, Search, SlidersHorizontal } from "lucide-react";
-import { SearchFilters, TaxonomyItem, fetchTaxonomy } from "@/lib/carapis";
+import { SearchFilters, TaxonomyItem, fetchTaxonomy } from "@/lib/listings";
 
 const BRAND_GREEN = "#183e32";
 

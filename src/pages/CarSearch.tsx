@@ -3,7 +3,7 @@ import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Listing, SearchFilters, searchListings } from "@/lib/carapis";
+import { Listing, SearchFilters, searchListings } from "@/lib/listings";
 import { ListingCard } from "@/components/carsearch/ListingCard";
 import { ListingDialog } from "@/components/carsearch/ListingDialog";
 import { CatalogFilters } from "@/components/carsearch/CatalogFilters";

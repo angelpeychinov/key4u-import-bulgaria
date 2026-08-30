@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ExternalLink, Mail, Phone } from "lucide-react";
-import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur } from "@/lib/carapis";
+import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur } from "@/lib/listings";
 
 interface Props {
   listing: Listing | null;

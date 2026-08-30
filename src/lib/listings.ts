@@ -60,7 +60,7 @@ const toNumber = (v: unknown): number | undefined => {
   return Number.isFinite(n) ? n : undefined;
 };
 
-const MEDIA_BASE = "https://api.carapis.com";
+const MEDIA_BASE = "";
 
 const absolute = (url: string): string => (url.startsWith("http") ? url : `${MEDIA_BASE}${url}`);
 
@@ -127,8 +127,8 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
     model,
     trim,
     year,
-    price: toNumber(raw.price_usd),
-    currency: "USD",
+    price: toNumber(raw.price_eur),
+    currency: "EUR",
     mileage: toNumber(raw.mileage),
     location: (raw.region as string | undefined) ?? undefined,
     source: (raw.source_code as string | undefined)?.toLowerCase(),
@@ -156,7 +156,7 @@ export const searchListings = async (
   params.set("page", String(page));
   params.set("limit", String(limit));
 
-  const { data, error } = await supabase.functions.invoke(`carapis-search?${params.toString()}`, {
+  const { data, error } = await supabase.functions.invoke(`listings-search?${params.toString()}`, {
     method: "GET",
   });
 
@@ -200,7 +200,7 @@ export const fetchTaxonomy = async (
     params.set("brand", brandSlug);
   }
 
-  const { data, error } = await supabase.functions.invoke(`carapis-taxonomy?${params.toString()}`, {
+  const { data, error } = await supabase.functions.invoke(`listings-taxonomy?${params.toString()}`, {
     method: "GET",
   });
   if (error) throw error;
