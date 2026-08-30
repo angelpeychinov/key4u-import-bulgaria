@@ -163,9 +163,18 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                 </Button>
               )}
             </div>
+
+            <PhotoLightbox
+              photos={gallery}
+              index={zoomIndex}
+              title={listing.title}
+              onClose={() => setZoomIndex(null)}
+              onIndexChange={setZoomIndex}
+            />
           </>
         )}
       </DialogContent>
     </Dialog>
+
   );
 };
