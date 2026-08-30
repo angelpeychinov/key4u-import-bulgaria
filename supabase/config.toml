@@ -1,7 +1,7 @@
 project_id = "sssvzaihbrqegckdywzu"
 
-[functions.carapis-search]
+[functions.listings-search]
 verify_jwt = false
 
-[functions.carapis-taxonomy]
+[functions.listings-taxonomy]
 verify_jwt = false
