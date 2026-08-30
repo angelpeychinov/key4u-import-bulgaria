@@ -304,7 +304,7 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="price">Цена до (USD)</Label>
+          <Label htmlFor="price">Цена до (EUR)</Label>
           <Input
             id="price"
             inputMode="numeric"
@@ -312,7 +312,7 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
             value={filters.price_to ?? ""}
             onChange={(e) => set("price_to", e.target.value)}
           />
-          <p className="text-xs text-muted-foreground">Филтрира по каталожна цена в USD</p>
+          <p className="text-xs text-muted-foreground">Филтрира по каталожна цена в EUR</p>
         </div>
 
         <div className="space-y-2">
