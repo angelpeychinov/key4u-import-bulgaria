@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ExternalLink, Mail, Phone } from "lucide-react";
 import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur } from "@/lib/listings";
+import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
 
 interface Props {
   listing: Listing | null;
@@ -13,10 +14,13 @@ interface Props {
 
 export const ListingDialog = ({ listing, onClose }: Props) => {
   const [insurance, setInsurance] = useState(false);
+  const [zoomIndex, setZoomIndex] = useState<number | null>(null);
 
   const ip = listing?.importPrice;
   const insuranceAmount = ip ? ip.price * 0.022 : 0;
   const total = ip ? ip.total + (insurance ? insuranceAmount : 0) : undefined;
+  const gallery = listing?.photos.slice(0, 12) ?? [];
+
 
   return (
     <Dialog
@@ -36,19 +40,27 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
             </DialogHeader>
 
             <div className="space-y-6">
-              {listing.photos.length > 0 && (
+              {gallery.length > 0 && (
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {listing.photos.slice(0, 12).map((photo, i) => (
-                    <img
+                  {gallery.map((photo, i) => (
+                    <button
                       key={`${photo}-${i}`}
-                      src={photo}
-                      alt={`${listing.title} снимка ${i + 1}`}
-                      loading="lazy"
-                      className="aspect-[4/3] w-full rounded-lg object-cover"
-                    />
+                      type="button"
+                      onClick={() => setZoomIndex(i)}
+                      aria-label={`Уголеми снимка ${i + 1}`}
+                      className="group relative overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                      <img
+                        src={photo}
+                        alt={`${listing.title} снимка ${i + 1}`}
+                        loading="lazy"
+                        className="aspect-[4/3] w-full cursor-zoom-in object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </button>
                   ))}
                 </div>
               )}
+
 
               <div className="flex flex-wrap items-center gap-3">
                 {listing.source && (
@@ -151,9 +163,18 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                 </Button>
               )}
             </div>
+
+            <PhotoLightbox
+              photos={gallery}
+              index={zoomIndex}
+              title={listing.title}
+              onClose={() => setZoomIndex(null)}
+              onIndexChange={setZoomIndex}
+            />
           </>
         )}
       </DialogContent>
     </Dialog>
+
   );
 };
