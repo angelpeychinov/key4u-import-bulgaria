@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ExternalLink, Mail, Phone } from "lucide-react";
 import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur } from "@/lib/listings";
+import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
 
 interface Props {
   listing: Listing | null;
@@ -13,10 +14,13 @@ interface Props {
 
 export const ListingDialog = ({ listing, onClose }: Props) => {
   const [insurance, setInsurance] = useState(false);
+  const [zoomIndex, setZoomIndex] = useState<number | null>(null);
 
   const ip = listing?.importPrice;
   const insuranceAmount = ip ? ip.price * 0.022 : 0;
   const total = ip ? ip.total + (insurance ? insuranceAmount : 0) : undefined;
+  const gallery = listing?.photos.slice(0, 12) ?? [];
+
 
   return (
     <Dialog
