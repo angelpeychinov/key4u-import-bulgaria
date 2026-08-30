@@ -14,7 +14,201 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      encar_listings: {
+        Row: {
+          body_type: string | null
+          brand_name: string | null
+          brand_slug: string | null
+          color: string | null
+          created_at: string
+          encar_id: string
+          engine_cc: number | null
+          first_seen_at: string
+          fuel_type: string | null
+          has_accident: boolean | null
+          id: string
+          last_seen_at: string
+          listing_url: string | null
+          mileage: number | null
+          model_name: string | null
+          model_slug: string | null
+          photos: Json
+          previous_price_krw: number | null
+          price_changed_at: string | null
+          price_original: number | null
+          raw_data: Json
+          region: string | null
+          source_code: string
+          status: string
+          thumb: string | null
+          transmission: string | null
+          trim: string | null
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          body_type?: string | null
+          brand_name?: string | null
+          brand_slug?: string | null
+          color?: string | null
+          created_at?: string
+          encar_id: string
+          engine_cc?: number | null
+          first_seen_at?: string
+          fuel_type?: string | null
+          has_accident?: boolean | null
+          id?: string
+          last_seen_at?: string
+          listing_url?: string | null
+          mileage?: number | null
+          model_name?: string | null
+          model_slug?: string | null
+          photos?: Json
+          previous_price_krw?: number | null
+          price_changed_at?: string | null
+          price_original?: number | null
+          raw_data?: Json
+          region?: string | null
+          source_code?: string
+          status?: string
+          thumb?: string | null
+          transmission?: string | null
+          trim?: string | null
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          body_type?: string | null
+          brand_name?: string | null
+          brand_slug?: string | null
+          color?: string | null
+          created_at?: string
+          encar_id?: string
+          engine_cc?: number | null
+          first_seen_at?: string
+          fuel_type?: string | null
+          has_accident?: boolean | null
+          id?: string
+          last_seen_at?: string
+          listing_url?: string | null
+          mileage?: number | null
+          model_name?: string | null
+          model_slug?: string | null
+          photos?: Json
+          previous_price_krw?: number | null
+          price_changed_at?: string | null
+          price_original?: number | null
+          raw_data?: Json
+          region?: string | null
+          source_code?: string
+          status?: string
+          thumb?: string | null
+          transmission?: string | null
+          trim?: string | null
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      notification_queue: {
+        Row: {
+          attempts: number
+          created_at: string
+          id: string
+          last_error: string | null
+          listing_id: string | null
+          notification_type: string
+          payload: Json
+          scheduled_for: string
+          sent_at: string | null
+          status: string
+          subscriber_id: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          listing_id?: string | null
+          notification_type?: string
+          payload?: Json
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          subscriber_id: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          listing_id?: string | null
+          notification_type?: string
+          payload?: Json
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string
+          subscriber_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_queue_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "encar_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_queue_subscriber_id_fkey"
+            columns: ["subscriber_id"]
+            isOneToOne: false
+            referencedRelation: "subscribers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscribers: {
+        Row: {
+          confirmed_at: string | null
+          created_at: string
+          criteria: Json
+          email: string
+          full_name: string | null
+          id: string
+          is_active: boolean
+          phone: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          confirmed_at?: string | null
+          created_at?: string
+          criteria?: Json
+          email: string
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          confirmed_at?: string | null
+          created_at?: string
+          criteria?: Json
+          email?: string
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
