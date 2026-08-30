@@ -60,7 +60,7 @@ const toNumber = (v: unknown): number | undefined => {
   return Number.isFinite(n) ? n : undefined;
 };
 
-const MEDIA_BASE = "https://api.carapis.com";
+const MEDIA_BASE = "";
 
 const absolute = (url: string): string => (url.startsWith("http") ? url : `${MEDIA_BASE}${url}`);
 
