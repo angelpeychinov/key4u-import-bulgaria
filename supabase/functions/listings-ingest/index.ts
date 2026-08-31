@@ -10,8 +10,17 @@
 // автоматично получават от Lovable Cloud runtime-а.
 //
 // Защита: изисква header 'x-ingest-secret', сравнен с INGEST_SECRET,
-// зададен в Lovable Secrets. Без това всеки в интернет би могъл да пише
-// произволни данни в таблицата.
+// зададен в Lovable Secrets.
+//
+// ⚠️ АРХИТЕКТУРНА БЕЛЕЖКА (31.08.2026): Първата версия обработваше всяка
+// обява ПООТДЕЛНО (select + insert/update в цикъл) -- при няколко хиляди
+// обяви (напр. пълния BMW каталог, 2500+) това отнемаше твърде дълго и
+// причиняваше client-side timeout от Python скрейпъра. Вече ползваме bulk
+// upsert (една SQL операция за целия chunk), а mark-as-sold логиката е
+// отделена в самостоятелна "finalize" стъпка, защото трябва да се изпълни
+// само ВЕДНЪЖ, след като всички chunk-ове от скрейпъра са пристигнали --
+// не след всеки chunk поотделно (иначе би маркирала грешно колите от
+// следващите chunk-ове като "продадени").
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -40,6 +49,12 @@ interface IncomingListing {
   listing_url?: string;
   source_code?: string;
   raw_data?: unknown;
+}
+
+function chunk<T>(arr: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
 }
 
 Deno.serve(async (req) => {
@@ -74,90 +89,114 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const brand: string | undefined = body.brand;
     const model: string | undefined = body.model;
-    const listings: IncomingListing[] = body.listings ?? [];
 
-    if (!brand || !Array.isArray(listings)) {
-      return json({ error: "Missing brand or listings array" }, 400);
+    if (!brand) {
+      return json({ error: "Missing brand" }, 400);
     }
 
-    let inserted = 0;
-    let updated = 0;
-    const seenIds = new Set<string>();
+    // --- FINALIZE стъпка: маркира изчезналите обяви като sold ---
+    // Извиква се веднъж, СЛЕД като всички chunk-ове с обяви са изпратени.
+    if (body.finalize === true) {
+      const seenIds: string[] = Array.isArray(body.seen_ids) ? body.seen_ids : [];
+      const seenSet = new Set(seenIds);
 
-    for (const listing of listings) {
-      if (!listing.encar_id) continue;
-      seenIds.add(listing.encar_id);
-
-      const { data: existing, error: selectError } = await supabase
+      let staleQuery = supabase
         .from("encar_listings")
-        .select("id, price_original")
-        .eq("encar_id", listing.encar_id)
-        .maybeSingle();
+        .select("encar_id")
+        .eq("status", "active")
+        .eq("brand_slug", brand.toLowerCase());
+      if (model) {
+        staleQuery = staleQuery.eq("model_slug", model.toLowerCase());
+      }
+      const { data: activeRows, error: staleError } = await staleQuery;
 
-      if (selectError) {
-        console.error("select failed", listing.encar_id, selectError);
-        continue;
+      if (staleError) {
+        console.error("finalize select failed", staleError);
+        return json({ error: "Finalize select failed" }, 500);
       }
 
-      const row: Record<string, unknown> = {
-        ...listing,
-        status: "active",
-        last_seen_at: new Date().toISOString(),
-      };
-
-      if (existing) {
-        const oldPrice = existing.price_original as number | null;
-        if (oldPrice && listing.price_original && oldPrice !== listing.price_original) {
-          row.previous_price_krw = oldPrice;
-          row.price_changed_at = new Date().toISOString();
-        }
-        const { error: updateError } = await supabase
-          .from("encar_listings")
-          .update(row)
-          .eq("encar_id", listing.encar_id);
-        if (updateError) {
-          console.error("update failed", listing.encar_id, updateError);
-          continue;
-        }
-        updated++;
-      } else {
-        row.first_seen_at = new Date().toISOString();
-        const { error: insertError } = await supabase.from("encar_listings").insert(row);
-        if (insertError) {
-          console.error("insert failed", listing.encar_id, insertError);
-          continue;
-        }
-        inserted++;
-      }
-    }
-
-    // Марк-ай изчезналите обяви (бяха active за тази марка/модел, но не бяха
-    // в текущия batch) като sold.
-    let markedSold = 0;
-    let staleQuery = supabase
-      .from("encar_listings")
-      .select("encar_id")
-      .eq("status", "active")
-      .eq("brand_slug", brand.toLowerCase());
-    if (model) {
-      staleQuery = staleQuery.eq("model_slug", model.toLowerCase());
-    }
-    const { data: activeRows, error: staleError } = await staleQuery;
-
-    if (!staleError && activeRows) {
-      const staleIds = activeRows
+      const staleIds = (activeRows ?? [])
         .map((r) => r.encar_id as string)
-        .filter((id) => !seenIds.has(id));
-      if (staleIds.length > 0) {
+        .filter((id) => !seenSet.has(id));
+
+      let markedSold = 0;
+      for (const idsChunk of chunk(staleIds, 300)) {
         const { error: soldError } = await supabase
           .from("encar_listings")
           .update({ status: "sold" })
-          .in("encar_id", staleIds);
-        if (!soldError) markedSold = staleIds.length;
+          .in("encar_id", idsChunk);
+        if (!soldError) markedSold += idsChunk.length;
+        else console.error("mark-sold chunk failed", soldError);
       }
+
+      return json({ marked_sold: markedSold });
     }
 
-    return json({ inserted, updated, marked_sold: markedSold, total_seen: seenIds.size });
+    // --- Обикновена ingest стъпка: bulk upsert на един chunk обяви ---
+    const listings: IncomingListing[] = body.listings ?? [];
+    if (!Array.isArray(listings) || listings.length === 0) {
+      return json({ error: "Missing listings array" }, 400);
+    }
+
+    const encarIds = listings.map((l) => l.encar_id).filter(Boolean);
+
+    // Една SELECT заявка за целия chunk, вместо по една на обява.
+    const { data: existingRows, error: selectError } = await supabase
+      .from("encar_listings")
+      .select("encar_id, price_original")
+      .in("encar_id", encarIds);
+
+    if (selectError) {
+      console.error("bulk select failed", selectError);
+      return json({ error: "Select failed" }, 500);
+    }
+
+    const oldPriceByEncarId = new Map<string, number | null>(
+      (existingRows ?? []).map((r) => [r.encar_id as string, r.price_original as number | null]),
+    );
+
+    const nowIso = new Date().toISOString();
+    const rows = listings.map((listing) => {
+      const row: Record<string, unknown> = {
+        ...listing,
+        status: "active",
+        last_seen_at: nowIso,
+      };
+      const oldPrice = oldPriceByEncarId.get(listing.encar_id);
+      if (oldPrice != null && listing.price_original != null && oldPrice !== listing.price_original) {
+        row.previous_price_krw = oldPrice;
+        row.price_changed_at = nowIso;
+      }
+      // Съзнателно НЕ включваме first_seen_at тук -- upsert би презаписал
+      // съществуващата стойност за вече наличните редове. Backfill-ваме я
+      // отделно по-долу, само за редовете, при които тя е NULL.
+      return row;
+    });
+
+    const { error: upsertError } = await supabase
+      .from("encar_listings")
+      .upsert(rows, { onConflict: "encar_id" });
+
+    if (upsertError) {
+      console.error("bulk upsert failed", upsertError);
+      return json({ error: "Upsert failed" }, 500);
+    }
+
+    // Backfill на first_seen_at само за истински новите редове.
+    const { error: backfillError } = await supabase
+      .from("encar_listings")
+      .update({ first_seen_at: nowIso })
+      .is("first_seen_at", null)
+      .in("encar_id", encarIds);
+    if (backfillError) {
+      console.error("first_seen_at backfill failed", backfillError);
+      // не е фатално -- редовете вече са записани, само first_seen_at ще е NULL
+    }
+
+    const updated = existingRows?.length ?? 0;
+    const inserted = encarIds.length - updated;
+
+    return json({ inserted, updated });
   } catch (err) {
     console.error("listings-ingest failed", err);
     return json({ error: "Unexpected error" }, 500);
