@@ -133,10 +133,20 @@ Deno.serve(async (req) => {
     }
 
     // --- Обикновена ingest стъпка: bulk upsert на един chunk обяви ---
-    const listings: IncomingListing[] = body.listings ?? [];
-    if (!Array.isArray(listings) || listings.length === 0) {
+    const rawListings: IncomingListing[] = body.listings ?? [];
+    if (!Array.isArray(rawListings) || rawListings.length === 0) {
       return json({ error: "Missing listings array" }, 400);
     }
+
+    // Защита в дълбочина: дублирани encar_id в рамките на един chunk биха
+    // счупили PostgreSQL upsert-а ("ON CONFLICT DO UPDATE ... affect row
+    // a second time"). Скрейпърът вече дедуплицира от своя страна, но пазим
+    // и тук за всеки случай (напр. ръчна заявка без тази логика).
+    const listingsByEncarId = new Map<string, IncomingListing>();
+    for (const listing of rawListings) {
+      if (listing.encar_id) listingsByEncarId.set(listing.encar_id, listing);
+    }
+    const listings = Array.from(listingsByEncarId.values());
 
     const encarIds = listings.map((l) => l.encar_id).filter(Boolean);
 
