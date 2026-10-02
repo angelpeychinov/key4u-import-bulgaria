@@ -15,6 +15,7 @@ const translations = {
     'nav.process': 'Import Process',
     'nav.findCar': 'Find My Car',
     'nav.carSearch': 'Korea',
+    'nav.delivered': 'Delivered Cars',
     'nav.faq': 'FAQ',
     'nav.contact': 'Contact',
     
@@ -141,6 +142,7 @@ const translations = {
     'nav.process': 'Процес',
     'nav.findCar': 'Намери Автомобил',
     'nav.carSearch': 'Корея',
+    'nav.delivered': 'Внесени автомобили',
     'nav.faq': 'Въпроси',
     'nav.contact': 'Контакт',
     
