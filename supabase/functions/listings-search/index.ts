@@ -10,6 +10,9 @@ const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
 const DEFAULT_FX_RATE = 1544; // KRW per EUR
 const DEFAULT_SHIPPING = 1720; // EUR, Korea -> Rotterdam base rate
+// Загуба при обмяна EUR -> CAD -> KRW (банката купува/продава на различен курс).
+// Смята се от сумата, изпратена до Ротердам (цена на колата + транспорт), не от крайната цена.
+const EUR_CAD_CONVERSION_PCT = 2.0;
 
 const bracketPct = (adjusted: number): number => {
   if (adjusted <= 15000000) return 3.0;
