@@ -14,14 +14,13 @@ const defaultSEO = {
   title: 'Key4U - Внос на автомобили от Канада и САЩ | България',
   description: 'Внос на луксозни автомобили от Канада и САЩ в България. Пълна услуга от заявка до доставка - BMW, Mercedes, Audi, Tesla. Достъпен лукс с местна експертиза.',
   siteUrl: 'https://key4u.bg',
-  ogImage: 'https://key4u.bg/og-image.jpg',
 };
 
 export function SEO({
   title,
   description = defaultSEO.description,
   canonicalUrl,
-  ogImage = defaultSEO.ogImage,
+  ogImage,
   ogType = 'website',
   noIndex = false,
 }: SEOProps) {
@@ -29,7 +28,7 @@ export function SEO({
     ? `${title} | Key4U България`
     : defaultSEO.title;
   
-  const canonical = canonicalUrl || defaultSEO.siteUrl;
+  const canonical = canonicalUrl || `${defaultSEO.siteUrl}${typeof window !== 'undefined' ? window.location.pathname : '/'}`;
 
   return (
     <Helmet>
@@ -47,7 +46,7 @@ export function SEO({
       <meta property="og:site_name" content={defaultSEO.siteName} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={ogImage} />
+      {ogImage && <meta property="og:image" content={ogImage} />}
       <meta property="og:url" content={canonical} />
       <meta property="og:locale" content="bg_BG" />
       
@@ -55,7 +54,7 @@ export function SEO({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
+      {ogImage && <meta name="twitter:image" content={ogImage} />}
       
       {/* Additional SEO */}
       <meta name="geo.region" content="BG" />
@@ -73,8 +72,7 @@ export function LocalBusinessSchema() {
     "name": "Key4U",
     "description": "Внос на луксозни автомобили от Канада и САЩ в България. Пълна услуга от заявка до доставка.",
     "url": "https://key4u.bg",
-    "logo": "https://key4u.bg/logo.png",
-    "image": "https://key4u.bg/og-image.jpg",
+    "logo": "https://key4u.bg/favicon.png",
     "telephone": "+359898252434",
     "email": "key4uimport@gmail.com",
     "address": {
@@ -101,12 +99,7 @@ export function LocalBusinessSchema() {
     "sameAs": [
       "https://www.facebook.com/key4uimport",
       "https://www.instagram.com/key4u.import"
-    ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5",
-      "reviewCount": "100"
-    }
+    ]
   };
 
   return (
