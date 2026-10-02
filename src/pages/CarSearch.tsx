@@ -65,7 +65,7 @@ export default function CarSearch() {
 
       <section className="relative overflow-hidden border-b border-border pb-16 pt-28 md:pb-24 md:pt-40">
         <div
-          className="absolute inset-0 bg-cover bg-[position:70%_center] md:bg-right"
+          className="absolute inset-0 bg-cover bg-[position:70%_25%] md:bg-[position:100%_25%]"
           style={{ backgroundImage: `url(${koreaHero.url})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
