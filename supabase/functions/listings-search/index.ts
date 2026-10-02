@@ -48,9 +48,20 @@ const calculateKoreaImportPrice = (priceKrw: number, isOversize = false) => {
   const carSizeSurcharge = isOversize ? 350 : 0;
   const domTransportCost = isOversize ? 1000 : 900;
   const transport = DEFAULT_SHIPPING + carSizeSurcharge + SEA_SURCHARGE + dutyVatFee(price);
+
+  // Превалутиране EUR -> CAD: 2% от сумата до Ротердам (цена + транспорт).
+  // Влиза в "Цена на автомобил", без отделен ред за клиента.
+  const conversionFee = ((price + transport) * EUR_CAD_CONVERSION_PCT) / 100;
+  const priceWithConversion = price + conversionFee;
+
   const handling = HIDDEN_MARGIN + domTransportCost + commissionForPrice(priceKrw);
 
-  return { price, transport, handling, total: price + transport + handling };
+  return {
+    price: priceWithConversion,
+    transport,
+    handling,
+    total: priceWithConversion + transport + handling,
+  };
 };
 
 const isOversizeVehicle = (v: Record<string, unknown>): boolean => {
