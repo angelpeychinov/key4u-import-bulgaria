@@ -15,6 +15,7 @@ import Process from "./pages/Process";
 import FindCar from "./pages/FindCar";
 import CarSearch from "./pages/CarSearch";
 import FAQ from "./pages/FAQ";
+import Delivered from "./pages/Delivered";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +39,7 @@ const App = () => (
                 <Route path="/process" element={<Process />} />
                 <Route path="/find-car" element={<FindCar />} />
                 <Route path="/car-search" element={<CarSearch />} />
+                <Route path="/delivered" element={<Delivered />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<Contact />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
