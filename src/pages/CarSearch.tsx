@@ -63,7 +63,7 @@ export default function CarSearch() {
         description="Разгледай автомобили от Корея (Encar) с изчислена цена до България. Филтрирай по марка, модел, година, цена и пробег."
       />
 
-      <section className="relative overflow-hidden border-b border-border pb-10 pt-20 md:pb-14 md:pt-28">
+      <section className="relative overflow-hidden border-b border-border pb-16 pt-28 md:pb-24 md:pt-40">
         <div
           className="absolute inset-0 bg-cover bg-[position:70%_center] md:bg-right"
           style={{ backgroundImage: `url(${koreaHero.url})` }}
