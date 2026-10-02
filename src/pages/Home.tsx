@@ -177,13 +177,13 @@ export default function Home() {
       </section>
 
       {/* Transparency Section */}
-      <section className="py-20 bg-card">
+      <section className="py-12 bg-card">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-[43px] md:text-[54px] font-bold text-primary mb-6">
+            <h2 className="text-[30px] md:text-[38px] font-bold text-primary mb-4">
               {t('transparency.title')}
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg text-muted-foreground">
               {t('transparency.subtitle')}
             </p>
           </div>

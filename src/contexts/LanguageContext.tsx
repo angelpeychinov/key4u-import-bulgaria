@@ -237,7 +237,7 @@ const translations = {
     'stats.days': 'дни',
     
     // Transparency
-    'transparency.title': 'Предоставяме 100% от информацията, която притежаваме.',
+    'transparency.title': 'Предоставяме ти 100% от информацията, с която разполагаме',
     'transparency.subtitle': 'Без празни обещания за "здрави" автомобили',
     
     // Mobile.bg
