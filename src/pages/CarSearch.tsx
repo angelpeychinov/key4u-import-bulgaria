@@ -1,4 +1,5 @@
 import { useState } from "react";
+import koreaHero from "@/assets/korea-hero.jpg.asset.json";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -62,10 +63,15 @@ export default function CarSearch() {
         description="Разгледай автомобили от Корея (Encar) с изчислена цена до България. Филтрирай по марка, модел, година, цена и пробег."
       />
 
-      <section className="border-b border-border bg-secondary/50 pb-10 pt-20 md:pb-14 md:pt-28">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-foreground md:text-4xl">Корея</h1>
-          <p className="mt-2 max-w-2xl text-muted-foreground">
+      <section className="relative overflow-hidden border-b border-border pb-16 pt-28 md:pb-24 md:pt-40">
+        <div
+          className="absolute inset-0 bg-cover bg-[position:70%_center] md:bg-right"
+          style={{ backgroundImage: `url(${koreaHero.url})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
+        <div className="container relative mx-auto px-4">
+          <h1 className="text-3xl font-bold text-white md:text-4xl">Корея</h1>
+          <p className="mt-2 max-w-2xl text-white/80">
             Актуални обяви от каталога на Encar с прогнозна цена до България.
           </p>
         </div>
