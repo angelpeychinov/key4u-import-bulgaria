@@ -70,7 +70,7 @@ export default function CarSearch() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
         <div className="container relative mx-auto px-4">
-          <h1 className="text-3xl font-bold text-white md:text-4xl">Корея</h1>
+          <h1 className="text-3xl font-bold text-white md:text-4xl">Южна Корея</h1>
           <p className="mt-2 max-w-2xl text-white/80">
             Актуални обяви от каталога на Encar с прогнозна цена до България.
           </p>
