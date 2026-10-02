@@ -10,6 +10,9 @@ const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
 const DEFAULT_FX_RATE = 1544; // KRW per EUR
 const DEFAULT_SHIPPING = 1720; // EUR, Korea -> Rotterdam base rate
+// Загуба при обмяна EUR -> CAD -> KRW (банката купува/продава на различен курс).
+// Смята се от сумата, изпратена до Ротердам (цена на колата + транспорт), не от крайната цена.
+const EUR_CAD_CONVERSION_PCT = 2.0;
 
 const bracketPct = (adjusted: number): number => {
   if (adjusted <= 15000000) return 3.0;
@@ -45,9 +48,20 @@ const calculateKoreaImportPrice = (priceKrw: number, isOversize = false) => {
   const carSizeSurcharge = isOversize ? 350 : 0;
   const domTransportCost = isOversize ? 1000 : 900;
   const transport = DEFAULT_SHIPPING + carSizeSurcharge + SEA_SURCHARGE + dutyVatFee(price);
+
+  // Превалутиране EUR -> CAD: 2% от сумата до Ротердам (цена + транспорт).
+  // Влиза в "Цена на автомобил", без отделен ред за клиента.
+  const conversionFee = ((price + transport) * EUR_CAD_CONVERSION_PCT) / 100;
+  const priceWithConversion = price + conversionFee;
+
   const handling = HIDDEN_MARGIN + domTransportCost + commissionForPrice(priceKrw);
 
-  return { price, transport, handling, total: price + transport + handling };
+  return {
+    price: priceWithConversion,
+    transport,
+    handling,
+    total: priceWithConversion + transport + handling,
+  };
 };
 
 const isOversizeVehicle = (v: Record<string, unknown>): boolean => {
