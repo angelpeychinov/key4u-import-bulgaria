@@ -22,7 +22,7 @@ export default function Delivered() {
         canonicalUrl="https://key4u.bg/delivered"
       />
 
-      <section className="container mx-auto px-4 pt-12 pb-10 md:pt-16">
+      <section className="container mx-auto px-4 pt-16 pb-10 md:pt-20">
         <p className="text-sm font-medium uppercase tracking-widest text-muted-foreground">Реални доставки</p>
         <h1 className="mt-3 text-4xl font-bold text-foreground md:text-5xl">Внесени автомобили</h1>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
