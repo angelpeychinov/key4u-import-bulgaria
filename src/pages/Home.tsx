@@ -76,7 +76,7 @@ export default function Home() {
           className="absolute inset-0 bg-cover bg-center bg-background md:bg-[length:102%_auto] md:bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background/85" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/70" />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center">
