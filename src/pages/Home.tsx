@@ -73,7 +73,7 @@ export default function Home() {
       />
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center bg-background md:bg-[length:102%_auto] md:bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background/85" />
