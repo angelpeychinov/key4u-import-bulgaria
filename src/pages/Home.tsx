@@ -19,7 +19,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Autoplay from "embla-carousel-autoplay";
-import heroImage from "@/assets/hero-car.jpg";
+import heroAsset from "@/assets/home-hero.jpg.asset.json";
+const heroImage = heroAsset.url;
 import bmwLogo from "@/assets/brands/bmw-logo.png";
 import audiLogo from "@/assets/brands/audi-logo.png";
 import mercedesLogo from "@/assets/brands/mercedes-logo.png";
