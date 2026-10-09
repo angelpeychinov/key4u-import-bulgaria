@@ -19,7 +19,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Autoplay from "embla-carousel-autoplay";
-import heroAsset from "@/assets/home-hero.jpg.asset.json";
+import heroAsset from "@/assets/home-hero-2.jpg.asset.json";
 const heroImage = heroAsset.url;
 import bmwLogo from "@/assets/brands/bmw-logo.png";
 import audiLogo from "@/assets/brands/audi-logo.png";
@@ -80,7 +80,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary">
+          <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary inline-block bg-background/80 backdrop-blur-sm px-6 md:px-10 py-3 md:py-4 rounded-xl shadow-card">
             {language === 'bg' ? (
               <>Внос на автомобили<br />от Канада и САЩ</>
             ) : (
@@ -91,7 +91,7 @@ export default function Home() {
             {t('hero.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="default" size="lg" onClick={() => navigate('/find-car')} className="bg-primary/90">
+            <Button variant="default" size="lg" onClick={() => navigate('/find-car')} className="bg-primary/90 ring-2 ring-background shadow-xl shadow-black/30">
               {t('hero.cta')}
             </Button>
           </div>
