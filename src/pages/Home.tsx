@@ -73,21 +73,22 @@ export default function Home() {
       />
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-background md:bg-[length:102%_auto] md:bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-background"
           style={{ backgroundImage: `url(${heroImage})` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/70" />
+          <div className="absolute inset-0 bg-black/45" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-black/70" />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary inline-block bg-background/80 backdrop-blur-sm px-6 md:px-10 py-3 md:py-4 rounded-xl shadow-card">
+          <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary-foreground drop-shadow-lg">
             {language === 'bg' ? (
               <>Внос на автомобили<br />от Канада и САЩ</>
             ) : (
               <>Car Import<br />from Canada and USA</>
             )}
           </h1>
-          <p className="text-lg md:text-xl text-foreground font-medium mb-12 max-w-2xl mx-auto bg-background/50 backdrop-blur-sm px-3 py-2 rounded-lg inline-block">
+          <p className="text-lg md:text-xl text-primary-foreground/90 font-medium mb-12 max-w-2xl mx-auto drop-shadow-md inline-block">
             {t('hero.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
