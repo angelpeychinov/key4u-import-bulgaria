@@ -82,6 +82,35 @@ All colors MUST be HSL.
   }
 }
 
+/* The homepage header sits directly on the unaltered hero photograph. */
+.navigation-on-photo a,
+.navigation-on-photo button {
+  color: hsl(var(--primary-foreground));
+}
+
+.navigation-on-photo button {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.navigation-on-photo a:hover {
+  color: hsl(var(--primary-foreground) / 0.8);
+}
+
+.navigation-on-photo button:hover {
+  color: hsl(var(--primary-foreground));
+  background-color: hsl(var(--primary-foreground) / 0.12);
+}
+
+.navigation-on-photo button[aria-pressed="true"],
+.navigation-on-photo button.bg-primary {
+  background-color: hsl(var(--primary-foreground) / 0.15);
+}
+
+.navigation-on-photo img {
+  filter: brightness(0) invert(1);
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -2,12 +2,28 @@ import { NavLink } from "@/components/NavLink";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 export const Navigation = () => {
   const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { pathname } = useLocation();
+  const [scrolled, setScrolled] = useState(() => window.scrollY > 24);
+
+  useEffect(() => {
+    const updateScroll = () => setScrolled(window.scrollY > 24);
+    updateScroll();
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    return () => window.removeEventListener("scroll", updateScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  const onPhoto = pathname === "/" && !scrolled && !mobileMenuOpen;
 
   const navLinks = [
     { to: "/", label: t('nav.home') },
@@ -18,7 +34,7 @@ export const Navigation = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
+    <nav className={`fixed top-0 left-0 right-0 z-50 border-b transition-colors duration-300 motion-reduce:transition-none ${onPhoto ? "navigation-on-photo bg-transparent border-transparent" : "bg-background/95 backdrop-blur-sm border-border shadow-sm"}`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -47,7 +63,7 @@ export const Navigation = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button variant="ghost" size="sm" className="text-[#1a472a] hover:text-[#0f2d1a] hover:bg-[#1a472a]/10 font-semibold">
+              <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10 font-semibold">
                 Key4U VIBER
               </Button>
             </a>
@@ -68,17 +84,21 @@ export const Navigation = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             className="md:hidden text-foreground"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </Button>
         </div>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-4">
+          <div id="mobile-navigation" className="md:hidden py-4 space-y-4">
             {navLinks.map((link) => (
               <NavLink
                 key={link.to}
@@ -96,7 +116,7 @@ export const Navigation = () => {
               rel="noopener noreferrer"
               className="block"
             >
-              <Button variant="ghost" size="sm" className="text-[#1a472a] hover:text-[#0f2d1a] hover:bg-[#1a472a]/10 font-semibold w-full justify-start">
+              <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10 font-semibold w-full justify-start">
                 Key4U VIBER
               </Button>
             </a>
