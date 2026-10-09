@@ -91,7 +91,7 @@ export default function Home() {
             {t('hero.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="default" size="lg" onClick={() => navigate('/find-car')} className="bg-primary/90 ring-1 ring-background/70 shadow-lg shadow-black/25">
+            <Button variant="default" size="lg" onClick={() => navigate('/find-car')} className="bg-primary/90 ring-2 ring-background shadow-xl shadow-black/30">
               {t('hero.cta')}
             </Button>
           </div>
