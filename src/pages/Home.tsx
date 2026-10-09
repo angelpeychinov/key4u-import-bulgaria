@@ -80,7 +80,7 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary">
+          <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary inline-block bg-background/80 backdrop-blur-sm px-6 md:px-10 py-3 md:py-4 rounded-xl shadow-card">
             {language === 'bg' ? (
               <>Внос на автомобили<br />от Канада и САЩ</>
             ) : (
