@@ -21,7 +21,7 @@ const PINNED_BRAND_SLUGS = [
   "lexus",
 ];
 
-const PAGE = 1000;
+
 
 type Item = { name: string; slug: string };
 
