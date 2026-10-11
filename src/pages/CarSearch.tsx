@@ -62,8 +62,11 @@ export default function CarSearch() {
   const [unavailable, setUnavailable] = useState(false);
   const [pages, setPages] = useState<number | undefined>(undefined);
 
+  const [applied, setApplied] = useState<SearchFilters>(filters);
+
   const runSearch = async (nextPage: number, append: boolean, active: SearchFilters = filters) => {
     setLoading(true);
+    if (!append) setApplied(active);
     try {
       const { listings: results, unavailable: down, hasNext, page: current, pages: totalPages } =
         await searchListings(active, nextPage, PAGE_SIZE);
@@ -145,7 +148,7 @@ export default function CarSearch() {
                 </p>
               ) : null}
               {hasMore && (
-                <Button variant="outline" size="lg" onClick={() => runSearch(page + 1, true)} disabled={loading}>
+                <Button variant="outline" size="lg" onClick={() => runSearch(page + 1, true, applied)} disabled={loading}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Зареди още
                 </Button>
