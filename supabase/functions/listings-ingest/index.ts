@@ -23,6 +23,7 @@
 // следващите chunk-ове като "продадени").
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { BRAND_MAP, slugify, translateListing } from "../_shared/encarMaps.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -144,7 +145,7 @@ Deno.serve(async (req) => {
     // и тук за всеки случай (напр. ръчна заявка без тази логика).
     const listingsByEncarId = new Map<string, IncomingListing>();
     for (const listing of rawListings) {
-      if (listing.encar_id) listingsByEncarId.set(listing.encar_id, listing);
+      if (listing.encar_id) listingsByEncarId.set(listing.encar_id, translateListing(listing));
     }
     const listings = Array.from(listingsByEncarId.values());
 
