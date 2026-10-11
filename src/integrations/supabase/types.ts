@@ -214,7 +214,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      encar_brands: {
+        Args: never
+        Returns: {
+          name: string
+          slug: string
+        }[]
+      }
+      encar_models: {
+        Args: { _brand: string }
+        Returns: {
+          name: string
+          slug: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

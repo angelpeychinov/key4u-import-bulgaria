@@ -101,13 +101,16 @@ Deno.serve(async (req) => {
       const seenIds: string[] = Array.isArray(body.seen_ids) ? body.seen_ids : [];
       const seenSet = new Set(seenIds);
 
+      // The scraper may send the brand in Korean; match the stored English slug.
+      const brandEn = BRAND_MAP[brand.trim()];
+      const brandSlug = brandEn ? slugify(brandEn) : brand.toLowerCase();
       let staleQuery = supabase
         .from("encar_listings")
         .select("encar_id")
         .eq("status", "active")
-        .eq("brand_slug", brand.toLowerCase());
+        .eq("brand_slug", brandSlug);
       if (model) {
-        staleQuery = staleQuery.eq("model_slug", model.toLowerCase());
+        staleQuery = staleQuery.eq("model_slug", translateListing({ model_name: model }).model_slug ?? model.toLowerCase());
       }
       const { data: activeRows, error: staleError } = await staleQuery;
 
