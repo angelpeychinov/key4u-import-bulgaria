@@ -23,6 +23,7 @@
 // следващите chunk-ове като "продадени").
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { BRAND_MAP, slugify, translateListing } from "../_shared/encarMaps.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -100,13 +101,16 @@ Deno.serve(async (req) => {
       const seenIds: string[] = Array.isArray(body.seen_ids) ? body.seen_ids : [];
       const seenSet = new Set(seenIds);
 
+      // The scraper may send the brand in Korean; match the stored English slug.
+      const brandEn = BRAND_MAP[brand.trim()];
+      const brandSlug = brandEn ? slugify(brandEn) : brand.toLowerCase();
       let staleQuery = supabase
         .from("encar_listings")
         .select("encar_id")
         .eq("status", "active")
-        .eq("brand_slug", brand.toLowerCase());
+        .eq("brand_slug", brandSlug);
       if (model) {
-        staleQuery = staleQuery.eq("model_slug", model.toLowerCase());
+        staleQuery = staleQuery.eq("model_slug", translateListing({ model_name: model }).model_slug ?? model.toLowerCase());
       }
       const { data: activeRows, error: staleError } = await staleQuery;
 
@@ -144,7 +148,7 @@ Deno.serve(async (req) => {
     // и тук за всеки случай (напр. ръчна заявка без тази логика).
     const listingsByEncarId = new Map<string, IncomingListing>();
     for (const listing of rawListings) {
-      if (listing.encar_id) listingsByEncarId.set(listing.encar_id, listing);
+      if (listing.encar_id) listingsByEncarId.set(listing.encar_id, translateListing(listing));
     }
     const listings = Array.from(listingsByEncarId.values());
 

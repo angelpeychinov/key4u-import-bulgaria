@@ -21,7 +21,7 @@ const PINNED_BRAND_SLUGS = [
   "lexus",
 ];
 
-const PAGE = 1000;
+
 
 type Item = { name: string; slug: string };
 
@@ -59,32 +59,22 @@ Deno.serve(async (req) => {
     const isBrands = kind === "brands";
     if (!isBrands && kind !== "models") return json({ results: [] });
 
-    const columns = isBrands ? "brand_name, brand_slug" : "model_name, model_slug";
-    let query = supabase
-      .from("encar_listings")
-      .select(columns)
-      .eq("status", "active")
-      .limit(PAGE);
-
-    if (!isBrands) {
+    let result;
+    if (isBrands) {
+      result = await supabase.rpc("encar_brands");
+    } else {
       const brand = incoming.get("brand")?.trim();
       if (!brand) return json({ results: [] });
-      query = query.eq("brand_slug", brand);
+      result = await supabase.rpc("encar_models", { _brand: brand });
     }
 
-    const { data, error } = await query;
+    const { data, error } = result;
     if (error) {
       console.error("taxonomy query failed", error);
       return json({ results: [], unavailable: true });
     }
 
-    const rows = (data ?? []) as unknown as Record<string, unknown>[];
-    const items = dedupe(
-      rows.map((r) => ({
-        name: isBrands ? r.brand_name : r.model_name,
-        slug: isBrands ? r.brand_slug : r.model_slug,
-      })),
-    );
+    const items = dedupe((data ?? []) as { name: unknown; slug: unknown }[]);
 
     if (!isBrands) return json({ results: items });
 
