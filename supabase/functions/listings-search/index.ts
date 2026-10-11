@@ -64,6 +64,20 @@ const calculateKoreaImportPrice = (priceKrw: number, isOversize = false) => {
   };
 };
 
+// Smallest KRW price whose (non-oversize) final total reaches `eur`.
+// The total has tiny dips at fee-bracket edges, so we scan upward instead of
+// binary searching: everything below the result is guaranteed to cost < eur.
+const firstKrwReaching = (eur: number): number => {
+  const total = (k: number) => calculateKoreaImportPrice(k).total;
+  if (total(0) >= eur) return 0;
+  const STEP = 5000;
+  let k = 0;
+  while (total(k + STEP) < eur && k < 5_000_000_000) k += STEP;
+  // refine inside (k, k+STEP]
+  while (total(k + 1) < eur) k += 1;
+  return k + 1;
+};
+
 const isOversizeVehicle = (v: Record<string, unknown>): boolean => {
   const body = String(v?.body_type ?? "").toLowerCase();
   const cc = Number(v?.engine_cc ?? 0);
@@ -132,11 +146,11 @@ Deno.serve(async (req) => {
     const mileageMax = numParam(incoming, "mileage_max");
     if (mileageMax) query = query.lte("mileage", mileageMax);
 
-    // Price filters arrive in EUR; the catalog stores the original KRW price.
+    // Price filters arrive in EUR as the final price to Bulgaria; translate to KRW bounds.
     const priceFrom = numParam(incoming, "price_from");
-    if (priceFrom) query = query.gte("price_original", Math.round(priceFrom * DEFAULT_FX_RATE));
+    if (priceFrom) query = query.gte("price_original", firstKrwReaching(priceFrom));
     const priceTo = numParam(incoming, "price_to");
-    if (priceTo) query = query.lte("price_original", Math.round(priceTo * DEFAULT_FX_RATE));
+    if (priceTo) query = query.lte("price_original", firstKrwReaching(priceTo + 0.000001) - 1);
 
     const { data, error, count } = await query
       .order("last_seen_at", { ascending: false })
