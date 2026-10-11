@@ -75,22 +75,19 @@ const FUEL_OPTIONS: [string, string][] = [
   ["gasoline", "Бензин"],
   ["diesel", "Дизел"],
   ["hybrid", "Хибрид"],
-  ["plug_hybrid", "Плъг-ин хибрид"],
   ["electric", "Електрически"],
-  ["hydrogen", "Водород"],
-  ["cng", "Метан (CNG)"],
-  ["lpg", "Газ (LPG)"],
-  ["other", "Друго"],
+  ["gasoline+lpg", "Газ (LPG)"],
 ];
 
 const TRANSMISSION_OPTIONS: [string, string][] = [
   ["manual", "Ръчна"],
   ["auto", "Автоматична"],
   ["cvt", "CVT"],
-  ["semi_auto", "Полуавтоматична"],
-  ["dct", "DCT"],
   ["other", "Друго"],
 ];
+
+// Hidden until the scraper fills body_type (currently NULL everywhere).
+const SHOW_BODY_FILTER = false;
 
 const BODY_OPTIONS: [string, string][] = [
   ["sedan", "Седан"],
@@ -133,7 +130,7 @@ const orderBrands = (items: TaxonomyItem[]) => {
 
 export function CatalogFilters({ filters, onChange, onApply, onReset, loading }: Props) {
   const [open, setOpen] = useState(false);
-  const [brands, setBrands] = useState<TaxonomyItem[]>(FALLBACK_BRANDS);
+  const [brands, setBrands] = useState<TaxonomyItem[]>([]);
   const [models, setModels] = useState<TaxonomyItem[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
 
@@ -141,15 +138,14 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
     let active = true;
     fetchTaxonomy("brands")
       .then((items) => {
-        if (!active || items.length === 0) return;
-        // Merge upstream brands with the curated fallback so pinned brands are always present.
-        const merged = new Map(items.map((b) => [b.slug.toLowerCase(), b]));
-        for (const b of FALLBACK_BRANDS) {
-          if (!merged.has(b.slug.toLowerCase())) merged.set(b.slug.toLowerCase(), b);
-        }
-        setBrands([...merged.values()]);
+        if (!active) return;
+        // Only brands that actually have listings; fallback list only if the API returns nothing.
+        setBrands(items.length > 0 ? items : FALLBACK_BRANDS);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        if (active) setBrands(FALLBACK_BRANDS);
+      });
     return () => {
       active = false;
     };
@@ -312,7 +308,7 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
             value={filters.price_to ?? ""}
             onChange={(e) => set("price_to", e.target.value)}
           />
-          <p className="text-xs text-muted-foreground">Филтрира по каталожна цена в EUR</p>
+          <p className="text-xs text-muted-foreground">Филтрира по крайната цена до България</p>
         </div>
 
         <div className="space-y-2">
@@ -355,6 +351,7 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
           </Select>
         </div>
 
+        {SHOW_BODY_FILTER && (
         <div className="space-y-2">
           <Label>Тип купе</Label>
           <Select
@@ -374,6 +371,7 @@ export function CatalogFilters({ filters, onChange, onApply, onReset, loading }:
             </SelectContent>
           </Select>
         </div>
+        )}
 
         <div className="flex items-center gap-2 sm:col-span-2 lg:col-span-1">
           <Checkbox
