@@ -23,10 +23,10 @@ const bracketPct = (adjusted: number): number => {
 };
 
 const commissionForPrice = (krw: number): number => {
-  if (krw <= 20000000) return 800;
+  if (krw <= 20000000) return 900;
   if (krw <= 35000000) return 1000;
-  if (krw <= 50000000) return 1100;
-  return 1150;
+  if (krw <= 50000000) return 1300;
+  return 1500;
 };
 
 const dutyVatFee = (priceEur: number): number => {
