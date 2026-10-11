@@ -89,7 +89,10 @@ const isOversizeVehicle = (v: Record<string, unknown>): boolean => {
 const numParam = (params: URLSearchParams, key: string): number | undefined => {
   const raw = params.get(key);
   if (!raw) return undefined;
-  const n = Number(raw.replace(/[^\d]/g, ""));
+  const trimmed = raw.replace(/\s/g, "");
+  // "2020.5" / "30000,50" -> integer part; "30.000" / "50 000" -> thousand separators stripped.
+  const decimal = trimmed.match(/^(\d+)[.,]\d{1,2}$/);
+  const n = Number(decimal ? decimal[1] : trimmed.replace(/[^\d]/g, ""));
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : undefined;
 };
 

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import koreaHero from "@/assets/korea-hero.jpg.asset.json";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
@@ -25,8 +26,33 @@ const emptyFilters: SearchFilters = {
   no_accident: false,
 };
 
+const FILTER_KEYS = Object.keys(emptyFilters) as (keyof SearchFilters)[];
+
+const filtersFromParams = (params: URLSearchParams): SearchFilters => {
+  const next: SearchFilters = { ...emptyFilters };
+  for (const key of FILTER_KEYS) {
+    const value = params.get(key);
+    if (value === null) continue;
+    if (key === "no_accident") next.no_accident = value === "1" || value === "true";
+    else (next as Record<string, unknown>)[key] = value.slice(0, 60);
+  }
+  return next;
+};
+
+const filtersToParams = (filters: SearchFilters): URLSearchParams => {
+  const params = new URLSearchParams();
+  for (const key of FILTER_KEYS) {
+    const value = filters[key];
+    if (key === "no_accident") {
+      if (value === true) params.set(key, "1");
+    } else if (typeof value === "string" && value.trim()) params.set(key, value.trim());
+  }
+  return params;
+};
+
 export default function CarSearch() {
-  const [filters, setFilters] = useState<SearchFilters>(emptyFilters);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState<SearchFilters>(() => filtersFromParams(searchParams));
   const [listings, setListings] = useState<Listing[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -36,11 +62,11 @@ export default function CarSearch() {
   const [unavailable, setUnavailable] = useState(false);
   const [pages, setPages] = useState<number | undefined>(undefined);
 
-  const runSearch = async (nextPage: number, append: boolean) => {
+  const runSearch = async (nextPage: number, append: boolean, active: SearchFilters = filters) => {
     setLoading(true);
     try {
       const { listings: results, unavailable: down, hasNext, page: current, pages: totalPages } =
-        await searchListings(filters, nextPage, PAGE_SIZE);
+        await searchListings(active, nextPage, PAGE_SIZE);
       setListings((prev) => (append ? [...prev, ...results] : results));
       setPage(current ?? nextPage);
       setPages(totalPages);
@@ -54,6 +80,23 @@ export default function CarSearch() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Load results on open, using any filters present in the URL.
+  useEffect(() => {
+    runSearch(1, false, filtersFromParams(searchParams));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const applyFilters = () => {
+    setSearchParams(filtersToParams(filters), { replace: true });
+    runSearch(1, false);
+  };
+
+  const resetFilters = () => {
+    setFilters(emptyFilters);
+    setSearchParams(new URLSearchParams(), { replace: true });
+    runSearch(1, false, emptyFilters);
   };
 
   return (
@@ -82,8 +125,8 @@ export default function CarSearch() {
         <CatalogFilters
           filters={filters}
           onChange={setFilters}
-          onApply={() => runSearch(1, false)}
-          onReset={() => setFilters(emptyFilters)}
+          onApply={applyFilters}
+          onReset={resetFilters}
           loading={loading}
         />
 
