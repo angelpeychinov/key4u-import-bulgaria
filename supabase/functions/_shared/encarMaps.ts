@@ -7,6 +7,10 @@ export const BRAND_MAP: Record<string, string> = {
   "포드": "Ford", "푸조": "Peugeot", "크라이슬러": "Chrysler", "지프": "Jeep", "인피니티": "Infiniti",
   "혼다": "Honda", "닛산": "Nissan", "스바루": "Subaru", "미쯔비시": "Mitsubishi", "스마트": "Smart",
   "현대": "Hyundai", "기아": "Kia", "BMW": "BMW",
+  "제네시스": "Genesis", "쉐보레(GM대우)": "Chevrolet", "르노코리아(삼성)": "Renault Korea",
+  "KG모빌리티(쌍용)": "KG Mobility", "테슬라": "Tesla", "링컨": "Lincoln", "폴스타": "Polestar",
+  "마쯔다": "Mazda", "르노": "Renault", "시트로엥": "Citroen", "알파로메오": "Alfa Romeo",
+  "피아트": "Fiat", "닷지": "Dodge",
 };
 
 export const REGION_MAP: Record<string, string> = {
@@ -19,10 +23,11 @@ export const REGION_MAP: Record<string, string> = {
 export const FUEL_MAP: Record<string, string> = {
   "가솔린": "gasoline", "디젤": "diesel", "전기": "electric", "가솔린+전기": "hybrid",
   "디젤+전기": "hybrid", "가솔린+LPG": "gasoline+lpg", "LPG": "lpg", "수소": "hydrogen",
+  "LPG+전기": "hybrid", "CNG": "cng",
 };
 
 export const TRANSMISSION_MAP: Record<string, string> = {
-  "오토": "auto", "수동": "manual", "기타": "other", "CVT": "cvt",
+  "오토": "auto", "수동": "manual", "기타": "other", "CVT": "cvt", "세미오토": "semi_auto",
 };
 
 // Word-level replacements for model/trim text.

@@ -26,6 +26,7 @@ const PINNED_BRAND_SLUGS = [
   "toyota",
   "hyundai",
   "kia",
+  "genesis",
   "mazda",
   "porsche",
   "lexus",
