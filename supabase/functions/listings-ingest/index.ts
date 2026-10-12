@@ -109,6 +109,12 @@ Deno.serve(async (req) => {
         .select("encar_id")
         .eq("status", "active")
         .eq("brand_slug", brandSlug);
+      // Several Encar brands can share one English slug (쉐보레 vs 쉐보레(GM대우)).
+      // When the scraper sends the original Korean name, also match the raw Encar
+      // manufacturer so finalizing one never marks the other's cars as sold.
+      if (/[\u3131-\uD79D]/.test(brand)) {
+        staleQuery = staleQuery.eq("raw_data->>Manufacturer", brand.trim());
+      }
       if (model) {
         staleQuery = staleQuery.eq("model_slug", translateListing({ model_name: model }).model_slug ?? model.toLowerCase());
       }
