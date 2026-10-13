@@ -16,7 +16,8 @@ import FindCar from "./pages/FindCar";
 // Korea catalog paused — restore import + route below when re-enabling.
 // import CarSearch from "./pages/CarSearch";
 import FAQ from "./pages/FAQ";
-import Delivered from "./pages/Delivered";
+// Delivered cars page paused — restore import + route below when re-enabling.
+// import Delivered from "./pages/Delivered";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 
@@ -41,7 +42,8 @@ const App = () => (
                 <Route path="/find-car" element={<FindCar />} />
                 {/* Korea catalog paused — restore route when re-enabling. */}
                 {/* <Route path="/car-search" element={<CarSearch />} /> */}
-                <Route path="/delivered" element={<Delivered />} />
+                {/* Delivered cars page paused — restore route when re-enabling. */}
+                {/* <Route path="/delivered" element={<Delivered />} /> */}
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<Contact />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
