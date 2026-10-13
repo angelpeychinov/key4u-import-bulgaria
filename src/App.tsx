@@ -13,7 +13,8 @@ import { LocalBusinessSchema, CarImportServiceSchema } from "@/components/SEO";
 import Home from "./pages/Home";
 import Process from "./pages/Process";
 import FindCar from "./pages/FindCar";
-import CarSearch from "./pages/CarSearch";
+// Korea catalog paused — restore import + route below when re-enabling.
+// import CarSearch from "./pages/CarSearch";
 import FAQ from "./pages/FAQ";
 import Delivered from "./pages/Delivered";
 import Contact from "./pages/Contact";
@@ -38,7 +39,8 @@ const App = () => (
                 <Route path="/" element={<Home />} />
                 <Route path="/process" element={<Process />} />
                 <Route path="/find-car" element={<FindCar />} />
-                <Route path="/car-search" element={<CarSearch />} />
+                {/* Korea catalog paused — restore route when re-enabling. */}
+                {/* <Route path="/car-search" element={<CarSearch />} /> */}
                 <Route path="/delivered" element={<Delivered />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<Contact />} />

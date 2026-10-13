@@ -29,7 +29,6 @@ export const Navigation = () => {
     { to: "/", label: t('nav.home') },
     { to: "/process", label: t('nav.process') },
     { to: "/find-car", label: t('nav.findCar') },
-    { to: "/car-search", label: t('nav.carSearch') },
     { to: "/delivered", label: t('nav.delivered') },
   ];
 
