@@ -26,6 +26,18 @@ export const PhotoLightbox = ({ photos, index, title, onClose, onIndexChange }: 
     setLoaded(false);
   }, [index]);
 
+  // Preload next/previous originals while viewing
+  useEffect(() => {
+    if (!open || index === null || photos.length < 2) return;
+    [index - 1, index + 1].forEach((i) => {
+      const src = photos[(i + photos.length) % photos.length];
+      if (src) {
+        const img = new Image();
+        img.src = src;
+      }
+    });
+  }, [open, index, photos]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
