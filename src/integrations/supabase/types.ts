@@ -131,6 +131,7 @@ export type Database = {
           error: string | null
           finished_at: string | null
           id: string
+          kind: string
           marked_sold: number
           pages: number
           started_at: string
@@ -143,6 +144,7 @@ export type Database = {
           error?: string | null
           finished_at?: string | null
           id?: string
+          kind?: string
           marked_sold?: number
           pages?: number
           started_at?: string
@@ -155,6 +157,7 @@ export type Database = {
           error?: string | null
           finished_at?: string | null
           id?: string
+          kind?: string
           marked_sold?: number
           pages?: number
           started_at?: string
@@ -336,6 +339,7 @@ export type Database = {
           error: string
           finished_at: string
           id: string
+          kind: string
           marked_sold: number
           pages: number
           progress_pct: number
