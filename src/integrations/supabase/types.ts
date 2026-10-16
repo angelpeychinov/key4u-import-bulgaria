@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      encar_listing_details: {
+        Row: {
+          encar_id: string
+          error: string | null
+          fetched_at: string
+          inspection: Json | null
+          record: Json | null
+          vehicle: Json | null
+        }
+        Insert: {
+          encar_id: string
+          error?: string | null
+          fetched_at?: string
+          inspection?: Json | null
+          record?: Json | null
+          vehicle?: Json | null
+        }
+        Update: {
+          encar_id?: string
+          error?: string | null
+          fetched_at?: string
+          inspection?: Json | null
+          record?: Json | null
+          vehicle?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "encar_listing_details_encar_id_fkey"
+            columns: ["encar_id"]
+            isOneToOne: true
+            referencedRelation: "encar_listings"
+            referencedColumns: ["encar_id"]
+          },
+        ]
+      }
       encar_listings: {
         Row: {
           body_type: string | null
