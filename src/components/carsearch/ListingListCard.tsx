@@ -116,9 +116,13 @@ export const ListingListCard = ({ listing, onOpen, priority = false }: Props) =>
       {/* Price */}
       <div className="flex shrink-0 flex-col justify-center gap-1 border-t border-border/60 p-4 sm:w-52 sm:border-l sm:border-t-0">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Цена до България</p>
-        <p className="text-xl font-bold text-[#183e32]">{formatApproxEur(listing.importPrice?.total)}</p>
-        {listing.importPrice && (
-          <p className="text-xs text-muted-foreground">Автомобил: {formatEur(listing.importPrice.price)}</p>
+        {listing.importPrice ? (
+          <>
+            <p className="text-xl font-bold text-[#183e32]">{formatApproxEur(listing.importPrice.total)}</p>
+            <p className="text-xs text-muted-foreground">Автомобил: {formatEur(listing.importPrice.price)}</p>
+          </>
+        ) : (
+          <p className="text-xl font-bold text-[#183e32]">Цена при запитване</p>
         )}
         <Button
           size="sm"
