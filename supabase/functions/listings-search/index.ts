@@ -8,12 +8,41 @@ const corsHeaders = {
 
 const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
+// Live rates come from the pricing_config table (cached 5 min); these are
+// fallbacks if the table is unreachable. fx = eur_to_cad * cad_to_krw already
+// includes the exchange loss, so there is NO separate EUR->CAD conversion fee.
 // calibrated against Key4U's Rotterdam calculator
-const DEFAULT_FX_RATE = 1544; // KRW per EUR
-const DEFAULT_SHIPPING = 1720; // EUR, Korea -> Rotterdam base rate
-// Загуба при обмяна EUR -> CAD -> KRW (банката купува/продава на различен курс).
-// Смята се от сумата, изпратена до Ротердам (цена на колата + транспорт), не от крайната цена.
-const EUR_CAD_CONVERSION_PCT = 2.0;
+const FALLBACK_FX = 1.5557 * 921.72; // KRW per EUR
+const FALLBACK_SEA_BASE = 1917; // EUR, Korea -> Rotterdam base rate
+const CONFIG_TTL_MS = 5 * 60 * 1000;
+
+interface PricingConfig {
+  fx: number;
+  seaBase: number;
+}
+
+const FALLBACK_CFG: PricingConfig = { fx: FALLBACK_FX, seaBase: FALLBACK_SEA_BASE };
+let pricingCache: { cfg: PricingConfig; at: number } | null = null;
+
+const loadPricingConfig = async (
+  supabase: ReturnType<typeof createClient>,
+): Promise<PricingConfig> => {
+  if (pricingCache && Date.now() - pricingCache.at < CONFIG_TTL_MS) return pricingCache.cfg;
+  const cfg: PricingConfig = { ...FALLBACK_CFG };
+  try {
+    const { data } = await supabase.from("pricing_config").select("key,value");
+    const map = new Map((data ?? []).map((r: { key: string; value: number }) => [r.key, Number(r.value)]));
+    const eurToCad = map.get("eur_to_cad");
+    const cadToKrw = map.get("cad_to_krw");
+    const seaBase = map.get("sea_base_eur");
+    if (eurToCad && cadToKrw) cfg.fx = eurToCad * cadToKrw;
+    if (seaBase) cfg.seaBase = seaBase;
+  } catch (e) {
+    console.error("pricing_config load failed, using fallbacks", e);
+  }
+  pricingCache = { cfg, at: Date.now() };
+  return cfg;
+};
 
 const bracketPct = (adjusted: number): number => {
   if (adjusted <= 15000000) return 3.0;
