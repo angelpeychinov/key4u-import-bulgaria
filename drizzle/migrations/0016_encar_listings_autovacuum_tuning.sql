@@ -1,0 +1,1 @@
+alter table public.encar_listings set (autovacuum_vacuum_scale_factor = 0.02, autovacuum_analyze_scale_factor = 0.02);
