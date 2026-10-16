@@ -6,22 +6,27 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
 };
 
-const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
 // Live rates come from the pricing_config table (cached 5 min); these are
 // fallbacks. fx = eur_to_cad * cad_to_krw already includes the exchange loss,
 // so there is NO separate EUR->CAD conversion fee.
 // calibrated against Key4U's Rotterdam calculator
 const FALLBACK_FX = 1.5557 * 921.72; // KRW per EUR
-const FALLBACK_SEA_BASE = 1917;
+const FALLBACK_CAR_MARKUP_PCT = 1.75;
+const FALLBACK_ROTTERDAM_FIXED = 2416;
 const CONFIG_TTL_MS = 5 * 60 * 1000;
 
 interface PricingConfig {
   fx: number;
-  seaBase: number;
+  carMarkupPct: number;
+  rotterdamFixed: number;
 }
 
-const FALLBACK_CFG: PricingConfig = { fx: FALLBACK_FX, seaBase: FALLBACK_SEA_BASE };
+const FALLBACK_CFG: PricingConfig = {
+  fx: FALLBACK_FX,
+  carMarkupPct: FALLBACK_CAR_MARKUP_PCT,
+  rotterdamFixed: FALLBACK_ROTTERDAM_FIXED,
+};
 let pricingCache: { cfg: PricingConfig; at: number } | null = null;
 
 const loadPricingConfig = async (
@@ -34,22 +39,16 @@ const loadPricingConfig = async (
     const map = new Map((data ?? []).map((r: { key: string; value: number }) => [r.key, Number(r.value)]));
     const eurToCad = map.get("eur_to_cad");
     const cadToKrw = map.get("cad_to_krw");
-    const seaBase = map.get("sea_base_eur");
+    const carMarkupPct = map.get("car_markup_pct");
+    const rotterdamFixed = map.get("rotterdam_fixed_eur");
     if (eurToCad && cadToKrw) cfg.fx = eurToCad * cadToKrw;
-    if (seaBase) cfg.seaBase = seaBase;
+    if (carMarkupPct) cfg.carMarkupPct = carMarkupPct;
+    if (rotterdamFixed) cfg.rotterdamFixed = rotterdamFixed;
   } catch (e) {
     console.error("pricing_config load failed, using fallbacks", e);
   }
   pricingCache = { cfg, at: Date.now() };
   return cfg;
-};
-
-const bracketPct = (adjusted: number): number => {
-  if (adjusted <= 15000000) return 3.0;
-  if (adjusted <= 30000000) return 2.5;
-  if (adjusted <= 45000000) return 2.0;
-  if (adjusted <= 75000000) return 1.5;
-  return 1.0;
 };
 
 const commissionForPrice = (krw: number): number => {
@@ -69,13 +68,14 @@ const dutyVatFee = (priceEur: number): number => {
   return 2500;
 };
 
+// Same calibrated formula as listings-search (non-oversize), used to translate
+// EUR price filters into KRW bounds.
 const calculateKoreaImportPrice = (priceKrw: number, cfg: PricingConfig = FALLBACK_CFG) => {
-  const adjusted = priceKrw * 0.909;
-  const bracketFee = (adjusted * bracketPct(adjusted)) / 100;
-  const price = (adjusted + bracketFee + 440000 + 250000) / cfg.fx;
-  const transport = cfg.seaBase + SEA_SURCHARGE + dutyVatFee(price);
-  const handling = HIDDEN_MARGIN + 900 + commissionForPrice(priceKrw);
-  return price + transport + handling;
+  const carEur = ((priceKrw / 1.1) * (1 + cfg.carMarkupPct / 100)) / cfg.fx;
+  const rotterdam = carEur + cfg.rotterdamFixed;
+  const transport = dutyVatFee(carEur) + 900;
+  const handling = HIDDEN_MARGIN + commissionForPrice(priceKrw);
+  return rotterdam + transport + handling;
 };
 
 const firstKrwReaching = (eur: number, cfg: PricingConfig = FALLBACK_CFG): number => {

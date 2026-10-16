@@ -6,22 +6,27 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 
-const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
 // Live rates come from the pricing_config table (cached 5 min); these are
 // fallbacks if the table is unreachable. fx = eur_to_cad * cad_to_krw already
 // includes the exchange loss, so there is NO separate EUR->CAD conversion fee.
 // calibrated against Key4U's Rotterdam calculator
 const FALLBACK_FX = 1.5557 * 921.72; // KRW per EUR
-const FALLBACK_SEA_BASE = 1917; // EUR, Korea -> Rotterdam base rate
+const FALLBACK_CAR_MARKUP_PCT = 1.75;
+const FALLBACK_ROTTERDAM_FIXED = 2416; // EUR, fixed costs to Rotterdam
 const CONFIG_TTL_MS = 5 * 60 * 1000;
 
 interface PricingConfig {
   fx: number;
-  seaBase: number;
+  carMarkupPct: number;
+  rotterdamFixed: number;
 }
 
-const FALLBACK_CFG: PricingConfig = { fx: FALLBACK_FX, seaBase: FALLBACK_SEA_BASE };
+const FALLBACK_CFG: PricingConfig = {
+  fx: FALLBACK_FX,
+  carMarkupPct: FALLBACK_CAR_MARKUP_PCT,
+  rotterdamFixed: FALLBACK_ROTTERDAM_FIXED,
+};
 let pricingCache: { cfg: PricingConfig; at: number } | null = null;
 
 const loadPricingConfig = async (
@@ -34,22 +39,16 @@ const loadPricingConfig = async (
     const map = new Map((data ?? []).map((r: { key: string; value: number }) => [r.key, Number(r.value)]));
     const eurToCad = map.get("eur_to_cad");
     const cadToKrw = map.get("cad_to_krw");
-    const seaBase = map.get("sea_base_eur");
+    const carMarkupPct = map.get("car_markup_pct");
+    const rotterdamFixed = map.get("rotterdam_fixed_eur");
     if (eurToCad && cadToKrw) cfg.fx = eurToCad * cadToKrw;
-    if (seaBase) cfg.seaBase = seaBase;
+    if (carMarkupPct) cfg.carMarkupPct = carMarkupPct;
+    if (rotterdamFixed) cfg.rotterdamFixed = rotterdamFixed;
   } catch (e) {
     console.error("pricing_config load failed, using fallbacks", e);
   }
   pricingCache = { cfg, at: Date.now() };
   return cfg;
-};
-
-const bracketPct = (adjusted: number): number => {
-  if (adjusted <= 15000000) return 3.0;
-  if (adjusted <= 30000000) return 2.5;
-  if (adjusted <= 45000000) return 2.0;
-  if (adjusted <= 75000000) return 1.5;
-  return 1.0;
 };
 
 const commissionForPrice = (krw: number): number => {
@@ -69,25 +68,23 @@ const dutyVatFee = (priceEur: number): number => {
   return 2500;
 };
 
+// Calibrated against Key4U's real Rotterdam calculator (8 data points, ±40 €).
 const calculateKoreaImportPrice = (priceKrw: number, isOversize = false, cfg: PricingConfig = FALLBACK_CFG) => {
-  const adjusted = priceKrw * 0.909;
-  const bracketFee = (adjusted * bracketPct(adjusted)) / 100;
-  const flatFees = 440000 + 250000;
-  // "Цена на автомобил" — цена до Ротердам в EUR (fx вече включва курсовата разлика).
-  const price = (adjusted + bracketFee + flatFees) / cfg.fx;
+  // Цена на колата в EUR: без корейско ДДС (/1.1), с нашата надценка, по курс fx.
+  const carEur = ((priceKrw / 1.1) * (1 + cfg.carMarkupPct / 100)) / cfg.fx;
 
-  const carSizeSurcharge = isOversize ? 350 : 0;
-  const domTransportCost = isOversize ? 1150 : 900;
-  // "Транспорт до България (вкл. мито и ДДС)"
-  const transport = cfg.seaBase + SEA_SURCHARGE + carSizeSurcharge + dutyVatFee(price);
-  // "Разходи по закупуване и разтоварване"
-  const handling = HIDDEN_MARGIN + domTransportCost + commissionForPrice(priceKrw);
+  // "Цена до Ротердам"
+  const rotterdam = carEur + cfg.rotterdamFixed + (isOversize ? 350 : 0);
+  const dutyVat = dutyVatFee(carEur);
+  const domTransport = isOversize ? 1150 : 900; // Rotterdam -> Bulgaria
+  // "Комисионна и обработка"
+  const handling = HIDDEN_MARGIN + commissionForPrice(priceKrw);
 
   return {
-    price,
-    transport,
+    price: rotterdam,
+    transport: dutyVat + domTransport, // "Транспорт до България + мито и ДДС"
     handling,
-    total: price + transport + handling,
+    total: rotterdam + dutyVat + domTransport + handling,
   };
 };
 
