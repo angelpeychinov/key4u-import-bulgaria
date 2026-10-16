@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { isEmptySavedSearch } from "./savedSearch";
 
 export interface ImportPrice {
   price: number;
@@ -240,6 +241,9 @@ export const searchListings = async (
   page: number,
   limit = 20,
 ): Promise<SearchResult> => {
+  if (isEmptySavedSearch(filters)) {
+    return { listings: [], count: 0, page, pages: 0, hasNext: false };
+  }
   const params = filtersToParams(filters);
   params.set("page", String(page));
   params.set("limit", String(limit));
