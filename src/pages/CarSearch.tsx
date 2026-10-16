@@ -275,8 +275,8 @@ export default function CarSearch() {
             ) : listings.length > 0 ? (
               <>
                 <div className="space-y-4">
-                  {listings.map((listing) => (
-                    <ListingListCard key={listing.encarId ?? listing.id} listing={listing} onOpen={setSelected} />
+                  {listings.map((listing, i) => (
+                    <ListingListCard key={listing.encarId ?? listing.id} listing={listing} onOpen={setSelected} priority={i < 2} />
                   ))}
                 </div>
                 <PaginationBar page={page} pages={pages} onPage={goToPage} />
