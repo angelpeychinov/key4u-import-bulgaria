@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { isEmptySavedSearch } from "./savedSearch";
+import { isEmptySavedSearch } from "../src/lib/savedSearch";
 
 test("zero favorites must not query the full catalog", () => {
   expect(isEmptySavedSearch({ ids: "" })).toBe(true);
