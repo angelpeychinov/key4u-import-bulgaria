@@ -1,0 +1,1 @@
+ALTER TABLE public.encar_sync_runs ADD COLUMN IF NOT EXISTS build_stack jsonb;
