@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Car, Shield, FileCheck, Search, Clock, ArrowRight, Phone } from "lucide-react";
-import { AnimatedCounter } from "@/components/AnimatedCounter";
 import {
   Carousel,
   CarouselContent,
@@ -119,61 +118,6 @@ export default function Home() {
       </section>
 
 
-      {/* Stats Section */}
-      <section className="py-24 bg-primary relative overflow-hidden">
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-              {t('stats.title')}
-            </h2>
-            <p className="text-lg text-primary-foreground/80">
-              {t('stats.subtitle')}
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Stat 1 - Cars Imported */}
-            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
-              <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
-                <AnimatedCounter end={100} suffix="+" />
-              </div>
-              <p className="text-primary-foreground/90 text-lg font-medium">
-                {t('stats.carsImported')}
-              </p>
-              <p className="text-primary-foreground/70 text-sm mt-2">
-                {t('stats.inLastYear')}
-              </p>
-            </div>
-            
-            {/* Stat 2 - Happy Clients */}
-            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
-              <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
-                <AnimatedCounter end={100} suffix="%" />
-              </div>
-              <p className="text-primary-foreground/90 text-lg font-medium">
-                {t('stats.happyClients')}
-              </p>
-              <p className="text-primary-foreground/70 text-sm mt-2">
-                {t('stats.recommendUs')}
-              </p>
-            </div>
-            
-            {/* Stat 3 - Delivery Time */}
-            <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-2xl p-8 text-center border border-primary-foreground/20 hover:bg-primary-foreground/15 transition-all duration-300 group">
-              <div className="text-5xl md:text-6xl font-bold text-primary-foreground mb-3">
-                <AnimatedCounter end={60} suffix={` ${t('stats.days')}`} />
-              </div>
-              <p className="text-primary-foreground/90 text-lg font-medium">
-                {t('stats.averageTime')}
-              </p>
-              <p className="text-primary-foreground/70 text-sm mt-2">
-                {t('stats.forDelivery')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Transparency Section */}
       <section className="py-12 bg-card">
