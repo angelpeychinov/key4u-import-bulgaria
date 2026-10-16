@@ -384,6 +384,24 @@ export type Database = {
           slug: string
         }[]
       }
+      encar_facets: {
+        Args: {
+          _body_types?: string[]
+          _brand?: string
+          _fuels?: string[]
+          _mileage_max?: number
+          _mileage_min?: number
+          _model?: string
+          _no_accident?: boolean
+          _price_max?: number
+          _price_min?: number
+          _regions?: string[]
+          _transmissions?: string[]
+          _year_from?: number
+          _year_to?: number
+        }
+        Returns: Json
+      }
       encar_models: {
         Args: { _brand: string }
         Returns: {

@@ -78,6 +78,13 @@
       "when": 1792182255875,
       "tag": "0010_encar_listings_stable_order_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792187831985,
+      "tag": "0011_encar_facets_and_sort_indexes",
+      "breakpoints": true
     }
   ]
 }
