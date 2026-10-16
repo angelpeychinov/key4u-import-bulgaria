@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Review monitoring findings: verify stale timeout evidence and fix empty saved-cars search; test live.
+- [x] Review monitoring findings: timeout evidence stale (current search/facets succeed); empty saved search fixed and verified through save/remove-last-car flow, tests passed, server deployed.
 
 - [x] Prevent Hangul in detail body/color writes and facet responses/cache; both functions deployed, 36 tests passed, default/BMW responses and cache verified clean; not published.
 
