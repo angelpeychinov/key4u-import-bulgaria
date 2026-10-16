@@ -3,7 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, Car, Shield, FileCheck, Search, Clock, ArrowRight, Phone } from "lucide-react";
+import { Car, Search, ArrowRight, Phone } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -35,6 +35,7 @@ import mobileBgLogo from "@/assets/mobile-bg-logo.png";
 import mobileBgSectionBg from "@/assets/mobile-bg-section-background.jpg";
 import { ViberSection } from "@/components/ViberSection";
 import { LicensedImporterSection } from "@/components/LicensedImporterSection";
+import { WhyKey4USection } from "@/components/WhyKey4USection";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -96,26 +97,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-card">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-primary">
-            {t('features.title')}
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="bg-primary shadow-card hover:shadow-elegant transition-smooth border-primary">
-                <CardContent className="pt-6 text-center">
-                  <div className="flex justify-center mb-4 text-primary-foreground">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2 text-primary-foreground">
-                    {feature.title}
-                  </h3>
-                  <p className="text-primary-foreground/90">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <WhyKey4USection />
 
 
 
