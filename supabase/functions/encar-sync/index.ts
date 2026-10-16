@@ -20,6 +20,8 @@ const MAX_DEPTH = 9000;
 const PAGE = 50;
 const BUDGET_MS = 100_000; // stop starting new work after this; hard budget ~120 s
 const BLOCK_COOLDOWN_MS = 30 * 60_000;
+const ERROR_PAUSE_MS = 2 * 60_000;
+const ABANDON_MS = 36 * 3600_000;
 
 const HEADERS = {
   accept: "application/json, text/javascript, */*; q=0.01",
@@ -198,6 +200,12 @@ Deno.serve(async (req) => {
     await supabase.from("encar_sync_runs").update({ pages: run.pages, upserted: run.upserted, ...extra }).eq("id", run.id);
   };
 
+  const clearPause = async () => {
+    if (!run || (!run.error && !run.paused_until)) return;
+    run.error = null; run.paused_until = null;
+    await supabase.from("encar_sync_runs").update({ error: null, paused_until: null }).eq("id", run.id);
+  };
+
   try {
     // --- decide mode: continue full / start full / incremental / idle ---
     const { data: running } = await supabase.from("encar_sync_runs").select("*")
@@ -230,6 +238,10 @@ Deno.serve(async (req) => {
       const fullDue = !lf ||
         (Date.now() - new Date(lf.started_at).getTime() > FULL_INTERVAL_MS && h >= 2 && h < 6);
       if (!fullDue) {
+        if (incBlocked) {
+          await releaseLock();
+          return json({ ok: true, status: "blocked-cooldown", retry_after_s: Math.round((BLOCK_COOLDOWN_MS - (Date.now() - at)) / 1000) });
+        }
         const res = await runIncremental(supabase, proxyUrl, t0);
         await releaseLock();
         return json(res);
