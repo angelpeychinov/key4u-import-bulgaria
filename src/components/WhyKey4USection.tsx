@@ -67,8 +67,8 @@ export function WhyKey4USection() {
       <div className="container relative mx-auto px-4">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">
           {/* Heading column */}
-          <div className="lg:col-span-4">
-            <div className="lg:sticky lg:top-28">
+          <div className="lg:col-span-4 lg:self-center">
+            <div>
               <div className="mb-5 flex items-center gap-3">
                 <span className="h-px w-10 bg-accent" />
                 <span className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
