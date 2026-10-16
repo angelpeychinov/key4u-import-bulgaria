@@ -98,8 +98,8 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                   .filter(([, value]) => value)
                   .map(([label, value]) => (
                     <div key={label as string} className="rounded-lg bg-muted/60 p-3">
-                      <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
-                      <dd className="font-medium capitalize text-foreground">{value}</dd>
+                      <dt className="text-xs tracking-wide text-muted-foreground">{label}</dt>
+                      <dd className="font-medium text-foreground">{value}</dd>
                     </div>
                   ))}
               </dl>
@@ -121,7 +121,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                       <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
                         {details.specs.map(([label, value]) => (
                           <div key={label} className="rounded-lg bg-muted/60 p-3">
-                            <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
+                            <dt className="text-xs tracking-wide text-muted-foreground">{label}</dt>
                             <dd className="font-medium text-foreground">{value}</dd>
                           </div>
                         ))}

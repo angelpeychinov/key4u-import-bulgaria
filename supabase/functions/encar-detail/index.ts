@@ -4,6 +4,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { HEADERS, makeClient } from "../_shared/encarHttp.ts";
+import { FUEL_MAP, HANGUL_RE } from "../_shared/encarMaps.ts";
 
 const CACHE_MS = 24 * 3600_000;
 const MIN_FETCH_GAP_MS = 10 * 60_000;
@@ -75,10 +76,15 @@ Deno.serve(async (req) => {
   try {
     const client = makeClient(proxyUrl);
     const base = "https://api.encar.com/v1/readside";
-    const [vehicle, inspection, record] = await Promise.all([
-      getJson(client, `${base}/vehicle/${id}`),
-      getJson(client, `${base}/inspection/vehicle/${id}`).catch((e) => { if (e instanceof BlockedError) throw e; return null; }),
-      getJson(client, `${base}/record/vehicle/${id}/open`).catch((e) => { if (e instanceof BlockedError) throw e; return null; }),
+    const soft = (e: unknown) => { if (e instanceof BlockedError) throw e; return null; };
+    const vehicle = await getJson(client, `${base}/vehicle/${id}`);
+    const vid = vehicle?.vehicleId;
+    const [inspection, record] = await Promise.all([
+      vid && vehicle?.condition?.inspection
+        ? getJson(client, `${base}/inspection/vehicle/${vid}`).catch(soft) : Promise.resolve(null),
+      vid && vehicle?.condition?.accident?.recordView === true
+        ? getJson(client, `${base}/record/vehicle/${vid}/open?vehicleNo=${encodeURIComponent(vehicle.vehicleNo ?? "")}`).catch(soft)
+        : Promise.resolve(null),
     ]);
     const row = { encar_id: id, vehicle, inspection, record, fetched_at: new Date().toISOString(), error: null };
     const { error: upErr } = await supabase.from("encar_listing_details").upsert(row, { onConflict: "encar_id" });
@@ -95,6 +101,20 @@ Deno.serve(async (req) => {
     const tr = typeof spec?.transmissionName === "string" ? spec.transmissionName.trim() : "";
     const TR: Record<string, string> = { "오토": "auto", "수동": "manual", "CVT": "cvt", "세미오토": "semi_auto" };
     if (TR[tr]) upd.transmission = TR[tr];
+    const fuel = typeof spec?.fuelName === "string" ? spec.fuelName.trim() : "";
+    if (fuel && FUEL_MAP[fuel]) upd.fuel_type = FUEL_MAP[fuel];
+    // Official English names from Encar's category block.
+    const cat = vehicle?.category ?? {};
+    const en = (x: unknown) => (typeof x === "string" && x.trim() && !HANGUL_RE.test(x) ? x.trim() : "");
+    const group = en(cat.modelGroupEnglishName);
+    if (group) {
+      const m = en(cat.modelName);
+      upd.model_name = !m ? group
+        : m.toLowerCase().startsWith(group.toLowerCase()) ? m
+        : group.toLowerCase().includes(m.toLowerCase()) ? group : `${group} ${m}`;
+      const trim = [en(cat.gradeEnglishName), en(cat.gradeDetailEnglishName)].filter(Boolean).join(" ");
+      if (trim) upd.trim = trim;
+    }
     const acc = inspection?.master?.accdient ?? inspection?.master?.accident;
     if (typeof acc === "boolean") upd.has_accident = acc;
     if (Object.keys(upd).length) {
