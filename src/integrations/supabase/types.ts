@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      encar_facets_cache: {
+        Row: {
+          key: string
+          payload: Json
+          updated_at: string
+        }
+        Insert: {
+          key: string
+          payload?: Json
+          updated_at?: string
+        }
+        Update: {
+          key?: string
+          payload?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       encar_listing_details: {
         Row: {
           encar_id: string
@@ -427,6 +445,7 @@ export type Database = {
           slug: string
         }[]
       }
+      encar_refresh_default_facets: { Args: never; Returns: undefined }
       encar_sync_release_lock: { Args: never; Returns: undefined }
       encar_sync_status: {
         Args: never
