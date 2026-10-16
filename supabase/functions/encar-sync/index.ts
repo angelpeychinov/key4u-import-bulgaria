@@ -4,6 +4,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { upsertListings } from "../_shared/upsertListings.ts";
+import { HEADERS, makeClient } from "../_shared/encarHttp.ts";
 
 const MAKERS: [string, "Y" | "N"][] = [
   ["현대", "Y"], ["기아", "Y"], ["제네시스", "Y"], ["쉐보레(GM대우)", "Y"], ["르노코리아(삼성)", "Y"],
@@ -23,13 +24,6 @@ const BLOCK_COOLDOWN_MS = 30 * 60_000;
 const ERROR_PAUSE_MS = 2 * 60_000;
 const ABANDON_MS = 36 * 3600_000;
 
-const HEADERS = {
-  accept: "application/json, text/javascript, */*; q=0.01",
-  "accept-language": "ko-KR,ko;q=0.9",
-  origin: "https://www.encar.com",
-  referer: "https://www.encar.com/",
-  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
-};
 
 class BlockedError extends Error {}
 
@@ -38,15 +32,6 @@ const json = (p: unknown, status = 200) =>
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const jitter = () => sleep(1200 + Math.random() * 1300);
 
-function makeClient(proxyUrl: string) {
-  const u = new URL(proxyUrl);
-  const username = decodeURIComponent(u.username);
-  const password = decodeURIComponent(u.password);
-  u.username = ""; u.password = "";
-  const proxy: any = { url: u.toString().replace(/\/$/, "") };
-  if (username) proxy.basicAuth = { username, password };
-  return (Deno as any).createHttpClient({ proxy });
-}
 
 function buildQ(maker: string, ct: string, lo?: number | null, hi?: number | null) {
   const price = lo != null && hi != null ? `._.Price.range(${lo}..${hi - 1}).` : ".";
