@@ -163,6 +163,30 @@ export type Database = {
         }
         Relationships: []
       }
+      encar_model_body: {
+        Row: {
+          body_type: string
+          category: string
+          category_count: number
+          manufacturer: string
+          model: string
+        }
+        Insert: {
+          body_type: string
+          category: string
+          category_count?: number
+          manufacturer: string
+          model: string
+        }
+        Update: {
+          body_type?: string
+          category?: string
+          category_count?: number
+          manufacturer?: string
+          model?: string
+        }
+        Relationships: []
+      }
       encar_sync_config: {
         Row: {
           key: string
@@ -413,6 +437,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      encar_backfill_model_body: { Args: { _limit?: number }; Returns: number }
       encar_brands: {
         Args: never
         Returns: {

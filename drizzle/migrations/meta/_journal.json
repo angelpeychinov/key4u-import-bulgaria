@@ -155,6 +155,27 @@
       "when": 1792192660645,
       "tag": "0021_encar_facets_cache_hangul_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792193043512,
+      "tag": "0022_encar_model_body_mapping",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792194266089,
+      "tag": "0023_encar_missing_body_join_index",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792194607070,
+      "tag": "0024_encar_body_backfill_indexed_batches",
+      "breakpoints": true
     }
   ]
 }

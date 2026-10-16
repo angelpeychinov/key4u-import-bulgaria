@@ -126,7 +126,7 @@ export const FUEL_BG: Record<string, string> = {
 export const TRANSMISSION_BG: Record<string, string> = { auto: "Автоматична", manual: "Ръчна", cvt: "Вариатор (CVT)", semi_auto: "Полуавтоматична" };
 export const BODY_BG: Record<string, string> = {
   sedan: "Седан", hatchback: "Хечбек", coupe: "Купе", convertible: "Кабриолет", suv: "SUV",
-  wagon: "Комби", pickup: "Пикап", van: "Ван", minivan: "Миниван", other: "Друго",
+  wagon: "Комби", pickup: "Пикап", van: "Ван", minivan: "Миниван", truck: "Товарен", mini: "Мини", other: "Друго",
 };
 export const REGION_BG: Record<string, string> = {
   seoul: "Сеул", busan: "Пусан", daegu: "Тегу", incheon: "Инчон", gwangju: "Куанджу",

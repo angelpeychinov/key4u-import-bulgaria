@@ -5,6 +5,7 @@
 // - sets first_seen_at only for new rows
 // deno-lint-ignore-file no-explicit-any
 import { translateListing } from "./encarMaps.ts";
+import { preserveBody } from "./encarModelBody.ts";
 
 export async function upsertListings(
   supabase: any,
@@ -21,7 +22,7 @@ export async function upsertListings(
 
   const { data: existingRows, error: selectError } = await supabase
     .from("encar_listings")
-    .select("encar_id, price_original")
+    .select("encar_id, price_original, body_type")
     .in("encar_id", encarIds);
   if (selectError) throw new Error("Select failed: " + selectError.message);
 
@@ -30,8 +31,10 @@ export async function upsertListings(
   );
 
   const nowIso = new Date().toISOString();
+  const oldBodies = new Map<string, unknown>((existingRows ?? []).map((r: any) => [r.encar_id, r.body_type]));
   const rows = listings.map((l) => {
     const row: Record<string, unknown> = { ...l, status: "active", last_seen_at: nowIso };
+    row.body_type = preserveBody(l.body_type, oldBodies.get(String(l.encar_id)));
     delete row.first_seen_at; // never overwrite on existing rows
     const prev = oldPrice.get(String(l.encar_id));
     if (prev != null && l.price_original != null && prev !== l.price_original) {
