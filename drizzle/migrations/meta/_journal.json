@@ -120,6 +120,13 @@
       "when": 1792188557726,
       "tag": "0016_encar_listings_autovacuum_tuning",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792189822639,
+      "tag": "0017_create_pricing_config",
+      "breakpoints": true
     }
   ]
 }

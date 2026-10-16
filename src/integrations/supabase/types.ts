@@ -333,6 +333,24 @@ export type Database = {
           },
         ]
       }
+      pricing_config: {
+        Row: {
+          key: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           confirmed_at: string | null
