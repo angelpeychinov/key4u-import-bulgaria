@@ -202,7 +202,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
 
                   <div className="mt-4 space-y-3 text-sm">
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-[#183e32]/70">Цена на автомобил</span>
+                      <span className="text-[#183e32]/70">Цена до Ротердам</span>
                       <span className="font-semibold text-[#183e32]">{formatEur(ip.price)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
