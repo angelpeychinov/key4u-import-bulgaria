@@ -69,37 +69,33 @@ const dutyVatFee = (priceEur: number): number => {
   return 2500;
 };
 
-const calculateKoreaImportPrice = (priceKrw: number, isOversize = false) => {
+const calculateKoreaImportPrice = (priceKrw: number, isOversize = false, cfg: PricingConfig = FALLBACK_CFG) => {
   const adjusted = priceKrw * 0.909;
   const bracketFee = (adjusted * bracketPct(adjusted)) / 100;
   const flatFees = 440000 + 250000;
-  const price = (adjusted + bracketFee + flatFees) / DEFAULT_FX_RATE;
+  // "Цена на автомобил" — цена до Ротердам в EUR (fx вече включва курсовата разлика).
+  const price = (adjusted + bracketFee + flatFees) / cfg.fx;
 
   const carSizeSurcharge = isOversize ? 350 : 0;
   const domTransportCost = isOversize ? 1150 : 900;
-  const transport = DEFAULT_SHIPPING + carSizeSurcharge + SEA_SURCHARGE + dutyVatFee(price);
-
-  // Превалутиране EUR -> CAD: 2% само от (цена на колата + морски транспорт до Ротердам),
-  // без митото/ДДС. Влиза в "Цена на автомобил", без отделен ред за клиента.
-  const conversionFee =
-    ((price + DEFAULT_SHIPPING + carSizeSurcharge + SEA_SURCHARGE) * EUR_CAD_CONVERSION_PCT) / 100;
-  const priceWithConversion = price + conversionFee;
-
+  // "Транспорт до България (вкл. мито и ДДС)"
+  const transport = cfg.seaBase + SEA_SURCHARGE + carSizeSurcharge + dutyVatFee(price);
+  // "Разходи по закупуване и разтоварване"
   const handling = HIDDEN_MARGIN + domTransportCost + commissionForPrice(priceKrw);
 
   return {
-    price: priceWithConversion,
+    price,
     transport,
     handling,
-    total: priceWithConversion + transport + handling,
+    total: price + transport + handling,
   };
 };
 
 // Smallest KRW price whose (non-oversize) final total reaches `eur`.
 // The total has tiny dips at fee-bracket edges, so we scan upward instead of
 // binary searching: everything below the result is guaranteed to cost < eur.
-const firstKrwReaching = (eur: number): number => {
-  const total = (k: number) => calculateKoreaImportPrice(k).total;
+const firstKrwReaching = (eur: number, cfg: PricingConfig = FALLBACK_CFG): number => {
+  const total = (k: number) => calculateKoreaImportPrice(k, false, cfg).total;
   if (total(0) >= eur) return 0;
   const STEP = 5000;
   let k = 0;
