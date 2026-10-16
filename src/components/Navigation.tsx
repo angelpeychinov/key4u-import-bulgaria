@@ -1,3 +1,4 @@
+import { VIBER_GROUP_URL } from "@/lib/contact";
 import { NavLink } from "@/components/NavLink";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,7 @@ export const Navigation = () => {
           {/* Viber Group + Language Switcher */}
           <div className="hidden md:flex items-center gap-3">
             <a
-              href="https://invite.viber.com/?g2=AQBJMj4Hv5lEfCLDNrlMz%2BNhJIH8B6XTKOY%2Ftk1MrCIQlHgSMLZNwjd%2FXAI5gnxD"
+              href={VIBER_GROUP_URL}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -131,7 +132,7 @@ export const Navigation = () => {
               Запазени{savedCount > 0 ? ` (${savedCount})` : ""}
             </NavLink>
             <a
-              href="https://invite.viber.com/?g2=AQBJMj4Hv5lEfCLDNrlMz%2BNhJIH8B6XTKOY%2Ftk1MrCIQlHgSMLZNwjd%2FXAI5gnxD"
+              href={VIBER_GROUP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="block"
