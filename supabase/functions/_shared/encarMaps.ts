@@ -31,6 +31,7 @@ export const FUEL_MAP: Record<string, string> = {
   "가솔린": "gasoline", "디젤": "diesel", "전기": "electric", "가솔린+전기": "hybrid",
   "디젤+전기": "hybrid", "가솔린+LPG": "gasoline+lpg", "LPG": "lpg", "수소": "hydrogen",
   "LPG+전기": "hybrid", "CNG": "cng",
+  "LPG(일반인 구입)": "lpg", "LPG(일반인구입)": "lpg", "가솔린+CNG": "cng", "기타": "other", "전기+가솔린": "hybrid",
 };
 
 export const TRANSMISSION_MAP: Record<string, string> = {
