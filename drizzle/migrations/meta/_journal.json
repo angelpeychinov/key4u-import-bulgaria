@@ -92,6 +92,13 @@
       "when": 1792188067488,
       "tag": "0012_encar_facets_single_scan",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792188276544,
+      "tag": "0013_encar_facets_timeout_and_direct_scans",
+      "breakpoints": true
     }
   ]
 }
