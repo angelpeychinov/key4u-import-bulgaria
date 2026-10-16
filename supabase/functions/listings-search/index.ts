@@ -8,6 +8,7 @@ const corsHeaders = {
 
 const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
+// calibrated against Key4U's Rotterdam calculator
 const DEFAULT_FX_RATE = 1544; // KRW per EUR
 const DEFAULT_SHIPPING = 1720; // EUR, Korea -> Rotterdam base rate
 // Загуба при обмяна EUR -> CAD -> KRW (банката купува/продава на различен курс).
@@ -46,12 +47,13 @@ const calculateKoreaImportPrice = (priceKrw: number, isOversize = false) => {
   const price = (adjusted + bracketFee + flatFees) / DEFAULT_FX_RATE;
 
   const carSizeSurcharge = isOversize ? 350 : 0;
-  const domTransportCost = isOversize ? 1000 : 900;
+  const domTransportCost = isOversize ? 1150 : 900;
   const transport = DEFAULT_SHIPPING + carSizeSurcharge + SEA_SURCHARGE + dutyVatFee(price);
 
-  // Превалутиране EUR -> CAD: 2% от сумата до Ротердам (цена + транспорт).
-  // Влиза в "Цена на автомобил", без отделен ред за клиента.
-  const conversionFee = ((price + transport) * EUR_CAD_CONVERSION_PCT) / 100;
+  // Превалутиране EUR -> CAD: 2% само от (цена на колата + морски транспорт до Ротердам),
+  // без митото/ДДС. Влиза в "Цена на автомобил", без отделен ред за клиента.
+  const conversionFee =
+    ((price + DEFAULT_SHIPPING + carSizeSurcharge + SEA_SURCHARGE) * EUR_CAD_CONVERSION_PCT) / 100;
   const priceWithConversion = price + conversionFee;
 
   const handling = HIDDEN_MARGIN + domTransportCost + commissionForPrice(priceKrw);

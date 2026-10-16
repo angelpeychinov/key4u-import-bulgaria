@@ -43,7 +43,8 @@ const calculateKoreaImportPrice = (priceKrw: number) => {
   const bracketFee = (adjusted * bracketPct(adjusted)) / 100;
   const price = (adjusted + bracketFee + 440000 + 250000) / DEFAULT_FX_RATE;
   const transport = DEFAULT_SHIPPING + SEA_SURCHARGE + dutyVatFee(price);
-  const conversionFee = ((price + transport) * EUR_CAD_CONVERSION_PCT) / 100;
+  // 2% EUR->CAD only on (car price + sea transport to Rotterdam), not on duty/VAT.
+  const conversionFee = ((price + DEFAULT_SHIPPING + SEA_SURCHARGE) * EUR_CAD_CONVERSION_PCT) / 100;
   const handling = HIDDEN_MARGIN + 900 + commissionForPrice(priceKrw);
   return price + conversionFee + transport + handling;
 };
