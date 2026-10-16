@@ -78,9 +78,6 @@ export function WhyKey4USection() {
               <h2 className="text-3xl font-bold leading-tight text-primary md:text-[42px]">
                 {t("features.title")}
               </h2>
-              <p className="mt-5 max-w-sm text-base leading-relaxed text-muted-foreground">
-                {t("features.lead")}
-              </p>
             </div>
           </div>
 
