@@ -51,14 +51,6 @@ const loadPricingConfig = async (
   return cfg;
 };
 
-const bracketPct = (adjusted: number): number => {
-  if (adjusted <= 15000000) return 3.0;
-  if (adjusted <= 30000000) return 2.5;
-  if (adjusted <= 45000000) return 2.0;
-  if (adjusted <= 75000000) return 1.5;
-  return 1.0;
-};
-
 const commissionForPrice = (krw: number): number => {
   if (krw <= 20000000) return 900;
   if (krw <= 35000000) return 1000;
@@ -76,13 +68,14 @@ const dutyVatFee = (priceEur: number): number => {
   return 2500;
 };
 
+// Same calibrated formula as listings-search (non-oversize), used to translate
+// EUR price filters into KRW bounds.
 const calculateKoreaImportPrice = (priceKrw: number, cfg: PricingConfig = FALLBACK_CFG) => {
-  const adjusted = priceKrw * 0.909;
-  const bracketFee = (adjusted * bracketPct(adjusted)) / 100;
-  const price = (adjusted + bracketFee + 440000 + 250000) / cfg.fx;
-  const transport = cfg.seaBase + SEA_SURCHARGE + dutyVatFee(price);
-  const handling = HIDDEN_MARGIN + 900 + commissionForPrice(priceKrw);
-  return price + transport + handling;
+  const carEur = ((priceKrw / 1.1) * (1 + cfg.carMarkupPct / 100)) / cfg.fx;
+  const rotterdam = carEur + cfg.rotterdamFixed;
+  const transport = dutyVatFee(carEur) + 900;
+  const handling = HIDDEN_MARGIN + commissionForPrice(priceKrw);
+  return rotterdam + transport + handling;
 };
 
 const firstKrwReaching = (eur: number, cfg: PricingConfig = FALLBACK_CFG): number => {
