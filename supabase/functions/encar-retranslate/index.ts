@@ -10,7 +10,7 @@ Deno.serve(async (req) => {
   const after = String(body.after ?? "");
   const { data, error } = await sb.from("encar_listings")
     .select("id,encar_id,model_name,model_slug,trim,raw_data")
-    .gt("encar_id", after).order("encar_id").limit(2000);
+    .gt("encar_id", after).order("encar_id").limit(1000);
   if (error) return Response.json({ error: error.message }, { status: 500 });
   let changed = 0;
   const updates: Promise<unknown>[] = [];
@@ -28,5 +28,5 @@ Deno.serve(async (req) => {
   }
   await Promise.all(updates);
   const last = data?.length ? data[data.length - 1].encar_id : null;
-  return Response.json({ scanned: data?.length ?? 0, changed, next: data?.length === 2000 ? last : null });
+  return Response.json({ scanned: data?.length ?? 0, changed, next: data?.length === 1000 ? last : null });
 });
