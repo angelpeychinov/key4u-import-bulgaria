@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ListingDetails, fetchListingDetails } from "@/lib/listingDetails";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,7 +21,23 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
   const ip = listing?.importPrice;
   const insuranceAmount = ip ? ip.price * 0.022 : 0;
   const total = ip ? ip.total + (insurance ? insuranceAmount : 0) : undefined;
-  const gallery = listing?.photos.slice(0, 12) ?? [];
+  const [details, setDetails] = useState<ListingDetails | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+
+  useEffect(() => {
+    setDetails(null);
+    const id = listing?.encarId;
+    if (!id) return;
+    let cancelled = false;
+    setDetailsLoading(true);
+    fetchListingDetails(id)
+      .then((d) => { if (!cancelled) setDetails(d); })
+      .catch(() => { if (!cancelled) setDetails(null); })
+      .finally(() => { if (!cancelled) setDetailsLoading(false); });
+    return () => { cancelled = true; };
+  }, [listing?.encarId]);
+
+  const gallery = details?.photos.length ? details.photos : listing?.photos.slice(0, 12) ?? [];
 
 
   return (
@@ -85,6 +103,54 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                     </div>
                   ))}
               </dl>
+
+              {detailsLoading && (
+                <div className="space-y-3" aria-label="Зареждане на детайли">
+                  <Skeleton className="h-5 w-32" />
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {[0, 1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-14 rounded-lg" />)}
+                  </div>
+                </div>
+              )}
+
+              {!detailsLoading && details && (
+                <div className="space-y-5">
+                  {details.specs.length > 0 && (
+                    <section>
+                      <h3 className="mb-3 text-lg font-semibold text-foreground">Детайли</h3>
+                      <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
+                        {details.specs.map(([label, value]) => (
+                          <div key={label} className="rounded-lg bg-muted/60 p-3">
+                            <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
+                            <dd className="font-medium text-foreground">{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </section>
+                  )}
+                  {details.history.length > 0 && (
+                    <section>
+                      <h3 className="mb-3 text-lg font-semibold text-foreground">История</h3>
+                      <dl className="divide-y divide-border rounded-lg border border-border text-sm">
+                        {details.history.map(([label, value]) => (
+                          <div key={label} className="flex items-center justify-between gap-4 px-4 py-2.5">
+                            <dt className="text-muted-foreground">{label}</dt>
+                            <dd className="font-medium text-foreground">{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </section>
+                  )}
+                  {details.equipment.length > 0 && (
+                    <section>
+                      <h3 className="mb-3 text-lg font-semibold text-foreground">Оборудване</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {details.equipment.map((o) => <Badge key={o} variant="secondary">{o}</Badge>)}
+                      </div>
+                    </section>
+                  )}
+                </div>
+              )}
 
               {ip && (
                 <div
@@ -158,7 +224,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
               {listing.url && (
                 <Button asChild variant="ghost" className="w-full sm:w-auto">
                   <a href={listing.url} target="_blank" rel="noopener noreferrer">
-                    Виж оригиналната обява <ExternalLink className="ml-2 h-4 w-4" />
+                    Виж оригиналната обява в Encar <ExternalLink className="ml-2 h-4 w-4" />
                   </a>
                 </Button>
               )}

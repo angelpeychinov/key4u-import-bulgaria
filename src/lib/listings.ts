@@ -21,6 +21,7 @@ export interface Listing {
   source?: string;
   thumb?: string;
   photos: string[];
+  encarId?: string;
   url?: string;
   specs: Record<string, string>;
   importPrice?: ImportPrice;
@@ -122,6 +123,7 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
 
   return {
     id: String(raw.id ?? `listing-${index}`),
+    encarId: raw.encar_id != null ? String(raw.encar_id) : undefined,
     title,
     brand,
     model,
