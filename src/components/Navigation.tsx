@@ -1,13 +1,15 @@
 import { NavLink } from "@/components/NavLink";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { useFavorites } from "@/hooks/useFavorites";
+import { Heart, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 export const Navigation = () => {
   const { language, setLanguage, t } = useLanguage();
+  const { count: savedCount } = useFavorites();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { pathname } = useLocation();
   const [scrolled, setScrolled] = useState(() => window.scrollY > 24);
@@ -55,6 +57,14 @@ export const Navigation = () => {
                 {link.label}
               </NavLink>
             ))}
+            <NavLink
+              to="/car-search?saved=1"
+              className="flex items-center gap-1.5 text-foreground hover:text-primary transition-smooth"
+              activeClassName="text-primary font-semibold"
+            >
+              <Heart size={16} className={savedCount > 0 ? "fill-red-500 text-red-500" : ""} />
+              Запазени{savedCount > 0 ? ` (${savedCount})` : ""}
+            </NavLink>
           </div>
 
           {/* Viber Group + Language Switcher */}
@@ -111,6 +121,15 @@ export const Navigation = () => {
                 {link.label}
               </NavLink>
             ))}
+            <NavLink
+              to="/car-search?saved=1"
+              className="flex items-center gap-1.5 py-2 text-foreground hover:text-primary transition-smooth"
+              activeClassName="text-primary font-semibold"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Heart size={16} className={savedCount > 0 ? "fill-red-500 text-red-500" : ""} />
+              Запазени{savedCount > 0 ? ` (${savedCount})` : ""}
+            </NavLink>
             <a
               href="https://invite.viber.com/?g2=AQBJMj4Hv5lEfCLDNrlMz%2BNhJIH8B6XTKOY%2Ftk1MrCIQlHgSMLZNwjd%2FXAI5gnxD"
               target="_blank"

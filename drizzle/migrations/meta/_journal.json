@@ -78,6 +78,48 @@
       "when": 1792182255875,
       "tag": "0010_encar_listings_stable_order_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792187831985,
+      "tag": "0011_encar_facets_and_sort_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792188067488,
+      "tag": "0012_encar_facets_single_scan",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792188276544,
+      "tag": "0013_encar_facets_timeout_and_direct_scans",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792188356233,
+      "tag": "0014_encar_facets_covering_index",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1792188421760,
+      "tag": "0015_encar_facets_dynamic_sql",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1792188557726,
+      "tag": "0016_encar_listings_autovacuum_tuning",
+      "breakpoints": true
     }
   ]
 }
