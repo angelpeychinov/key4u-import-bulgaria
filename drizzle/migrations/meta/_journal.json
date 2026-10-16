@@ -148,6 +148,13 @@
       "when": 1792192154338,
       "tag": "0020_encar_facets_grouped_cache",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792192660645,
+      "tag": "0021_encar_facets_cache_hangul_guard",
+      "breakpoints": true
     }
   ]
 }
