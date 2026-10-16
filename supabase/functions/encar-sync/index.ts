@@ -96,6 +96,72 @@ function toRow(r: any, maker: string) {
   };
 }
 
+const FULL_INTERVAL_MS = 20 * 3600_000;
+const INCR_INTERVAL_MS = 15 * 60_000;
+const INCR_MAX_PAGES = 20;
+const INCR_FIRST_PAGES = 4;
+
+function sofiaHour(): number {
+  return Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Sofia", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
+}
+
+// Encar format: "2026-08-31 22:23:04.000 +09"
+function parseEncarDate(s?: string): number | null {
+  if (!s) return null;
+  const m = String(s).trim().match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})(\.\d+)?\s*([+-]\d{2})(?::?(\d{2}))?$/);
+  if (!m) return null;
+  const t = Date.parse(`${m[1]}T${m[2]}${m[3] ?? ""}${m[4]}:${m[5] ?? "00"}`);
+  return Number.isNaN(t) ? null : t;
+}
+
+async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
+  const { data: lastInc } = await supabase.from("encar_sync_runs").select("started_at")
+    .eq("kind", "incremental").order("started_at", { ascending: false }).limit(1);
+  if (lastInc?.[0] && Date.now() - new Date(lastInc[0].started_at).getTime() < INCR_INTERVAL_MS) {
+    return { ok: true, status: "idle" };
+  }
+  const { data: prevOk } = await supabase.from("encar_sync_runs").select("started_at")
+    .eq("kind", "incremental").eq("status", "done").order("started_at", { ascending: false }).limit(1);
+  const cutoff = prevOk?.[0] ? new Date(prevOk[0].started_at).getTime() - 10 * 60_000 : null;
+  const maxPages = cutoff == null ? INCR_FIRST_PAGES : INCR_MAX_PAGES;
+
+  const { data: inc, error } = await supabase.from("encar_sync_runs").insert({ kind: "incremental", windows_built: true }).select("*").single();
+  if (error) throw new Error("create incremental failed: " + error.message);
+  let pages = 0, upserted = 0;
+  try {
+    const client = makeClient(proxyUrl);
+    for (const ct of ["Y", "N"]) {
+      let olderStreak = 0;
+      for (let p = 0; p < maxPages && Date.now() - t0 < BUDGET_MS; p++) {
+        const { results } = await encarSearch(client, `(And.Hidden.N._.CarType.${ct}.)`, p * PAGE, PAGE);
+        pages++;
+        if (results.length === 0) break;
+        const rows = results.filter((r) => Number(r.Price) < 9999 && r.SellType === "일반")
+          .map((r) => toRow(r, String(r.Manufacturer ?? "")));
+        if (rows.length) {
+          const { inserted, updated } = await upsertListings(supabase, rows);
+          upserted += inserted + updated;
+        }
+        // Sort order is unverified: stop only after 2 consecutive pages that are entirely older than the cutoff.
+        if (cutoff != null) {
+          const allOlder = results.every((r) => { const t = parseEncarDate(r.ModifiedDate); return t != null && t < cutoff; });
+          olderStreak = allOlder ? olderStreak + 1 : 0;
+          if (olderStreak >= 2) break;
+        }
+        await jitter();
+      }
+    }
+    await supabase.from("encar_sync_runs").update({ status: "done", pages, upserted, finished_at: new Date().toISOString() }).eq("id", inc.id);
+    return { ok: true, status: "incremental-done", pages, upserted };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    const blocked = e instanceof BlockedError;
+    console.error(blocked ? "encar blocked (incremental)" : "incremental error", msg);
+    await supabase.from("encar_sync_runs").update({ status: blocked ? "blocked" : "error", error: msg.slice(0, 1000), pages, upserted, finished_at: new Date().toISOString() }).eq("id", inc.id);
+    return { ok: false, status: blocked ? "blocked" : "error", error: msg };
+  }
+}
+
 Deno.serve(async (req) => {
   const t0 = Date.now();
   const proxyUrl = Deno.env.get("ENCAR_PROXY_URL");
@@ -125,9 +191,9 @@ Deno.serve(async (req) => {
   };
 
   try {
-    // --- find or create run ---
+    // --- decide mode: continue full / start full / incremental / idle ---
     const { data: running } = await supabase.from("encar_sync_runs").select("*")
-      .eq("status", "running").order("started_at", { ascending: false }).limit(1);
+      .eq("status", "running").eq("kind", "full").order("started_at", { ascending: false }).limit(1);
     run = running?.[0] ?? null;
     if (!run) {
       const { data: last } = await supabase.from("encar_sync_runs").select("status, started_at, finished_at")
@@ -140,7 +206,18 @@ Deno.serve(async (req) => {
           return json({ ok: true, status: "blocked-cooldown", retry_after_s: Math.round((BLOCK_COOLDOWN_MS - (Date.now() - at)) / 1000) });
         }
       }
-      const { data: created, error } = await supabase.from("encar_sync_runs").insert({}).select("*").single();
+      const { data: lastFull } = await supabase.from("encar_sync_runs").select("started_at")
+        .eq("kind", "full").eq("status", "done").order("started_at", { ascending: false }).limit(1);
+      const lf = lastFull?.[0];
+      const h = sofiaHour();
+      const fullDue = !lf ||
+        (Date.now() - new Date(lf.started_at).getTime() > FULL_INTERVAL_MS && h >= 2 && h < 6);
+      if (!fullDue) {
+        const res = await runIncremental(supabase, proxyUrl, t0);
+        await releaseLock();
+        return json(res);
+      }
+      const { data: created, error } = await supabase.from("encar_sync_runs").insert({ kind: "full" }).select("*").single();
       if (error) throw new Error("create run failed: " + error.message);
       run = created;
     }
