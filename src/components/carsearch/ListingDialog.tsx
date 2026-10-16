@@ -206,11 +206,11 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                       <span className="font-semibold text-[#183e32]">{formatEur(ip.price)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-[#183e32]/70">Транспорт до България (вкл. мито и ДДС)</span>
+                      <span className="text-[#183e32]/70">Транспорт до България + мито и ДДС</span>
                       <span className="font-semibold text-[#183e32]">{formatEur(ip.transport)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-[#183e32]/70">Разходи по закупуване и разтоварване</span>
+                      <span className="text-[#183e32]/70">Комисионна и обработка</span>
                       <span className="font-semibold text-[#183e32]">{formatEur(ip.handling)}</span>
                     </div>
 
