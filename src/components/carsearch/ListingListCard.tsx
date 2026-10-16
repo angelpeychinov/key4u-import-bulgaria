@@ -53,7 +53,7 @@ export const ListingListCard = ({ listing, onOpen, priority = false }: Props) =>
             src={encarImg(photo, 640)}
             alt={`${listing.title} снимка`}
             loading={priority ? "eager" : "lazy"}
-            fetchPriority={priority ? "high" : "auto"}
+            {...({ fetchpriority: priority ? "high" : "auto" } as Record<string, string>)}
             decoding="async"
             className="h-full w-full object-cover"
           />

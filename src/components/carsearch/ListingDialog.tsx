@@ -85,7 +85,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                       src={encarImg(gallery[current], 1000)}
                       alt={`${listing.title} снимка ${current + 1}`}
                       loading="eager"
-                      fetchPriority="high"
+                      {...({ fetchpriority: "high" } as Record<string, string>)}
                       decoding="async"
                       className="aspect-[4/3] w-full cursor-zoom-in object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                     />
