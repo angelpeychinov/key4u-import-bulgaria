@@ -125,20 +125,10 @@ function toRow(r: any, maker: string) {
 
 const FULL_INTERVAL_MS = 20 * 3600_000;
 const INCR_INTERVAL_MS = 15 * 60_000;
-const INCR_MAX_PAGES = 20;
-const INCR_FIRST_PAGES = 4;
+const INCR_MAX_PAGES = 8; // per car type; the list API has no ModifiedDate, so no date-based early stop
 
 function sofiaHour(): number {
   return Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Sofia", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
-}
-
-// Encar format: "2026-08-31 22:23:04.000 +09"
-function parseEncarDate(s?: string): number | null {
-  if (!s) return null;
-  const m = String(s).trim().match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})(\.\d+)?\s*([+-]\d{2})(?::?(\d{2}))?$/);
-  if (!m) return null;
-  const t = Date.parse(`${m[1]}T${m[2]}${m[3] ?? ""}${m[4]}:${m[5] ?? "00"}`);
-  return Number.isNaN(t) ? null : t;
 }
 
 async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
@@ -147,10 +137,7 @@ async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
   if (lastInc?.[0] && Date.now() - new Date(lastInc[0].started_at).getTime() < INCR_INTERVAL_MS) {
     return { ok: true, status: "idle" };
   }
-  const { data: prevOk } = await supabase.from("encar_sync_runs").select("started_at")
-    .eq("kind", "incremental").eq("status", "done").order("started_at", { ascending: false }).limit(1);
-  const cutoff = prevOk?.[0] ? new Date(prevOk[0].started_at).getTime() - 10 * 60_000 : null;
-  const maxPages = cutoff == null ? INCR_FIRST_PAGES : INCR_MAX_PAGES;
+  const maxPages = INCR_MAX_PAGES;
 
   const { data: inc, error } = await supabase.from("encar_sync_runs").insert({ kind: "incremental", windows_built: true }).select("*").single();
   if (error) throw new Error("create incremental failed: " + error.message);
@@ -158,7 +145,6 @@ async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
   try {
     const client = makeClient(proxyUrl);
     for (const ct of ["Y", "N"]) {
-      let olderStreak = 0;
       for (let p = 0; p < maxPages && Date.now() - t0 < BUDGET_MS; p++) {
         const { results } = await encarSearch(client, `(And.Hidden.N._.CarType.${ct}.)`, p * PAGE, PAGE);
         pages++;
@@ -168,12 +154,6 @@ async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
         if (rows.length) {
           const { inserted, updated } = await upsertListings(supabase, rows);
           upserted += inserted + updated;
-        }
-        // Sort order is unverified: stop only after 2 consecutive pages that are entirely older than the cutoff.
-        if (cutoff != null) {
-          const allOlder = results.every((r) => { const t = parseEncarDate(r.ModifiedDate); return t != null && t < cutoff; });
-          olderStreak = allOlder ? olderStreak + 1 : 0;
-          if (olderStreak >= 2) break;
         }
         await jitter();
       }
