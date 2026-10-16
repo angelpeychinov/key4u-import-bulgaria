@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,18 @@ export const ListingListCard = ({ listing, onOpen, priority = false }: Props) =>
     e.stopPropagation();
     setPhotoIdx((i) => (i + dir + photos.length) % photos.length);
   };
+
+  // Preload neighbours so flipping feels instant
+  useEffect(() => {
+    if (photos.length < 2) return;
+    [photoIdx - 1, photoIdx + 1].forEach((i) => {
+      const src = encarImg(photos[(i + photos.length) % photos.length], 640);
+      if (src) {
+        const img = new Image();
+        img.src = src;
+      }
+    });
+  }, [photoIdx, photos]);
 
   return (
     <Card
