@@ -43,6 +43,13 @@
       "when": 1792163250856,
       "tag": "0005_encar_listing_details",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792172538304,
+      "tag": "0006_encar_sync_runs_makers",
+      "breakpoints": true
     }
   ]
 }

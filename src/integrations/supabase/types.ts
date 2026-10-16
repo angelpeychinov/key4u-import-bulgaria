@@ -182,6 +182,7 @@ export type Database = {
           finished_at: string | null
           id: string
           kind: string
+          makers: Json | null
           marked_sold: number
           pages: number
           paused_until: string | null
@@ -196,6 +197,7 @@ export type Database = {
           finished_at?: string | null
           id?: string
           kind?: string
+          makers?: Json | null
           marked_sold?: number
           pages?: number
           paused_until?: string | null
@@ -210,6 +212,7 @@ export type Database = {
           finished_at?: string | null
           id?: string
           kind?: string
+          makers?: Json | null
           marked_sold?: number
           pages?: number
           paused_until?: string | null
