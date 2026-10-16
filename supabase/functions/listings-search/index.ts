@@ -124,9 +124,15 @@ Deno.serve(async (req) => {
     const page = numParam(incoming, "page") ?? 1;
     const from = (page - 1) * pageSize;
 
+    // Narrow searches (model, or 3+ filters) get exact counts; broad ones use the planner estimate for speed.
+    const filterKeys = ["brand", "model", "fuel_type", "transmission", "body_type", "has_accident", "year_from", "year_to", "mileage_max", "price_from", "price_to"]
+      .filter((k) => incoming.get(k));
+    const narrow = !!incoming.get("model") || filterKeys.length >= 3;
+    const COLS = "id,encar_id,brand_name,brand_slug,model_name,model_slug,trim,year,price_original,mileage,fuel_type,transmission,body_type,color,region,has_accident,engine_cc,thumb,photos,listing_url,source_code,status,first_seen_at,last_seen_at,price_changed_at,previous_price_krw";
+
     let query = supabase
       .from("encar_listings")
-      .select("*", { count: "exact" })
+      .select(COLS, { count: narrow ? "exact" : "estimated" })
       .eq("status", "active");
 
     const brand = textParam(incoming, "brand");
@@ -135,11 +141,11 @@ Deno.serve(async (req) => {
     if (model) query = query.eq("model_slug", model);
 
     for (const key of ["fuel_type", "transmission", "body_type"] as const) {
-      const value = textParam(incoming, key);
+      const value = textParam(incoming, key)?.toLowerCase();
       if (!value) continue;
       // The Encar list API omits transmission; unknown rows are treated as automatic (~99% of Korean used cars).
-      if (key === "transmission" && value.toLowerCase() === "auto") query = query.or("transmission.ilike.auto,transmission.is.null");
-      else query = query.ilike(key, value);
+      if (key === "transmission" && value === "auto") query = query.or("transmission.eq.auto,transmission.is.null");
+      else query = query.eq(key, value);
     }
 
     if (incoming.get("has_accident") === "false") query = query.eq("has_accident", false);
@@ -160,7 +166,7 @@ Deno.serve(async (req) => {
 
     const { data, error, count } = await query
       .order("last_seen_at", { ascending: false })
-      .range(from, from + pageSize - 1);
+      .range(from, from + pageSize); // one extra row tells us if there is a next page
 
     if (error) {
       console.error("encar_listings query failed", error);
@@ -175,7 +181,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const results = (data ?? []).map((row) => {
+    const hasMore = (data?.length ?? 0) > pageSize;
+    const results = (data ?? []).slice(0, pageSize).map((row: any) => {
       const krw = Number(row.price_original ?? 0);
       const importPrice =
         Number.isFinite(krw) && krw > 0
@@ -188,15 +195,17 @@ Deno.serve(async (req) => {
       };
     });
 
-    const total = count ?? results.length;
-    const pages = pageSize > 0 ? Math.ceil(total / pageSize) : 0;
+    let total = count ?? from + results.length + (hasMore ? 1 : 0);
+    if (!hasMore) total = from + results.length; // last page: exact
+    else total = Math.max(total, from + results.length + 1);
+    const pages = pageSize > 0 ? Math.max(page + (hasMore ? 1 : 0), Math.ceil(total / pageSize)) : 0;
 
     return json({
       count: total,
       page,
       pages,
       page_size: pageSize,
-      has_next: page < pages,
+      has_next: hasMore,
       results,
     });
   } catch (err) {
