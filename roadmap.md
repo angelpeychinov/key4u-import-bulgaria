@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Build protected Encar model/body category mapping, backfill missing bodies, enrich sync, verify coverage and samples; do not publish.
+- [ ] Finish Encar body backfill and verify final coverage/samples: mapping and sync enrichment deployed, tests passed; last verified 155k+ classified, remaining work blocked by unavailable database connection pooler. Do not publish.
 
 - [x] Review monitoring findings: timeout evidence stale (current search/facets succeed); empty saved search fixed and verified through save/remove-last-car flow, tests passed, server deployed.
 

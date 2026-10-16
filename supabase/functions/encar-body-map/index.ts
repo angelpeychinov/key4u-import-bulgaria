@@ -115,7 +115,7 @@ Deno.serve(async (req) => {
   const q = selection && (manufacturers?.length || groups?.length)
    ? `(And.Hidden.N._.(C.CarType.${ct}._.${groupSelection ? `(Or.${(manufacturers ?? (manufacturer ? [manufacturer] : [])).map(m => `(C.Manufacturer.${escape(m)}._.${groupSelection})`).join("_.")})` : selection})${category ? `_.Category.${category}.` : ""})`
    : category || manufacturer
-   ? `(And.Hidden.N._.${manufacturer ? `(C.CarType.${ct}._.Manufacturer.${manufacturer.replace(/\)/g, "_)")}.)` : `CarType.${ct}.`}${category ? `_.Category.${category}.` : ""})`
+   ? `(And.Hidden.N._.${manufacturer ? `(C.CarType.${ct}._.Manufacturer.${escape(manufacturer)}.)` : `CarType.${ct}.`}${category ? `_.Category.${category}.` : ""})`
    : `(And.Hidden.N._.CarType.${ct}.)`;
   const payload = await fetchFacet(q);
   console.log("Encar body facet structure", JSON.stringify(payload).slice(0, 20000));
