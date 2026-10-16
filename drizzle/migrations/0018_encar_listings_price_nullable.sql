@@ -1,0 +1,1 @@
+ALTER TABLE public.encar_listings ALTER COLUMN price_original DROP NOT NULL;

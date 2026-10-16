@@ -127,6 +127,13 @@
       "when": 1792189822639,
       "tag": "0017_create_pricing_config",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792190820930,
+      "tag": "0018_encar_listings_price_nullable",
+      "breakpoints": true
     }
   ]
 }
