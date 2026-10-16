@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS encar_listings_missing_body_model_idx ON public.encar_listings ((raw_data->>'Manufacturer'), (raw_data->>'Model')) WHERE body_type IS NULL;

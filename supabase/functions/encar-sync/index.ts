@@ -5,6 +5,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { upsertListings } from "../_shared/upsertListings.ts";
 import { HEADERS, makeClient } from "../_shared/encarHttp.ts";
+import { loadModelBodies, pairKey } from "../_shared/encarModelBody.ts";
 
 const MAKERS: [string, "Y" | "N"][] = [
   ["현대", "Y"], ["기아", "Y"], ["제네시스", "Y"], ["쉐보레(GM대우)", "Y"], ["르노코리아(삼성)", "Y"],
@@ -98,7 +99,7 @@ async function encarSearch(client: any, q: string, offset: number, limit: number
 const modelSlug = (m?: string) =>
   m ? m.replace(/\([^)]*\)/g, "").trim().toLowerCase().replace(/\s+/g, "-") : undefined;
 
-function toRow(r: any, maker: string) {
+function toRow(r: any, maker: string, bodies: Map<string, string>) {
   const photos: string[] = Array.isArray(r.Photos) && r.Photos.length
     ? [...r.Photos].sort((a, b) => {
         const byOrdering = (a.ordering ?? 0) - (b.ordering ?? 0);
@@ -122,6 +123,7 @@ function toRow(r: any, maker: string) {
     mileage: r.Mileage ?? null,
     fuel_type: r.FuelType ?? null,
     transmission: r.Transmission ?? null,
+    body_type: bodies.get(pairKey(String(r.Manufacturer ?? maker), String(r.Model ?? ""))) ?? null,
     region: r.OfficeCityState ?? null,
     photos,
     thumb: photos[0] ?? null,
@@ -139,7 +141,7 @@ function sofiaHour(): number {
   return Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Sofia", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
 }
 
-async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
+async function runIncremental(supabase: any, proxyUrl: string, t0: number, bodies: Map<string, string>) {
   const { data: lastInc } = await supabase.from("encar_sync_runs").select("started_at")
     .eq("kind", "incremental").order("started_at", { ascending: false }).limit(1);
   if (lastInc?.[0] && Date.now() - new Date(lastInc[0].started_at).getTime() < INCR_INTERVAL_MS) {
@@ -158,7 +160,7 @@ async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
         pages++;
         if (results.length === 0) break;
         const rows = results.filter((r) => Number(r.Price) > 0 && r.SellType === "일반")
-          .map((r) => toRow(r, String(r.Manufacturer ?? "")));
+          .map((r) => toRow(r, String(r.Manufacturer ?? ""), bodies));
         if (rows.length) {
           const { inserted, updated } = await upsertListings(supabase, rows);
           upserted += inserted + updated;
@@ -220,6 +222,7 @@ Deno.serve(async (req) => {
   };
 
   try {
+    const bodies = await loadModelBodies(supabase);
     // --- decide mode: continue full / start full / incremental / idle ---
     const { data: running } = await supabase.from("encar_sync_runs").select("*")
       .eq("status", "running").eq("kind", "full").order("started_at", { ascending: false }).limit(1);
@@ -255,7 +258,7 @@ Deno.serve(async (req) => {
           await releaseLock();
           return json({ ok: true, status: "blocked-cooldown", retry_after_s: Math.round((BLOCK_COOLDOWN_MS - (Date.now() - at)) / 1000) });
         }
-        const res = await runIncremental(supabase, proxyUrl, t0);
+        const res = await runIncremental(supabase, proxyUrl, t0, bodies);
         await releaseLock();
         return json(res);
       }
@@ -347,7 +350,7 @@ Deno.serve(async (req) => {
         }
         const rows = good.flat()
           .filter((r) => Number(r.Price) > 0 && r.SellType === "일반")
-          .map((r) => toRow(r, w.maker));
+          .map((r) => toRow(r, w.maker, bodies));
         if (rows.length) {
           const { inserted, updated } = await upsertListings(supabase, rows);
           stats.upserted += inserted + updated;

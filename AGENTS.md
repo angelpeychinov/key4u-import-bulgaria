@@ -5,3 +5,5 @@
 - Default and categorical catalog facets use a scheduled grouped database cache; numeric filters scan one source, with taxonomy fallback to preserve choices under sync load.
 - Encar detail normalization and response facet sanitization share a tested text-safety helper; a database trigger sanitizes every facet-cache write to protect cached fallback reads.
 - Search distinguishes absent saved IDs from an explicit empty scope; empty saved searches return locally and the server rejects empty ID scopes to avoid exposing the full catalog as favorites.
+- Encar model/category bodies are resolved through the protected model mapping table cached per sync invocation; shared upserts preserve existing non-null bodies so detail classifications are never lost.
+- Body-category mapping uses Encar-provided facet expressions and size-bounded grouped queries to preserve punctuation and avoid rejected URLs; backfill updates only null classifications through indexed batches.
