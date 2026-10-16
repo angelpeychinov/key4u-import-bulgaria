@@ -43,6 +43,7 @@ async function encarSearch(client: any, q: string, offset: number, limit: number
   const url = `https://api.encar.com/search/car/list/general?count=true&q=${encodeURIComponent(q)}&sr=${encodeURIComponent(sr)}`;
   const r = await fetch(url, { client, headers: HEADERS, redirect: "manual", signal: AbortSignal.timeout(20_000) } as any);
   const text = await r.text();
+  if (!r.ok) console.error(`encar non-2xx ${r.status} ${url}`);
   if ([403, 407, 429].includes(r.status) || (r.status >= 300 && r.status < 400)) {
     throw new BlockedError(`HTTP ${r.status} ${r.headers.get("location") ?? ""} ${text.slice(0, 200)}`.trim());
   }
