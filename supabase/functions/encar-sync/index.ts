@@ -33,9 +33,40 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const jitter = () => sleep(1200 + Math.random() * 1300);
 
 
+// Price.range must sit at the top level next to the (C.…) group — nesting it inside returns HTTP 400.
 function buildQ(maker: string, ct: string, lo?: number | null, hi?: number | null) {
-  const price = lo != null && hi != null ? `._.Price.range(${lo}..${hi - 1}).` : ".";
-  return `(And.Hidden.N._.(C.CarType.${ct}._.Manufacturer.${maker}${price}))`;
+  const group = `(C.CarType.${ct}._.Manufacturer.${maker}.)`;
+  return lo != null && hi != null
+    ? `(And.Hidden.N._.${group}_.Price.range(${lo}..${hi - 1}).)`
+    : `(And.Hidden.N._.${group})`;
+}
+
+function findFacet(node: any, name: string): any {
+  if (!node || typeof node !== "object") return null;
+  if (Array.isArray(node)) { for (const x of node) { const f = findFacet(x, name); if (f) return f; } return null; }
+  if (node.Name === name && Array.isArray(node.Facets)) return node;
+  for (const v of Object.values(node)) { const f = findFacet(v, name); if (f) return f; }
+  return null;
+}
+
+// Returns [maker, car_type, count][] from Encar's Manufacturer facet (Count > 0 only).
+async function fetchMakers(client: any): Promise<[string, string, number][]> {
+  const out: [string, string, number][] = [];
+  for (const ct of ["Y", "N"]) {
+    const url = `https://api.encar.com/search/car/list/general?count=true&q=${encodeURIComponent(`(And.Hidden.N._.CarType.${ct}.)`)}&inav=${encodeURIComponent("|Metadata|Sort")}&sr=${encodeURIComponent("|ModifiedDate|0|1")}`;
+    const r = await fetch(url, { client, headers: HEADERS, redirect: "manual", signal: AbortSignal.timeout(20_000) } as any);
+    const text = await r.text();
+    if (!r.ok) { console.error(`encar non-2xx ${r.status} ${url}`); throw new Error(`facet HTTP ${r.status}`); }
+    const f = findFacet(JSON.parse(text), "Manufacturer");
+    if (!f) throw new Error("Manufacturer facet not found");
+    for (const c of f.Facets) {
+      const v = String(c.Value ?? c.DisplayValue ?? ""); const n = Number(c.Count ?? 0);
+      if (v && n > 0) out.push([v, ct, n]);
+    }
+    await jitter();
+  }
+  if (!out.length) throw new Error("facet returned no makers");
+  return out;
 }
 
 async function encarSearch(client: any, q: string, offset: number, limit: number) {
@@ -240,28 +271,50 @@ Deno.serve(async (req) => {
     const client = makeClient(proxyUrl);
 
     // --- build windows maker by maker ---
+    if (!run.windows_built && !Array.isArray(run.makers)) {
+      let makers: [string, string, number | null][];
+      try { makers = await fetchMakers(client); await clearPause(); }
+      catch (e) {
+        if (e instanceof BlockedError) throw e;
+        console.error("facet fetch failed, using fallback MAKERS", String(e));
+        makers = MAKERS.map(([m, ct]) => [m, ct, null]);
+      }
+      run.makers = makers;
+      await supabase.from("encar_sync_runs").update({ makers }).eq("id", run.id);
+    }
     while (!run.windows_built && timeLeft()) {
       const idx = run.build_maker_idx;
-      if (idx >= MAKERS.length) {
+      const list = run.makers as [string, string, number | null][];
+      if (idx >= list.length) {
         run.windows_built = true;
         await supabase.from("encar_sync_runs").update({ windows_built: true }).eq("id", run.id);
         break;
       }
-      const [maker, ct] = MAKERS[idx];
-      const { count } = await encarSearch(client, buildQ(maker, ct), 0, 1);
-      await clearPause();
-      await jitter();
+      const [maker, ct, known] = list[idx];
+      let count = known;
+      if (count == null) {
+        ({ count } = await encarSearch(client, buildQ(maker, ct), 0, 1));
+        await clearPause();
+        await jitter();
+      }
       const windows: any[] = [];
-      if (count === 0) {
+      if (!count) {
         console.log(`maker ${maker} has 0 listings, skipped`);
       } else if (count <= MAX_DEPTH) {
         windows.push({ run_id: run.id, maker, car_type: ct, total: count });
       } else {
-        for (let i = 0; i < PRICE_EDGES.length - 1; i++) {
-          const lo = PRICE_EDGES[i], hi = PRICE_EDGES[i + 1];
+        const stack: [number, number][] = [];
+        for (let i = PRICE_EDGES.length - 2; i >= 0; i--) stack.push([PRICE_EDGES[i], PRICE_EDGES[i + 1]]);
+        while (stack.length) {
+          const [lo, hi] = stack.pop()!;
           const { count: c } = await encarSearch(client, buildQ(maker, ct, lo, hi), 0, 1);
+          await clearPause();
           await jitter();
-          if (c > 0) windows.push({ run_id: run.id, maker, car_type: ct, price_lo: lo, price_hi: hi, total: c });
+          if (c <= 0) continue;
+          if (c > MAX_DEPTH && hi - lo > 1) {
+            const mid = Math.floor((lo + hi) / 2);
+            stack.push([mid, hi], [lo, mid]);
+          } else windows.push({ run_id: run.id, maker, car_type: ct, price_lo: lo, price_hi: hi, total: c });
         }
       }
       if (windows.length) {
