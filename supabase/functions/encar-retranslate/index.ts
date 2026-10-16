@@ -12,9 +12,14 @@ Deno.serve(async (req) => {
     .select("id,encar_id,model_name,model_slug,trim,raw_data")
     .gt("encar_id", after).order("encar_id").limit(1000);
   if (error) return Response.json({ error: error.message }, { status: 500 });
+  // Cars with official English names from encar-detail keep them.
+  const { data: det } = await sb.from("encar_listing_details").select("encar_id,vehicle").not("vehicle", "is", null);
+  // deno-lint-ignore no-explicit-any
+  const keep = new Set((det ?? []).filter((d: any) => d.vehicle?.category?.modelGroupEnglishName).map((d) => d.encar_id));
   let changed = 0;
   const updates: Promise<unknown>[] = [];
   for (const r of data ?? []) {
+    if (keep.has(r.encar_id)) continue;
     // deno-lint-ignore no-explicit-any
     const raw = r.raw_data as any;
     const model = raw?.Model ?? r.model_name;
