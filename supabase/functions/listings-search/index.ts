@@ -101,6 +101,28 @@ const textParam = (params: URLSearchParams, key: string): string | undefined => 
   return raw && raw !== "all" ? raw : undefined;
 };
 
+// Comma-separated multi-select param, e.g. fuel_type=gasoline,diesel
+const listParam = (params: URLSearchParams, key: string): string[] | undefined => {
+  const raw = params.get(key);
+  if (!raw) return undefined;
+  const items = raw
+    .split(",")
+    .map((s) => s.trim().toLowerCase().slice(0, 40))
+    .filter((s) => s && s !== "all");
+  return items.length ? [...new Set(items)] : undefined;
+};
+
+type SortKey = "newest" | "price_asc" | "price_desc" | "mileage_asc" | "year_desc" | "year_asc";
+
+const SORTS: Record<SortKey, { column: string; ascending: boolean }> = {
+  newest: { column: "last_seen_at", ascending: false },
+  price_asc: { column: "price_original", ascending: true },
+  price_desc: { column: "price_original", ascending: false },
+  mileage_asc: { column: "mileage", ascending: true },
+  year_desc: { column: "year", ascending: false },
+  year_asc: { column: "year", ascending: true },
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -120,14 +142,14 @@ Deno.serve(async (req) => {
     );
 
     const incoming = new URL(req.url).searchParams;
-    const pageSize = Math.min(numParam(incoming, "limit") ?? 24, 48);
+    const pageSize = Math.min(numParam(incoming, "limit") ?? 20, 48);
     const page = numParam(incoming, "page") ?? 1;
     const from = (page - 1) * pageSize;
 
     // Narrow searches (model, or 3+ filters) get exact counts; broad ones use the planner estimate for speed.
-    const filterKeys = ["brand", "model", "fuel_type", "transmission", "body_type", "has_accident", "year_from", "year_to", "mileage_max", "price_from", "price_to"]
+    const filterKeys = ["brand", "model", "fuel_type", "transmission", "body_type", "region", "has_accident", "year_from", "year_to", "mileage_min", "mileage_max", "price_from", "price_to", "ids"]
       .filter((k) => incoming.get(k));
-    const narrow = !!incoming.get("model") || filterKeys.length >= 3;
+    const narrow = !!incoming.get("model") || !!incoming.get("ids") || filterKeys.length >= 3;
     const COLS = "id,encar_id,brand_name,brand_slug,model_name,model_slug,trim,year,price_original,mileage,fuel_type,transmission,body_type,color,region,has_accident,engine_cc,thumb,photos,listing_url,source_code,status,first_seen_at,last_seen_at,price_changed_at,previous_price_krw";
 
     let query = supabase
@@ -135,18 +157,42 @@ Deno.serve(async (req) => {
       .select(COLS, { count: narrow ? "exact" : "estimated" })
       .eq("status", "active");
 
+    // Saved cars: explicit list of encar ids.
+    const idsRaw = incoming.get("ids");
+    if (idsRaw) {
+      const ids = idsRaw.split(",").map((s) => s.trim()).filter((s) => /^\d{1,20}$/.test(s)).slice(0, 200);
+      if (ids.length === 0) {
+        return json({ results: [], count: 0, page, pages: 0, page_size: pageSize, has_next: false });
+      }
+      query = query.in("encar_id", ids);
+    }
+
     const brand = textParam(incoming, "brand");
     if (brand) query = query.eq("brand_slug", brand);
     const model = textParam(incoming, "model");
     if (model) query = query.eq("model_slug", model);
 
-    for (const key of ["fuel_type", "transmission", "body_type"] as const) {
-      const value = textParam(incoming, key)?.toLowerCase();
-      if (!value) continue;
+    const fuels = listParam(incoming, "fuel_type");
+    if (fuels) query = query.in("fuel_type", fuels);
+
+    const transmissions = listParam(incoming, "transmission");
+    if (transmissions) {
       // The Encar list API omits transmission; unknown rows are treated as automatic (~99% of Korean used cars).
-      if (key === "transmission" && value === "auto") query = query.or("transmission.eq.auto,transmission.is.null");
-      else query = query.eq(key, value);
+      if (transmissions.includes("auto")) {
+        const others = transmissions.filter((t) => t !== "auto");
+        query = query.or(
+          `transmission.is.null,transmission.in.(${["auto", ...others].join(",")})`,
+        );
+      } else {
+        query = query.in("transmission", transmissions);
+      }
     }
+
+    const bodyTypes = listParam(incoming, "body_type");
+    if (bodyTypes) query = query.in("body_type", bodyTypes);
+
+    const regions = listParam(incoming, "region");
+    if (regions) query = query.in("region", regions);
 
     if (incoming.get("has_accident") === "false") query = query.eq("has_accident", false);
 
@@ -155,6 +201,8 @@ Deno.serve(async (req) => {
     const yearTo = numParam(incoming, "year_to");
     if (yearTo) query = query.lte("year", yearTo);
 
+    const mileageMin = numParam(incoming, "mileage_min");
+    if (mileageMin) query = query.gte("mileage", mileageMin);
     const mileageMax = numParam(incoming, "mileage_max");
     if (mileageMax) query = query.lte("mileage", mileageMax);
 
@@ -164,8 +212,11 @@ Deno.serve(async (req) => {
     const priceTo = numParam(incoming, "price_to");
     if (priceTo) query = query.lte("price_original", firstKrwReaching(priceTo + 0.000001) - 1);
 
+    const sortParam = (incoming.get("sort") ?? "newest") as SortKey;
+    const sort = SORTS[sortParam] ?? SORTS.newest;
+
     const { data, error, count } = await query
-      .order("last_seen_at", { ascending: false })
+      .order(sort.column, { ascending: sort.ascending, nullsFirst: false })
       .order("encar_id", { ascending: false })
       .range(from, from + pageSize); // one extra row tells us if there is a next page
 
