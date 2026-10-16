@@ -117,7 +117,8 @@ function toRow(r: any, maker: string) {
     model_slug: modelSlug(r.Model) ?? null,
     trim: [r.Badge, r.BadgeDetail].filter(Boolean).join(" ") || null,
     year: parseInt(r.FormYear) || (r.Year ? Math.floor(Number(r.Year) / 100) : null),
-    price_original: Math.round(Number(r.Price) * 10000),
+    // 9999 (만원) is Encar's "price on request" placeholder — store as NULL
+    price_original: Number(r.Price) === 9999 ? null : Math.round(Number(r.Price) * 10000),
     mileage: r.Mileage ?? null,
     fuel_type: r.FuelType ?? null,
     transmission: r.Transmission ?? null,
@@ -156,7 +157,7 @@ async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
         const { results } = await encarSearch(client, `(And.Hidden.N._.CarType.${ct}.)`, p * PAGE, PAGE);
         pages++;
         if (results.length === 0) break;
-        const rows = results.filter((r) => { const p = Number(r.Price); return p > 0 && p !== 9999 && r.SellType === "일반"; })
+        const rows = results.filter((r) => Number(r.Price) > 0 && r.SellType === "일반")
           .map((r) => toRow(r, String(r.Manufacturer ?? "")));
         if (rows.length) {
           const { inserted, updated } = await upsertListings(supabase, rows);
@@ -345,7 +346,7 @@ Deno.serve(async (req) => {
           good.push(s.value.results);
         }
         const rows = good.flat()
-          .filter((r) => { const p = Number(r.Price); return p > 0 && p !== 9999 && r.SellType === "일반"; })
+          .filter((r) => Number(r.Price) > 0 && r.SellType === "일반")
           .map((r) => toRow(r, w.maker));
         if (rows.length) {
           const { inserted, updated } = await upsertListings(supabase, rows);
