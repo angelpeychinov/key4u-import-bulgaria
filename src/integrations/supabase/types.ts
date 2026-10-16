@@ -178,6 +178,7 @@ export type Database = {
       encar_sync_runs: {
         Row: {
           build_maker_idx: number
+          build_stack: Json | null
           error: string | null
           finished_at: string | null
           id: string
@@ -193,6 +194,7 @@ export type Database = {
         }
         Insert: {
           build_maker_idx?: number
+          build_stack?: Json | null
           error?: string | null
           finished_at?: string | null
           id?: string
@@ -208,6 +210,7 @@ export type Database = {
         }
         Update: {
           build_maker_idx?: number
+          build_stack?: Json | null
           error?: string | null
           finished_at?: string | null
           id?: string
