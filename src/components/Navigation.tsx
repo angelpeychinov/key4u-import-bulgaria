@@ -29,6 +29,7 @@ export const Navigation = () => {
     { to: "/", label: t('nav.home') },
     { to: "/process", label: t('nav.process') },
     { to: "/find-car", label: t('nav.findCar') },
+    { to: "/car-search", label: t('nav.carSearch') },
     // Delivered cars page paused — restore this link when re-enabling.
     // { to: "/delivered", label: t('nav.delivered') },
   ];
