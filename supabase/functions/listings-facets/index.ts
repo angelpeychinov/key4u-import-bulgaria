@@ -146,6 +146,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       { auth: { persistSession: false } },
     );
+    const pricing = await loadPricingConfig(supabase);
 
     const priceFrom = numParam(incoming, "price_from");
     const priceTo = numParam(incoming, "price_to");
@@ -155,8 +156,8 @@ Deno.serve(async (req) => {
       _model: textParam(incoming, "model") ?? null,
       _year_from: numParam(incoming, "year_from") ?? null,
       _year_to: numParam(incoming, "year_to") ?? null,
-      _price_min: priceFrom ? firstKrwReaching(priceFrom) : null,
-      _price_max: priceTo ? firstKrwReaching(priceTo + 0.000001) - 1 : null,
+      _price_min: priceFrom ? firstKrwReaching(priceFrom, pricing) : null,
+      _price_max: priceTo ? firstKrwReaching(priceTo + 0.000001, pricing) - 1 : null,
       _mileage_min: numParam(incoming, "mileage_min") ?? null,
       _mileage_max: numParam(incoming, "mileage_max") ?? null,
       _fuels: listParam(incoming, "fuel_type") ?? null,
