@@ -203,17 +203,26 @@ Deno.serve(async (req) => {
     const { data: running } = await supabase.from("encar_sync_runs").select("*")
       .eq("status", "running").eq("kind", "full").order("started_at", { ascending: false }).limit(1);
     run = running?.[0] ?? null;
+    // Safety valve: a full run stuck 'running' for >36 h is abandoned so a new one can start.
+    if (run && Date.now() - new Date(run.started_at).getTime() > ABANDON_MS) {
+      console.warn("abandoning stale full run", run.id);
+      await supabase.from("encar_sync_runs").update({ status: "abandoned", finished_at: new Date().toISOString() }).eq("id", run.id);
+      run = null;
+    }
+    // Paused full run: do nothing (no incremental either) until the pause expires.
+    if (run?.paused_until && new Date(run.paused_until).getTime() > Date.now()) {
+      const until = run.paused_until;
+      run = null;
+      await releaseLock();
+      return json({ ok: true, status: "paused", until });
+    }
     if (!run) {
+      // Blocked cooldown applies to incremental runs only.
       const { data: last } = await supabase.from("encar_sync_runs").select("status, started_at, finished_at")
-        .order("started_at", { ascending: false }).limit(1);
+        .eq("kind", "incremental").order("started_at", { ascending: false }).limit(1);
       const l = last?.[0];
-      if (l?.status === "blocked") {
-        const at = new Date(l.finished_at ?? l.started_at).getTime();
-        if (Date.now() - at < BLOCK_COOLDOWN_MS) {
-          await releaseLock();
-          return json({ ok: true, status: "blocked-cooldown", retry_after_s: Math.round((BLOCK_COOLDOWN_MS - (Date.now() - at)) / 1000) });
-        }
-      }
+      const at = l ? new Date(l.finished_at ?? l.started_at).getTime() : 0;
+      const incBlocked = l?.status === "blocked" && Date.now() - at < BLOCK_COOLDOWN_MS;
       const { data: lastFull } = await supabase.from("encar_sync_runs").select("started_at")
         .eq("kind", "full").eq("status", "done").order("started_at", { ascending: false }).limit(1);
       const lf = lastFull?.[0];
@@ -242,6 +251,7 @@ Deno.serve(async (req) => {
       }
       const [maker, ct] = MAKERS[idx];
       const { count } = await encarSearch(client, buildQ(maker, ct), 0, 1);
+      await clearPause();
       await jitter();
       const windows: any[] = [];
       if (count === 0) {
@@ -283,6 +293,7 @@ Deno.serve(async (req) => {
           const { inserted, updated } = await upsertListings(supabase, rows);
           stats.upserted += inserted + updated;
         }
+        await clearPause();
         w.next_offset += PAGE;
         w.fetched += results.length; // skipped results still count as seen
         if (w.next_offset >= limit) w.done = true;
@@ -331,8 +342,13 @@ Deno.serve(async (req) => {
     const msg = e instanceof Error ? e.message : String(e);
     const blocked = e instanceof BlockedError;
     console.error(blocked ? "encar blocked" : "encar-sync error", msg);
-    if (run) await bumpRun({ status: blocked ? "blocked" : "error", error: msg.slice(0, 1000), finished_at: new Date().toISOString() });
+    let until: string | null = null;
+    if (run) {
+      // A full run is never abandoned on error/block: keep 'running' and pause it.
+      until = new Date(Date.now() + (blocked ? BLOCK_COOLDOWN_MS : ERROR_PAUSE_MS)).toISOString();
+      await bumpRun({ status: "running", error: ((blocked ? "BLOCKED: " : "") + msg).slice(0, 1000), paused_until: until });
+    }
     await releaseLock();
-    return json({ ok: false, status: blocked ? "blocked" : "error", error: msg });
+    return json({ ok: false, status: blocked ? "blocked" : "error", error: msg, paused_until: until });
   }
 });
