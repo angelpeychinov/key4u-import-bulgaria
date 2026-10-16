@@ -70,7 +70,11 @@ export default function CarSearch() {
     try {
       const { listings: results, unavailable: down, hasNext, page: current, pages: totalPages } =
         await searchListings(active, nextPage, PAGE_SIZE);
-      setListings((prev) => (append ? [...prev, ...results] : results));
+      setListings((prev) => {
+        if (!append) return results;
+        const seen = new Set(prev.map((l) => l.encarId ?? l.id));
+        return [...prev, ...results.filter((l) => !seen.has(l.encarId ?? l.id))];
+      });
       setPage(current ?? nextPage);
       setPages(totalPages);
       setHasMore(hasNext);

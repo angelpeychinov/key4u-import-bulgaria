@@ -166,6 +166,7 @@ Deno.serve(async (req) => {
 
     const { data, error, count } = await query
       .order("last_seen_at", { ascending: false })
+      .order("encar_id", { ascending: false })
       .range(from, from + pageSize); // one extra row tells us if there is a next page
 
     if (error) {
