@@ -1,5 +1,12 @@
 // Shared Korean -> English maps for Encar data. Mirrored by the SQL backfill.
 export const BRAND_MAP: Record<string, string> = {
+  "시트로엥/DS": "Citroen/DS", "알파 로메오": "Alfa Romeo", "BYD": "BYD", "GMC": "GMC", "다이하쯔": "Daihatsu",
+  "동풍소콘": "Dongfeng Sokon", "로터스": "Lotus", "마이바흐": "Maybach", "맥라렌": "McLaren", "미쯔오까": "Mitsuoka",
+  "북기은상": "BAIC", "사브": "Saab", "사이언": "Scion", "신위안": "Xinyuan", "스즈키": "Suzuki", "애스턴마틴": "Aston Martin",
+  "어큐라": "Acura", "이네오스": "Ineos", "지리": "Geely", "험머": "Hummer", "부가티": "Bugatti", "코닉세그": "Koenigsegg",
+  "파가니": "Pagani", "기타 제조사": "Other (Korea)", "기타 수입차": "Other (Import)", "머큐리": "Mercury", "뷰익": "Buick",
+  "새턴": "Saturn", "오펠": "Opel", "올즈모빌": "Oldsmobile", "이스즈": "Isuzu", "지커": "Zeekr", "포톤": "Foton",
+  "폰티악": "Pontiac", "MG로버": "MG Rover",
   "벤츠": "Mercedes-Benz", "아우디": "Audi", "폭스바겐": "Volkswagen", "포르쉐": "Porsche",
   "볼보": "Volvo", "렉서스": "Lexus", "랜드로버": "Land Rover", "도요타": "Toyota", "미니": "Mini",
   "벤틀리": "Bentley", "롤스로이스": "Rolls-Royce", "재규어": "Jaguar", "마세라티": "Maserati",
