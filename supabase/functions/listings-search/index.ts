@@ -216,7 +216,10 @@ Deno.serve(async (req) => {
     const sort = SORTS[sortParam] ?? SORTS.newest;
 
     const { data, error, count } = await query
-      .order(sort.column, { ascending: sort.ascending, nullsFirst: false })
+      // No nullsFirst override: DESC NULLS LAST can't use our plain DESC indexes
+      // and forces a full sort of 180k+ rows (statement timeout). NULLS FIRST
+      // matches the indexes; last_seen_at is always set on active rows anyway.
+      .order(sort.column, { ascending: sort.ascending })
       .order("encar_id", { ascending: false })
       .range(from, from + pageSize); // one extra row tells us if there is a next page
 
