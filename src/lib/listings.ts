@@ -17,6 +17,7 @@ export interface Listing {
   price?: number;
   currency?: string;
   mileage?: number;
+  engineCc?: number;
   location?: string;
   source?: string;
   thumb?: string;
@@ -207,6 +208,7 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
     price: toNumber(raw.price_eur),
     currency: "EUR",
     mileage: toNumber(raw.mileage),
+    engineCc: toNumber(raw.engine_cc),
     location: (raw.region as string | undefined) ?? undefined,
     source: (raw.source_code as string | undefined)?.toLowerCase(),
     thumb,
