@@ -64,6 +64,13 @@
       "when": 1792174005224,
       "tag": "0008_encar_listings_catalog_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792174104145,
+      "tag": "0009_encar_listings_brand_last_seen_index",
+      "breakpoints": true
     }
   ]
 }
