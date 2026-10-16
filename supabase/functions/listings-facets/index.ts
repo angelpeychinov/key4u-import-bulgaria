@@ -6,22 +6,27 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
 };
 
-const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
 // Live rates come from the pricing_config table (cached 5 min); these are
 // fallbacks. fx = eur_to_cad * cad_to_krw already includes the exchange loss,
 // so there is NO separate EUR->CAD conversion fee.
 // calibrated against Key4U's Rotterdam calculator
 const FALLBACK_FX = 1.5557 * 921.72; // KRW per EUR
-const FALLBACK_SEA_BASE = 1917;
+const FALLBACK_CAR_MARKUP_PCT = 1.75;
+const FALLBACK_ROTTERDAM_FIXED = 2416;
 const CONFIG_TTL_MS = 5 * 60 * 1000;
 
 interface PricingConfig {
   fx: number;
-  seaBase: number;
+  carMarkupPct: number;
+  rotterdamFixed: number;
 }
 
-const FALLBACK_CFG: PricingConfig = { fx: FALLBACK_FX, seaBase: FALLBACK_SEA_BASE };
+const FALLBACK_CFG: PricingConfig = {
+  fx: FALLBACK_FX,
+  carMarkupPct: FALLBACK_CAR_MARKUP_PCT,
+  rotterdamFixed: FALLBACK_ROTTERDAM_FIXED,
+};
 let pricingCache: { cfg: PricingConfig; at: number } | null = null;
 
 const loadPricingConfig = async (
@@ -34,9 +39,11 @@ const loadPricingConfig = async (
     const map = new Map((data ?? []).map((r: { key: string; value: number }) => [r.key, Number(r.value)]));
     const eurToCad = map.get("eur_to_cad");
     const cadToKrw = map.get("cad_to_krw");
-    const seaBase = map.get("sea_base_eur");
+    const carMarkupPct = map.get("car_markup_pct");
+    const rotterdamFixed = map.get("rotterdam_fixed_eur");
     if (eurToCad && cadToKrw) cfg.fx = eurToCad * cadToKrw;
-    if (seaBase) cfg.seaBase = seaBase;
+    if (carMarkupPct) cfg.carMarkupPct = carMarkupPct;
+    if (rotterdamFixed) cfg.rotterdamFixed = rotterdamFixed;
   } catch (e) {
     console.error("pricing_config load failed, using fallbacks", e);
   }

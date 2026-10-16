@@ -51,14 +51,6 @@ const loadPricingConfig = async (
   return cfg;
 };
 
-const bracketPct = (adjusted: number): number => {
-  if (adjusted <= 15000000) return 3.0;
-  if (adjusted <= 30000000) return 2.5;
-  if (adjusted <= 45000000) return 2.0;
-  if (adjusted <= 75000000) return 1.5;
-  return 1.0;
-};
-
 const commissionForPrice = (krw: number): number => {
   if (krw <= 20000000) return 900;
   if (krw <= 35000000) return 1000;
@@ -76,25 +68,23 @@ const dutyVatFee = (priceEur: number): number => {
   return 2500;
 };
 
+// Calibrated against Key4U's real Rotterdam calculator (8 data points, ±40 €).
 const calculateKoreaImportPrice = (priceKrw: number, isOversize = false, cfg: PricingConfig = FALLBACK_CFG) => {
-  const adjusted = priceKrw * 0.909;
-  const bracketFee = (adjusted * bracketPct(adjusted)) / 100;
-  const flatFees = 440000 + 250000;
-  // "Цена на автомобил" — цена до Ротердам в EUR (fx вече включва курсовата разлика).
-  const price = (adjusted + bracketFee + flatFees) / cfg.fx;
+  // Цена на колата в EUR: без корейско ДДС (/1.1), с нашата надценка, по курс fx.
+  const carEur = ((priceKrw / 1.1) * (1 + cfg.carMarkupPct / 100)) / cfg.fx;
 
-  const carSizeSurcharge = isOversize ? 350 : 0;
-  const domTransportCost = isOversize ? 1150 : 900;
-  // "Транспорт до България (вкл. мито и ДДС)"
-  const transport = cfg.seaBase + SEA_SURCHARGE + carSizeSurcharge + dutyVatFee(price);
-  // "Разходи по закупуване и разтоварване"
-  const handling = HIDDEN_MARGIN + domTransportCost + commissionForPrice(priceKrw);
+  // "Цена до Ротердам"
+  const rotterdam = carEur + cfg.rotterdamFixed + (isOversize ? 350 : 0);
+  const dutyVat = dutyVatFee(carEur);
+  const domTransport = isOversize ? 1150 : 900; // Rotterdam -> Bulgaria
+  // "Комисионна и обработка"
+  const handling = HIDDEN_MARGIN + commissionForPrice(priceKrw);
 
   return {
-    price,
-    transport,
+    price: rotterdam,
+    transport: dutyVat + domTransport, // "Транспорт до България + мито и ДДС"
     handling,
-    total: price + transport + handling,
+    total: rotterdam + dutyVat + domTransport + handling,
   };
 };
 
