@@ -3,17 +3,18 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Gauge, Calendar, Fuel, MapPin, Heart, Car } from "lucide-react";
-import { Listing, formatMileage, formatApproxEur, formatEur, regionBg, fuelBg, transmissionBg } from "@/lib/listings";
+import { Listing, formatMileage, formatApproxEur, formatEur, regionBg, fuelBg, transmissionBg, encarImg } from "@/lib/listings";
 import { useFavorites } from "@/hooks/useFavorites";
 
 interface Props {
   listing: Listing;
   onOpen: (listing: Listing) => void;
+  priority?: boolean;
 }
 
 const MAX_PHOTOS = 5;
 
-export const ListingListCard = ({ listing, onOpen }: Props) => {
+export const ListingListCard = ({ listing, onOpen, priority = false }: Props) => {
   const photos = listing.photos.slice(0, MAX_PHOTOS);
   const [photoIdx, setPhotoIdx] = useState(0);
   const { has, toggle } = useFavorites();
@@ -36,7 +37,14 @@ export const ListingListCard = ({ listing, onOpen }: Props) => {
       {/* Photo flipper */}
       <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-muted sm:aspect-auto sm:h-auto sm:w-64 md:w-72">
         {photo ? (
-          <img src={photo} alt={`${listing.title} снимка`} loading="lazy" className="h-full w-full object-cover" />
+          <img
+            src={encarImg(photo, 640)}
+            alt={`${listing.title} снимка`}
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full min-h-40 w-full items-center justify-center text-muted-foreground">
             <Car className="h-10 w-10" />
