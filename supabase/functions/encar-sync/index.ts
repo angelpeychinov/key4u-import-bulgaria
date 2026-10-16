@@ -131,15 +131,6 @@ function sofiaHour(): number {
   return Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Sofia", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
 }
 
-// Encar format: "2026-08-31 22:23:04.000 +09"
-function parseEncarDate(s?: string): number | null {
-  if (!s) return null;
-  const m = String(s).trim().match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})(\.\d+)?\s*([+-]\d{2})(?::?(\d{2}))?$/);
-  if (!m) return null;
-  const t = Date.parse(`${m[1]}T${m[2]}${m[3] ?? ""}${m[4]}:${m[5] ?? "00"}`);
-  return Number.isNaN(t) ? null : t;
-}
-
 async function runIncremental(supabase: any, proxyUrl: string, t0: number) {
   const { data: lastInc } = await supabase.from("encar_sync_runs").select("started_at")
     .eq("kind", "incremental").order("started_at", { ascending: false }).limit(1);
