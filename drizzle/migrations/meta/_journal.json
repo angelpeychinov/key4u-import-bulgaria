@@ -29,6 +29,13 @@
       "when": 1792162689735,
       "tag": "0003_encar_sync_config",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792162988256,
+      "tag": "0004_encar_sync_runs_paused_until",
+      "breakpoints": true
     }
   ]
 }

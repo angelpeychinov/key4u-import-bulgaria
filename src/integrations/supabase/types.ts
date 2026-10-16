@@ -149,6 +149,7 @@ export type Database = {
           kind: string
           marked_sold: number
           pages: number
+          paused_until: string | null
           started_at: string
           status: string
           upserted: number
@@ -162,6 +163,7 @@ export type Database = {
           kind?: string
           marked_sold?: number
           pages?: number
+          paused_until?: string | null
           started_at?: string
           status?: string
           upserted?: number
@@ -175,6 +177,7 @@ export type Database = {
           kind?: string
           marked_sold?: number
           pages?: number
+          paused_until?: string | null
           started_at?: string
           status?: string
           upserted?: number
