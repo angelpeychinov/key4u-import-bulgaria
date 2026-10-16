@@ -132,6 +132,15 @@ export const REGION_BG: Record<string, string> = {
   gyeongbuk: "Сев. Кьонсан", gyeongnam: "Юж. Кьонсан", jeju: "Джеджу",
 };
 
+// Encar CDN resize (verified working): impolicy=heightRate with cw/ch crop box.
+// widthRate returns multipart junk — do not use.
+export const encarImg = (url: string | undefined, width: number): string | undefined => {
+  if (!url || !url.includes("ci.encar.com")) return url;
+  const h = Math.round(width * 0.75);
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}impolicy=heightRate&rh=${h}&cw=${width}&ch=${h}&cg=Center`;
+};
+
 export const fuelBg = (v?: string) => (v ? FUEL_BG[v.toLowerCase()] ?? v : "—");
 export const transmissionBg = (v?: string) => (v ? TRANSMISSION_BG[v.toLowerCase()] ?? v : "—");
 export const bodyBg = (v?: string) => (v ? BODY_BG[v.toLowerCase()] ?? v : "—");

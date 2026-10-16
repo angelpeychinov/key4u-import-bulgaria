@@ -100,7 +100,14 @@ const modelSlug = (m?: string) =>
 
 function toRow(r: any, maker: string) {
   const photos: string[] = Array.isArray(r.Photos) && r.Photos.length
-    ? [...r.Photos].sort((a, b) => (a.ordering ?? 0) - (b.ordering ?? 0))
+    ? [...r.Photos].sort((a, b) => {
+        const byOrdering = (a.ordering ?? 0) - (b.ordering ?? 0);
+        if (byOrdering !== 0) return byOrdering;
+        // Tiebreak by numeric part of the file name (_001, _003 …)
+        const na = parseInt(String(a.location ?? "").match(/_(\d+)/)?.[1] ?? "0", 10);
+        const nb = parseInt(String(b.location ?? "").match(/_(\d+)/)?.[1] ?? "0", 10);
+        return na - nb;
+      })
         .map((p) => "https://ci.encar.com/carpicture" + p.location)
     : r.Photo ? ["https://ci.encar.com/carpicture" + r.Photo + "001.jpg"] : [];
   return {

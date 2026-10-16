@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ExternalLink, Mail, Phone } from "lucide-react";
-import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur } from "@/lib/listings";
+import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, encarImg } from "@/lib/listings";
 import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
 
 interface Props {
@@ -17,6 +17,7 @@ interface Props {
 export const ListingDialog = ({ listing, onClose }: Props) => {
   const [insurance, setInsurance] = useState(false);
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
+  const [activePhoto, setActivePhoto] = useState(0);
 
   const ip = listing?.importPrice;
   const insuranceAmount = ip ? ip.price * 0.022 : 0;
@@ -26,6 +27,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
 
   useEffect(() => {
     setDetails(null);
+    setActivePhoto(0);
     const id = listing?.encarId;
     if (!id) return;
     let cancelled = false;
@@ -38,6 +40,19 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
   }, [listing?.encarId]);
 
   const gallery = details?.photos.length ? details.photos : listing?.photos.slice(0, 12) ?? [];
+  const current = Math.min(activePhoto, Math.max(gallery.length - 1, 0));
+
+  // Preload neighbours of the active photo
+  useEffect(() => {
+    if (gallery.length < 2) return;
+    [current - 1, current + 1].forEach((i) => {
+      const src = encarImg(gallery[(i + gallery.length) % gallery.length], 1000);
+      if (src) {
+        const img = new Image();
+        img.src = src;
+      }
+    });
+  }, [current, gallery]);
 
 
   return (
@@ -59,23 +74,49 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
 
             <div className="space-y-6">
               {gallery.length > 0 && (
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {gallery.map((photo, i) => (
-                    <button
-                      key={`${photo}-${i}`}
-                      type="button"
-                      onClick={() => setZoomIndex(i)}
-                      aria-label={`Уголеми снимка ${i + 1}`}
-                      className="group relative overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
-                    >
-                      <img
-                        src={photo}
-                        alt={`${listing.title} снимка ${i + 1}`}
-                        loading="lazy"
-                        className="aspect-[4/3] w-full cursor-zoom-in object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    </button>
-                  ))}
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setZoomIndex(current)}
+                    aria-label={`Уголеми снимка ${current + 1}`}
+                    className="group relative block w-full overflow-hidden rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <img
+                      src={encarImg(gallery[current], 1000)}
+                      alt={`${listing.title} снимка ${current + 1}`}
+                      loading="eager"
+                      {...({ fetchpriority: "high" } as Record<string, string>)}
+                      decoding="async"
+                      className="aspect-[4/3] w-full cursor-zoom-in object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    />
+                    <span className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
+                      {current + 1}/{gallery.length}
+                    </span>
+                  </button>
+                  {gallery.length > 1 && (
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {gallery.map((photo, i) => (
+                        <button
+                          key={`${photo}-${i}`}
+                          type="button"
+                          onClick={() => setActivePhoto(i)}
+                          aria-label={`Снимка ${i + 1}`}
+                          aria-current={i === current}
+                          className={`shrink-0 overflow-hidden rounded-md focus:outline-none focus:ring-2 focus:ring-ring ${
+                            i === current ? "ring-2 ring-[#183e32]" : "opacity-70 hover:opacity-100"
+                          }`}
+                        >
+                          <img
+                            src={encarImg(photo, 240)}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                            className="aspect-[4/3] w-20 object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
