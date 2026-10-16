@@ -77,7 +77,9 @@ const FUEL_OPTIONS: [string, string][] = [
   ["diesel", "Дизел"],
   ["hybrid", "Хибрид"],
   ["electric", "Електрически"],
-  ["gasoline+lpg", "Газ (LPG)"],
+  ["lpg", "Газ (LPG)"],
+  ["gasoline+lpg", "Бензин/газ"],
+  ["hydrogen", "Водород"],
 ];
 
 const TRANSMISSION_OPTIONS: [string, string][] = [
