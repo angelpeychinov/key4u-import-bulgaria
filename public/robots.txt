@@ -28,5 +28,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /korea-preview-k4u
 
 Sitemap: https://key4u.bg/sitemap.xml

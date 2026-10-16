@@ -107,7 +107,8 @@ export default function CarSearch() {
       <SEO
         title="Внос на автомобили от Южна Корея — каталог Encar"
         description="Разгледай автомобили от Южна Корея (Encar) с изчислена крайна цена до България — транспорт, мито и ДДС включени. Филтрирай по марка, модел, година и пробег."
-        canonicalUrl="https://key4u.bg/car-search"
+        canonicalUrl="https://key4u.bg/korea-preview-k4u"
+        noIndex
       />
 
       <section className="relative overflow-hidden border-b border-border pb-16 pt-28 md:pb-24 md:pt-40">
