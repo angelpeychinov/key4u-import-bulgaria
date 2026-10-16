@@ -107,7 +107,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                           }`}
                         >
                           <img
-                            src={encarImg(photo, 160)}
+                            src={encarImg(photo, 240)}
                             alt=""
                             loading="lazy"
                             decoding="async"
