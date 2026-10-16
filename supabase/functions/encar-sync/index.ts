@@ -169,12 +169,20 @@ Deno.serve(async (req) => {
     console.log("ENCAR_PROXY_URL not set");
     return json({ ok: true, skipped: "ENCAR_PROXY_URL not set" });
   }
-  const cronSecret = Deno.env.get("CRON_SECRET");
-  if (!cronSecret || req.headers.get("x-cron-secret") !== cronSecret) {
-    return json({ error: "Unauthorized" }, 401);
-  }
-
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  const provided = req.headers.get("x-cron-secret");
+  let authorized = false;
+  if (provided) {
+    const envSecret = Deno.env.get("CRON_SECRET");
+    if (envSecret && provided === envSecret) authorized = true;
+    if (!authorized) {
+      const { data: cfg } = await supabase
+        .from("encar_sync_config").select("value").eq("key", "cron_secret").maybeSingle();
+      if (cfg?.value && provided === cfg.value) authorized = true;
+    }
+  }
+  if (!authorized) return json({ error: "Unauthorized" }, 401);
+
   const { data: locked, error: lockErr } = await supabase.rpc("encar_sync_try_lock", { _seconds: 150 });
   if (lockErr) return json({ error: "lock failed: " + lockErr.message }, 500);
   if (!locked) return json({ ok: true, status: "busy" });
