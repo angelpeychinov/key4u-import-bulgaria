@@ -25,7 +25,21 @@ export interface Listing {
   url?: string;
   specs: Record<string, string>;
   importPrice?: ImportPrice;
+  hasAccident?: boolean;
+  priceDrop?: boolean;
+  isNew?: boolean;
 }
+
+export type SortKey = "newest" | "price_asc" | "price_desc" | "mileage_asc" | "year_desc" | "year_asc";
+
+export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "newest", label: "Най-нови" },
+  { value: "price_asc", label: "Цена: ниска → висока" },
+  { value: "price_desc", label: "Цена: висока → ниска" },
+  { value: "mileage_asc", label: "Пробег: най-нисък" },
+  { value: "year_desc", label: "Година: най-нова" },
+  { value: "year_asc", label: "Година: най-стара" },
+];
 
 export interface SearchFilters {
   brand?: string;
@@ -34,11 +48,15 @@ export interface SearchFilters {
   year_to?: string;
   price_from?: string;
   price_to?: string;
+  mileage_min?: string;
   mileage_max?: string;
-  fuel_type?: string;
-  transmission?: string;
-  body_type?: string;
+  fuel_type?: string; // comma-separated multi-select
+  transmission?: string; // comma-separated multi-select
+  body_type?: string; // comma-separated multi-select
+  region?: string; // comma-separated multi-select
   no_accident?: boolean;
+  sort?: SortKey;
+  ids?: string; // comma-separated encar ids (saved cars)
 }
 
 export interface TaxonomyItem {
@@ -53,6 +71,27 @@ export interface SearchResult {
   pages?: number;
   hasNext: boolean;
   unavailable?: boolean;
+}
+
+export interface FacetCount {
+  value: string;
+  count: number;
+}
+
+export interface FacetNamed {
+  slug: string;
+  name: string;
+  count: number;
+}
+
+export interface Facets {
+  total: number;
+  brands: FacetNamed[];
+  models: FacetNamed[];
+  fuels: FacetCount[];
+  transmissions: FacetCount[];
+  body_types: FacetCount[];
+  regions: FacetCount[];
 }
 
 const toNumber = (v: unknown): number | undefined => {
@@ -77,15 +116,27 @@ const toUrl = (v: unknown): string | undefined => {
   return undefined;
 };
 
-const FUEL_BG: Record<string, string> = {
+export const FUEL_BG: Record<string, string> = {
   gasoline: "Бензин", diesel: "Дизел", hybrid: "Хибрид", electric: "Електрически", lpg: "Газ (LPG)",
-  "gasoline+lpg": "Бензин/газ", hydrogen: "Водород", cng: "Метан",
+  "gasoline+lpg": "Бензин/газ", hydrogen: "Водород", cng: "Метан", other: "Друго",
 };
-const TRANSMISSION_BG: Record<string, string> = { auto: "Автоматична", manual: "Ръчна", cvt: "Вариатор (CVT)", semi_auto: "Полуавтоматична" };
-const BODY_BG: Record<string, string> = {
+export const TRANSMISSION_BG: Record<string, string> = { auto: "Автоматична", manual: "Ръчна", cvt: "Вариатор (CVT)", semi_auto: "Полуавтоматична" };
+export const BODY_BG: Record<string, string> = {
   sedan: "Седан", hatchback: "Хечбек", coupe: "Купе", convertible: "Кабриолет", suv: "SUV",
   wagon: "Комби", pickup: "Пикап", van: "Ван", minivan: "Миниван", other: "Друго",
 };
+export const REGION_BG: Record<string, string> = {
+  seoul: "Сеул", busan: "Пусан", daegu: "Тегу", incheon: "Инчон", gwangju: "Куанджу",
+  daejeon: "Деджон", ulsan: "Улсан", sejong: "Седжонг", gyeonggi: "Кьонги", gangwon: "Кануън",
+  chungbuk: "Сев. Чхунчхон", chungnam: "Юж. Чхунчхон", jeonbuk: "Сев. Джола", jeonnam: "Юж. Джола",
+  gyeongbuk: "Сев. Кьонсан", gyeongnam: "Юж. Кьонсан", jeju: "Джеджу",
+};
+
+export const fuelBg = (v?: string) => (v ? FUEL_BG[v.toLowerCase()] ?? v : "—");
+export const transmissionBg = (v?: string) => (v ? TRANSMISSION_BG[v.toLowerCase()] ?? v : "—");
+export const bodyBg = (v?: string) => (v ? BODY_BG[v.toLowerCase()] ?? v : "—");
+export const regionBg = (v?: string) => (v ? REGION_BG[v.toLowerCase()] ?? v : "—");
+
 const SPEC_KEYS: [string, string, Record<string, string>?][] = [
   ["fuel_type", "Гориво", FUEL_BG],
   ["transmission", "Скоростна кутия", TRANSMISSION_BG],
@@ -93,6 +144,8 @@ const SPEC_KEYS: [string, string, Record<string, string>?][] = [
   ["color", "Цвят"],
   ["trim", "Ниво на оборудване"],
 ];
+
+const NEW_DAYS = 7;
 
 export const normalizeListing = (raw: Record<string, unknown>, index: number): Listing => {
   const brand = (raw.brand_name as string | undefined) ?? undefined;
@@ -130,6 +183,10 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
         }
       : undefined;
 
+  const krw = toNumber(raw.price_original);
+  const prevKrw = toNumber(raw.previous_price_krw);
+  const firstSeen = typeof raw.first_seen_at === "string" ? Date.parse(raw.first_seen_at) : NaN;
+
   return {
     id: String(raw.id ?? `listing-${index}`),
     encarId: raw.encar_id != null ? String(raw.encar_id) : undefined,
@@ -148,14 +205,13 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
     url: (raw.listing_url as string | undefined) ?? undefined,
     specs,
     importPrice,
+    hasAccident: typeof raw.has_accident === "boolean" ? raw.has_accident : undefined,
+    priceDrop: krw !== undefined && prevKrw !== undefined && prevKrw > krw,
+    isNew: Number.isFinite(firstSeen) && Date.now() - firstSeen < NEW_DAYS * 24 * 60 * 60 * 1000,
   };
 };
 
-export const searchListings = async (
-  filters: SearchFilters,
-  page: number,
-  limit = 24,
-): Promise<SearchResult> => {
+const filtersToParams = (filters: SearchFilters): URLSearchParams => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
     if (key === "no_accident") {
@@ -164,6 +220,15 @@ export const searchListings = async (
     }
     if (typeof value === "string" && value && value !== "all") params.set(key, value);
   });
+  return params;
+};
+
+export const searchListings = async (
+  filters: SearchFilters,
+  page: number,
+  limit = 20,
+): Promise<SearchResult> => {
+  const params = filtersToParams(filters);
   params.set("page", String(page));
   params.set("limit", String(limit));
 
@@ -187,19 +252,57 @@ export const searchListings = async (
   };
 };
 
+export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null> => {
+  const params = filtersToParams(filters);
+  params.delete("sort");
+  params.delete("ids");
+
+  const { data, error } = await supabase.functions.invoke(`listings-facets?${params.toString()}`, {
+    method: "GET",
+  });
+  if (error) return null;
+  const obj = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+  if (obj.unavailable) return null;
+
+  const named = (v: unknown): FacetNamed[] =>
+    Array.isArray(v)
+      ? (v as Record<string, unknown>[])
+          .map((i) => ({ slug: String(i.slug ?? ""), name: String(i.name ?? ""), count: toNumber(i.count) ?? 0 }))
+          .filter((i) => i.slug)
+      : [];
+  const counts = (v: unknown): FacetCount[] =>
+    Array.isArray(v)
+      ? (v as Record<string, unknown>[])
+          .map((i) => ({ value: String(i.value ?? ""), count: toNumber(i.count) ?? 0 }))
+          .filter((i) => i.value)
+      : [];
+
+  return {
+    total: toNumber(obj.total) ?? 0,
+    brands: named(obj.brands),
+    models: named(obj.models),
+    fuels: counts(obj.fuels),
+    transmissions: counts(obj.transmissions),
+    body_types: counts(obj.body_types),
+    regions: counts(obj.regions),
+  };
+};
+
 export const SOURCE_LABELS: Record<string, string> = {
   encar: "Encar",
 };
 
-export const formatEur = (value?: number) =>
-  value === undefined
-    ? "—"
-    : new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
+const eurFormatter = new Intl.NumberFormat("bg-BG", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+const numFormatter = new Intl.NumberFormat("bg-BG");
+
+export const formatEur = (value?: number) => (value === undefined ? "—" : eurFormatter.format(value));
 
 export const formatApproxEur = (value?: number) => (value === undefined ? "—" : `~${formatEur(value)}`);
 
+export const formatNumber = (value?: number) => (value === undefined ? "—" : numFormatter.format(value));
+
 export const formatMileage = (mileage?: number) =>
-  mileage === undefined ? "—" : `${new Intl.NumberFormat("en-US").format(mileage)} km`;
+  mileage === undefined ? "—" : `${numFormatter.format(mileage)} km`;
 
 export const fetchTaxonomy = async (
   kind: "brands" | "models",
