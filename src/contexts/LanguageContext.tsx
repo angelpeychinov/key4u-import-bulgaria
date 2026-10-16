@@ -88,7 +88,9 @@ const translations = {
     'contact.viber': 'Chat on Viber',
     
     // Features
+    'features.eyebrow': 'Advantages',
     'features.title': 'Why Choose Key4U?',
+    'features.lead': 'Four things we take care of so that buying a car from abroad stays simple.',
     'features.endToEnd': 'Full Service',
     'features.endToEndDesc': 'From request to registration, we handle everything',
     'features.realKm': 'Real Mileage',
@@ -215,7 +217,9 @@ const translations = {
     'contact.viber': 'Чат във Viber',
     
     // Features
+    'features.eyebrow': 'Предимства',
     'features.title': 'Защо да изберете Key4U?',
+    'features.lead': 'Четири неща, за които се грижим, за да остане купуването на кола от чужбина просто.',
     'features.endToEnd': 'Пълна Услуга',
     'features.endToEndDesc': 'От заявка до регистрация, можем да се погрижим за всичко',
     'features.realKm': 'Реални Километри',
