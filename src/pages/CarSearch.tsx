@@ -1,29 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import koreaHero from "@/assets/korea-hero.jpg.asset.json";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { X, Heart } from "lucide-react";
 import { toast } from "sonner";
-import { Listing, SearchFilters, searchListings } from "@/lib/listings";
-import { ListingCard } from "@/components/carsearch/ListingCard";
+import {
+  Facets, Listing, SearchFilters, SortKey, SORT_OPTIONS,
+  searchListings, fetchFacets, formatNumber,
+  fuelBg, transmissionBg, bodyBg, regionBg, formatEur, formatMileage,
+} from "@/lib/listings";
+import { ListingListCard } from "@/components/carsearch/ListingListCard";
 import { ListingDialog } from "@/components/carsearch/ListingDialog";
-import { CatalogFilters } from "@/components/carsearch/CatalogFilters";
+import { FilterSidebar } from "@/components/carsearch/FilterSidebar";
+import { MobileFilterBar } from "@/components/carsearch/MobileFilterBar";
+import { PaginationBar } from "@/components/carsearch/PaginationBar";
+import { useFavorites } from "@/hooks/useFavorites";
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 20;
 
 const emptyFilters: SearchFilters = {
-  brand: "",
-  model: "",
-  year_from: "",
-  year_to: "",
-  price_from: "",
-  price_to: "",
-  mileage_max: "",
-  fuel_type: "",
-  transmission: "",
-  body_type: "",
-  no_accident: false,
+  brand: "", model: "", year_from: "", year_to: "", price_from: "", price_to: "",
+  mileage_min: "", mileage_max: "", fuel_type: "", transmission: "", body_type: "",
+  region: "", no_accident: false, sort: "newest",
 };
 
 const FILTER_KEYS = Object.keys(emptyFilters) as (keyof SearchFilters)[];
@@ -34,7 +35,7 @@ const filtersFromParams = (params: URLSearchParams): SearchFilters => {
     const value = params.get(key);
     if (value === null) continue;
     if (key === "no_accident") next.no_accident = value === "1" || value === "true";
-    else (next as Record<string, unknown>)[key] = value.slice(0, 60);
+    else (next as Record<string, unknown>)[key] = value.slice(0, 120);
   }
   return next;
 };
@@ -45,66 +46,138 @@ const filtersToParams = (filters: SearchFilters): URLSearchParams => {
     const value = filters[key];
     if (key === "no_accident") {
       if (value === true) params.set(key, "1");
+    } else if (key === "sort") {
+      if (value && value !== "newest") params.set(key, String(value));
     } else if (typeof value === "string" && value.trim()) params.set(key, value.trim());
   }
   return params;
 };
 
+interface Chip {
+  key: string;
+  label: string;
+  clear: (f: SearchFilters) => SearchFilters;
+}
+
+const buildChips = (filters: SearchFilters, facets: Facets | null): Chip[] => {
+  const chips: Chip[] = [];
+  if (filters.brand) {
+    const name = facets?.brands.find((b) => b.slug === filters.brand)?.name ?? filters.brand;
+    chips.push({ key: "brand", label: name, clear: (f) => ({ ...f, brand: "", model: "" }) });
+  }
+  if (filters.model) {
+    const name = facets?.models.find((m) => m.slug === filters.model)?.name ?? filters.model;
+    chips.push({ key: "model", label: name, clear: (f) => ({ ...f, model: "" }) });
+  }
+  if (filters.price_from || filters.price_to) {
+    const label = filters.price_from && filters.price_to
+      ? `${formatEur(Number(filters.price_from))} – ${formatEur(Number(filters.price_to))}`
+      : filters.price_from ? `от ${formatEur(Number(filters.price_from))}` : `до ${formatEur(Number(filters.price_to))}`;
+    chips.push({ key: "price", label, clear: (f) => ({ ...f, price_from: "", price_to: "" }) });
+  }
+  if (filters.year_from || filters.year_to) {
+    chips.push({
+      key: "year",
+      label: `Година: ${filters.year_from || "…"} – ${filters.year_to || "…"}`,
+      clear: (f) => ({ ...f, year_from: "", year_to: "" }),
+    });
+  }
+  if (filters.mileage_min || filters.mileage_max) {
+    chips.push({
+      key: "mileage",
+      label: `Пробег: ${filters.mileage_min ? formatMileage(Number(filters.mileage_min)) : "…"} – ${filters.mileage_max ? formatMileage(Number(filters.mileage_max)) : "…"}`,
+      clear: (f) => ({ ...f, mileage_min: "", mileage_max: "" }),
+    });
+  }
+  for (const v of filters.fuel_type?.split(",").filter(Boolean) ?? []) {
+    chips.push({ key: `fuel:${v}`, label: fuelBg(v), clear: (f) => ({ ...f, fuel_type: f.fuel_type?.split(",").filter((x) => x && x !== v).join(",") ?? "" }) });
+  }
+  for (const v of filters.transmission?.split(",").filter(Boolean) ?? []) {
+    chips.push({ key: `tr:${v}`, label: transmissionBg(v), clear: (f) => ({ ...f, transmission: f.transmission?.split(",").filter((x) => x && x !== v).join(",") ?? "" }) });
+  }
+  for (const v of filters.body_type?.split(",").filter(Boolean) ?? []) {
+    chips.push({ key: `body:${v}`, label: bodyBg(v), clear: (f) => ({ ...f, body_type: f.body_type?.split(",").filter((x) => x && x !== v).join(",") ?? "" }) });
+  }
+  for (const v of filters.region?.split(",").filter(Boolean) ?? []) {
+    chips.push({ key: `region:${v}`, label: regionBg(v), clear: (f) => ({ ...f, region: f.region?.split(",").filter((x) => x && x !== v).join(",") ?? "" }) });
+  }
+  if (filters.no_accident) {
+    chips.push({ key: "no_accident", label: "Без катастрофи", clear: (f) => ({ ...f, no_accident: false }) });
+  }
+  return chips;
+};
+
 export default function CarSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState<SearchFilters>(() => filtersFromParams(searchParams));
+  const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get("page")) || 1));
   const [listings, setListings] = useState<Listing[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
+  const [count, setCount] = useState<number>(0);
+  const [pages, setPages] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [facets, setFacets] = useState<Facets | null>(null);
   const [selected, setSelected] = useState<Listing | null>(null);
   const [unavailable, setUnavailable] = useState(false);
-  const [pages, setPages] = useState<number | undefined>(undefined);
+  const resultsTop = useRef<HTMLDivElement>(null);
+  const requestId = useRef(0);
+  const { ids: favoriteIds } = useFavorites();
 
-  const [applied, setApplied] = useState<SearchFilters>(filters);
+  const savedMode = searchParams.get("saved") === "1";
 
-  const runSearch = async (nextPage: number, append: boolean, active: SearchFilters = filters) => {
+  const effectiveFilters = useMemo<SearchFilters>(() => {
+    if (!savedMode) return filters;
+    return { ...emptyFilters, ids: favoriteIds.join(","), sort: filters.sort };
+  }, [savedMode, filters, favoriteIds]);
+
+  const runSearch = async (active: SearchFilters, targetPage: number) => {
+    const id = ++requestId.current;
     setLoading(true);
-    if (!append) setApplied(active);
     try {
-      const { listings: results, unavailable: down, hasNext, page: current, pages: totalPages } =
-        await searchListings(active, nextPage, PAGE_SIZE);
-      setListings((prev) => {
-        if (!append) return results;
-        const seen = new Set(prev.map((l) => l.encarId ?? l.id));
-        return [...prev, ...results.filter((l) => !seen.has(l.encarId ?? l.id))];
-      });
-      setPage(current ?? nextPage);
-      setPages(totalPages);
-      setHasMore(hasNext);
-      setUnavailable(!!down);
-      setSearched(true);
-      if (down) toast.error("Каталогът е временно недостъпен.");
+      const result = await searchListings(active, targetPage, PAGE_SIZE);
+      if (id !== requestId.current) return;
+      setListings(result.listings);
+      setCount(result.count ?? 0);
+      setPages(result.pages ?? 0);
+      setUnavailable(!!result.unavailable);
+      if (result.unavailable) toast.error("Каталогът е временно недостъпен.");
     } catch (err) {
+      if (id !== requestId.current) return;
       console.error(err);
       toast.error("Обявите не можаха да бъдат заредени. Опитайте отново.");
     } finally {
-      setLoading(false);
+      if (id === requestId.current) setLoading(false);
     }
   };
 
-  // Load results on open, using any filters present in the URL.
+  const runFacets = async (active: SearchFilters) => {
+    const next = await fetchFacets(active);
+    if (next) setFacets(next);
+  };
+
+  // Debounced search + facets whenever filters change.
   useEffect(() => {
-    runSearch(1, false, filtersFromParams(searchParams));
+    setPage(1);
+    const timer = window.setTimeout(() => {
+      const params = filtersToParams(filters);
+      if (savedMode) params.set("saved", "1");
+      setSearchParams(params, { replace: true });
+      runSearch(effectiveFilters, 1);
+      runFacets(effectiveFilters);
+    }, 400);
+    return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filters, savedMode, favoriteIds]);
 
-  const applyFilters = () => {
-    setSearchParams(filtersToParams(filters), { replace: true });
-    runSearch(1, false);
+  const goToPage = (next: number) => {
+    setPage(next);
+    runSearch(effectiveFilters, next);
+    resultsTop.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const resetFilters = () => {
-    setFilters(emptyFilters);
-    setSearchParams(new URLSearchParams(), { replace: true });
-    runSearch(1, false, emptyFilters);
-  };
+  const resetFilters = () => setFilters({ ...emptyFilters });
+
+  const chips = useMemo(() => buildChips(filters, facets), [filters, facets]);
+  const shownCount = savedMode ? count : facets?.total ?? count;
 
   return (
     <main className="flex-1 bg-background">
@@ -128,46 +201,102 @@ export default function CarSearch() {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-8">
-        <CatalogFilters
+      <div className="container mx-auto px-4 py-6" ref={resultsTop}>
+        <MobileFilterBar
           filters={filters}
+          facets={facets}
+          activeCount={chips.length}
           onChange={setFilters}
-          onApply={applyFilters}
           onReset={resetFilters}
-          loading={loading}
         />
 
-        {listings.length > 0 && (
-          <>
-            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {listings.map((listing, i) => (
-                <ListingCard key={`${listing.id}-${i}`} listing={listing} onOpen={setSelected} />
-              ))}
+        <div className="flex gap-8">
+          {/* Desktop sidebar */}
+          <aside className="hidden w-72 shrink-0 lg:block">
+            <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2">
+              <FilterSidebar filters={filters} facets={facets} onChange={setFilters} onReset={resetFilters} />
+            </div>
+          </aside>
+
+          {/* Results */}
+          <div className="min-w-0 flex-1">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                {savedMode ? (
+                  <span className="flex items-center gap-1.5">
+                    <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+                    Запазени автомобили: {formatNumber(shownCount)}
+                  </span>
+                ) : (
+                  <>Намерени <span className="font-semibold text-foreground">{formatNumber(shownCount)}</span> автомобила</>
+                )}
+              </p>
+              <div className="hidden lg:block">
+                <Select
+                  value={filters.sort ?? "newest"}
+                  onValueChange={(v) => setFilters({ ...filters, sort: v as SortKey })}
+                >
+                  <SelectTrigger className="h-9 w-56">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_OPTIONS.map((o) => (
+                      <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <div className="mt-8 flex flex-col items-center gap-3">
-              {pages ? (
-                <p className="text-sm text-muted-foreground">
-                  Страница {page} от {pages}
+            {chips.length > 0 && !savedMode && (
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                {chips.map((chip) => (
+                  <button
+                    key={chip.key}
+                    onClick={() => setFilters(chip.clear(filters))}
+                    className="flex items-center gap-1 rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground transition-colors hover:bg-accent"
+                  >
+                    {chip.label}
+                    <X className="h-3 w-3" />
+                  </button>
+                ))}
+                <button onClick={resetFilters} className="text-xs font-medium text-primary hover:underline">
+                  Изчисти всички
+                </button>
+              </div>
+            )}
+
+            {loading ? (
+              <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-44 w-full rounded-xl" />
+                ))}
+              </div>
+            ) : listings.length > 0 ? (
+              <>
+                <div className="space-y-4">
+                  {listings.map((listing) => (
+                    <ListingListCard key={listing.encarId ?? listing.id} listing={listing} onOpen={setSelected} />
+                  ))}
+                </div>
+                <PaginationBar page={page} pages={pages} onPage={goToPage} />
+              </>
+            ) : (
+              <div className="mt-10 flex flex-col items-center gap-3 text-center">
+                <p className="text-muted-foreground">
+                  {unavailable
+                    ? "Каталогът е временно недостъпен. Моля, опитайте по-късно."
+                    : savedMode
+                      ? "Нямате запазени автомобили. Отбележете сърчице на обява, за да я добавите тук."
+                      : "Няма намерени обяви по избраните критерии."}
                 </p>
-              ) : null}
-              {hasMore && (
-                <Button variant="outline" size="lg" onClick={() => runSearch(page + 1, true, applied)} disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Зареди още
-                </Button>
-              )}
-            </div>
-          </>
-        )}
-
-        {searched && !loading && listings.length === 0 && (
-          <p className="mt-10 text-center text-muted-foreground">
-            {unavailable
-              ? "Каталогът е временно недостъпен. Моля, опитайте по-късно."
-              : "Няма намерени обяви по избраните критерии."}
-          </p>
-        )}
+                {!savedMode && !unavailable && (
+                  <Button variant="outline" onClick={resetFilters}>Изчисти филтрите</Button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <ListingDialog listing={selected} onClose={() => setSelected(null)} />

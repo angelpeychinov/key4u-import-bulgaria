@@ -1,7 +1,8 @@
 import { NavLink } from "@/components/NavLink";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { useFavorites } from "@/hooks/useFavorites";
+import { Heart, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
