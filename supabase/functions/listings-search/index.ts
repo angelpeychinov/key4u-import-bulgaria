@@ -240,6 +240,9 @@ Deno.serve(async (req) => {
     const sortParam = (incoming.get("sort") ?? "newest") as SortKey;
     const sort = SORTS[sortParam] ?? SORTS.newest;
 
+    // "Price on request" rows (NULL price) must not flood price sorts
+    if (sort.column === "price_original") query = query.not("price_original", "is", null);
+
     const { data, error, count } = await query
       // No nullsFirst override: DESC NULLS LAST can't use our plain DESC indexes
       // and forces a full sort of 180k+ rows (statement timeout). NULLS FIRST
