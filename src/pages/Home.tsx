@@ -41,28 +41,6 @@ export default function Home() {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
 
-  const features = [
-    {
-      icon: <CheckCircle2 className="w-12 h-12" />,
-      title: t('features.endToEnd'),
-      description: t('features.endToEndDesc'),
-    },
-    {
-      icon: <FileCheck className="w-12 h-12" />,
-      title: t('features.realKm'),
-      description: t('features.realKmDesc'),
-    },
-    {
-      icon: <Car className="w-12 h-12" />,
-      title: t('features.affordable'),
-      description: t('features.affordableDesc'),
-    },
-    {
-      icon: <Shield className="w-12 h-12" />,
-      title: t('features.trust'),
-      description: t('features.trustDesc'),
-    },
-  ];
 
   return (
     <div className="min-h-screen">
