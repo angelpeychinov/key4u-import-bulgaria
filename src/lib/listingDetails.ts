@@ -99,9 +99,17 @@ export function parseDetails(d: any): ListingDetails {
   };
   collect(v?.options);
 
+  // Detail photos arrive unordered: sort by type priority OUTER→INNER→OPTION→other,
+  // then by numeric code ("001", "002" …) ascending.
+  const TYPE_PRIORITY: Record<string, number> = { OUTER: 0, INNER: 1, OPTION: 2 };
+  const typeRank = (t: unknown) => TYPE_PRIORITY[String(t ?? "").toUpperCase()] ?? 3;
+  const codeNum = (c: unknown) => {
+    const n = parseInt(String(c ?? "").replace(/\D/g, ""), 10);
+    return Number.isFinite(n) ? n : 0;
+  };
   const photos = Array.isArray(v?.photos)
     ? [...v.photos]
-        .sort((a: any, b: any) => (num(a?.ordering) ?? 0) - (num(b?.ordering) ?? 0))
+        .sort((a: any, b: any) => typeRank(a?.type) - typeRank(b?.type) || codeNum(a?.code) - codeNum(b?.code))
         .map((p: any) => str(p?.path))
         .filter((p): p is string => !!p)
         .map((p) => (p.startsWith("http") ? p : `https://ci.encar.com${p.startsWith("/") ? "" : "/"}${p}`))
