@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Car, Shield, FileCheck, Search, Clock, ArrowRight, Phone } from "lucide-react";
-import { AnimatedCounter } from "@/components/AnimatedCounter";
 import {
   Carousel,
   CarouselContent,
