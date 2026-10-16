@@ -19,6 +19,7 @@ const MAKERS: [string, "Y" | "N"][] = [
 const PRICE_EDGES = [0, 500, 800, 1000, 1200, 1500, 1800, 2000, 2300, 2600, 3000, 3500, 4000, 5000, 6000, 8000, 10000, 15000, 999999];
 const MAX_DEPTH = 9000;
 const PAGE = 50;
+const CONCURRENCY = 4;
 const BUDGET_MS = 100_000; // stop starting new work after this; hard budget ~120 s
 const BLOCK_COOLDOWN_MS = 30 * 60_000;
 const ERROR_PAUSE_MS = 2 * 60_000;
@@ -343,26 +344,39 @@ Deno.serve(async (req) => {
       const w = ws?.[0];
       if (!w) break;
       const limit = Math.min(w.total, MAX_DEPTH);
+      const q = buildQ(w.maker, w.car_type, w.price_lo, w.price_hi);
       while (timeLeft()) {
         if (w.next_offset >= limit) { w.done = true; break; }
-        const { results } = await encarSearch(client, buildQ(w.maker, w.car_type, w.price_lo, w.price_hi), w.next_offset, PAGE);
-        stats.pages++;
-        if (results.length === 0) { w.done = true; break; }
-        const rows = results
+        // Fetch up to CONCURRENCY pages in parallel; only advance over the contiguous successful prefix.
+        const offsets: number[] = [];
+        for (let k = 0; k < CONCURRENCY && w.next_offset + k * PAGE < limit; k++) offsets.push(w.next_offset + k * PAGE);
+        const settled = await Promise.allSettled(offsets.map((o) => encarSearch(client, q, o, PAGE)));
+        let firstErr: unknown = null;
+        const good: any[][] = [];
+        for (const s of settled) {
+          if (s.status === "rejected") { firstErr = s.reason; break; }
+          good.push(s.value.results);
+        }
+        const rows = good.flat()
           .filter((r) => Number(r.Price) < 9999 && r.SellType === "일반")
           .map((r) => toRow(r, w.maker));
         if (rows.length) {
           const { inserted, updated } = await upsertListings(supabase, rows);
           stats.upserted += inserted + updated;
         }
-        await clearPause();
-        w.next_offset += PAGE;
-        w.fetched += results.length; // skipped results still count as seen
+        for (const res of good) {
+          stats.pages++;
+          w.fetched += res.length; // skipped results still count as seen
+          w.next_offset += PAGE;
+          if (res.length === 0) { w.done = true; break; }
+        }
         if (w.next_offset >= limit) w.done = true;
         await supabase.from("encar_sync_windows")
           .update({ next_offset: w.next_offset, fetched: w.fetched, done: w.done }).eq("id", w.id);
+        if (firstErr) { await bumpRun(); throw firstErr; }
+        if (good.length) await clearPause();
         if (w.done) break;
-        await jitter();
+        await sleep(300 + Math.random() * 400);
       }
       if (w.done) await supabase.from("encar_sync_windows").update({ done: true }).eq("id", w.id);
       await bumpRun();
