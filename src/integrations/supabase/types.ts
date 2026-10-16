@@ -446,6 +446,10 @@ export type Database = {
         }[]
       }
       encar_refresh_default_facets: { Args: never; Returns: undefined }
+      encar_sanitize_facets_payload: {
+        Args: { _grouped?: boolean; _payload: Json }
+        Returns: Json
+      }
       encar_sync_release_lock: { Args: never; Returns: undefined }
       encar_sync_status: {
         Args: never
