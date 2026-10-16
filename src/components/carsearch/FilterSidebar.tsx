@@ -14,7 +14,7 @@ const PINNED_BRANDS = [
   "hyundai", "kia", "mazda", "porsche", "lexus",
 ];
 
-const PRICE_PRESETS = [10000, 15000, 20000, 25000, 30000, 40000, 50000];
+const PRICE_PRESETS = [10000, 15000, 20000, 25000, 30000, 40000, 50000, 75000, 100000, 150000, 200000, 300000, 500000];
 const MILEAGE_PRESETS = [30000, 60000, 100000, 150000, 200000];
 const currentYear = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: currentYear - 2009 }, (_, i) => currentYear - i);
