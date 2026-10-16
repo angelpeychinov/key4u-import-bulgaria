@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { sanitizeFacets } from "../_shared/encarTextSafety.ts";
 
 const HIDDEN_MARGIN = 150;
 // Live rates come from the pricing_config table (cached 5 min); these are
@@ -133,7 +134,7 @@ Deno.serve(async (req) => {
 
     const hit = cache.get(cacheKey);
     if (hit && Date.now() - hit.at < CACHE_TTL_MS) {
-      return json({ ...(hit.payload as Record<string, unknown>), cached: true });
+      return json({ ...sanitizeFacets(hit.payload as Record<string, unknown>), cached: true });
     }
 
     const url = Deno.env.get("SUPABASE_URL");
@@ -147,7 +148,7 @@ Deno.serve(async (req) => {
     const readDefault = async () => {
       const { data } = await supabase.from("encar_facets_cache")
         .select("payload,updated_at").eq("key", "default").maybeSingle();
-      return data?.payload ? { ...data.payload, updated_at: data.updated_at } : null;
+      return data?.payload ? { ...sanitizeFacets(data.payload), updated_at: data.updated_at } : null;
     };
     const hasFilters = ["brand", "model", "year_from", "year_to", "price_from", "price_to",
       "mileage_min", "mileage_max", "fuel_type", "transmission", "body_type", "region"]
@@ -188,7 +189,7 @@ Deno.serve(async (req) => {
       return json({ ...fallback, unavailable: true, fallback: true, models: [] });
     }
 
-    const payload = { ...(data as Record<string, unknown>), took_ms: Date.now() - started };
+    const payload = { ...sanitizeFacets(data as Record<string, unknown>), took_ms: Date.now() - started };
     cache.set(cacheKey, { at: Date.now(), payload });
     if (cache.size > 500) {
       // Simple eviction: drop expired entries first, then oldest.

@@ -5,20 +5,11 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { HEADERS, makeClient } from "../_shared/encarHttp.ts";
 import { FUEL_MAP, HANGUL_RE } from "../_shared/encarMaps.ts";
+import { mapDetailBody, mapDetailColor } from "../_shared/encarTextSafety.ts";
 
 const CACHE_MS = 24 * 3600_000;
 const MIN_FETCH_GAP_MS = 10 * 60_000;
 
-const BODY_MAP: Record<string, string> = {
-  "세단": "sedan", "해치백": "hatchback", "쿠페": "coupe", "컨버터블": "convertible", "SUV": "suv",
-  "왜건": "wagon", "픽업트럭": "pickup", "승합": "van", "밴": "van", "승합/밴": "van", "RV": "minivan",
-  "경차": "hatchback", "기타": "other",
-};
-const COLOR_MAP: Record<string, string> = {
-  "흰색": "White", "화이트": "White", "검정색": "Black", "블랙": "Black", "은색": "Silver", "실버": "Silver",
-  "쥐색": "Gray", "회색": "Gray", "그레이": "Gray", "파란색": "Blue", "청색": "Blue", "빨간색": "Red",
-  "갈색": "Brown", "진주색": "Pearl white", "녹색": "Green", "베이지": "Beige",
-};
 
 const json = (p: unknown, status = 200) =>
   new Response(JSON.stringify(p), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -53,7 +44,10 @@ Deno.serve(async (req) => {
   const id = new URL(req.url).searchParams.get("id") ?? "";
   if (!/^\d{1,15}$/.test(id)) return json({ error: "Invalid id" }, 400);
 
-  const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return json({ unavailable: true }, 503);
+  const supabase = createClient(url, key);
   const { data: cached } = await supabase.from("encar_listing_details").select("*").eq("encar_id", id).maybeSingle();
   const hasData = cached && (cached.vehicle || cached.inspection || cached.record);
 
@@ -93,11 +87,11 @@ Deno.serve(async (req) => {
     const upd: Record<string, unknown> = {};
     const spec = vehicle?.spec;
     const body = typeof spec?.bodyName === "string" ? spec.bodyName.trim() : "";
-    if (body) upd.body_type = BODY_MAP[body] ?? body.toLowerCase();
+    if (body) upd.body_type = mapDetailBody(body);
     const cc = Number(spec?.displacement);
     if (Number.isFinite(cc) && cc > 0) upd.engine_cc = Math.round(cc);
     const color = typeof spec?.colorName === "string" ? spec.colorName.trim() : "";
-    if (color) upd.color = COLOR_MAP[color] ?? color;
+    if (color) upd.color = mapDetailColor(color);
     const tr = typeof spec?.transmissionName === "string" ? spec.transmissionName.trim() : "";
     const TR: Record<string, string> = { "오토": "auto", "수동": "manual", "CVT": "cvt", "세미오토": "semi_auto" };
     if (TR[tr]) upd.transmission = TR[tr];
