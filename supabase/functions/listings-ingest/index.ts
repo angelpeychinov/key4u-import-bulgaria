@@ -24,6 +24,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { BRAND_MAP, slugify, translateListing } from "../_shared/encarMaps.ts";
+import { upsertListings } from "../_shared/upsertListings.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -148,75 +149,16 @@ Deno.serve(async (req) => {
       return json({ error: "Missing listings array" }, 400);
     }
 
-    // Защита в дълбочина: дублирани encar_id в рамките на един chunk биха
-    // счупили PostgreSQL upsert-а ("ON CONFLICT DO UPDATE ... affect row
-    // a second time"). Скрейпърът вече дедуплицира от своя страна, но пазим
-    // и тук за всеки случай (напр. ръчна заявка без тази логика).
-    const listingsByEncarId = new Map<string, IncomingListing>();
-    for (const listing of rawListings) {
-      if (listing.encar_id) listingsByEncarId.set(listing.encar_id, translateListing(listing));
+    // Shared helper: dedupes encar_id, translates, keeps price-change history,
+    // sets first_seen_at only for new rows.
+    try {
+      const { inserted, updated } = await upsertListings(supabase, rawListings as Array<Record<string, unknown>>);
+      return json({ inserted, updated });
+    } catch (e) {
+      console.error("bulk upsert failed", e);
+      const msg = String(e instanceof Error ? e.message : e);
+      return json({ error: msg.startsWith("Select") ? "Select failed" : "Upsert failed" }, 500);
     }
-    const listings = Array.from(listingsByEncarId.values());
-
-    const encarIds = listings.map((l) => l.encar_id).filter(Boolean);
-
-    // Една SELECT заявка за целия chunk, вместо по една на обява.
-    const { data: existingRows, error: selectError } = await supabase
-      .from("encar_listings")
-      .select("encar_id, price_original")
-      .in("encar_id", encarIds);
-
-    if (selectError) {
-      console.error("bulk select failed", selectError);
-      return json({ error: "Select failed" }, 500);
-    }
-
-    const oldPriceByEncarId = new Map<string, number | null>(
-      (existingRows ?? []).map((r) => [r.encar_id as string, r.price_original as number | null]),
-    );
-
-    const nowIso = new Date().toISOString();
-    const rows = listings.map((listing) => {
-      const row: Record<string, unknown> = {
-        ...listing,
-        status: "active",
-        last_seen_at: nowIso,
-      };
-      const oldPrice = oldPriceByEncarId.get(listing.encar_id);
-      if (oldPrice != null && listing.price_original != null && oldPrice !== listing.price_original) {
-        row.previous_price_krw = oldPrice;
-        row.price_changed_at = nowIso;
-      }
-      // Съзнателно НЕ включваме first_seen_at тук -- upsert би презаписал
-      // съществуващата стойност за вече наличните редове. Backfill-ваме я
-      // отделно по-долу, само за редовете, при които тя е NULL.
-      return row;
-    });
-
-    const { error: upsertError } = await supabase
-      .from("encar_listings")
-      .upsert(rows, { onConflict: "encar_id" });
-
-    if (upsertError) {
-      console.error("bulk upsert failed", upsertError);
-      return json({ error: "Upsert failed" }, 500);
-    }
-
-    // Backfill на first_seen_at само за истински новите редове.
-    const { error: backfillError } = await supabase
-      .from("encar_listings")
-      .update({ first_seen_at: nowIso })
-      .is("first_seen_at", null)
-      .in("encar_id", encarIds);
-    if (backfillError) {
-      console.error("first_seen_at backfill failed", backfillError);
-      // не е фатално -- редовете вече са записани, само first_seen_at ще е NULL
-    }
-
-    const updated = existingRows?.length ?? 0;
-    const inserted = encarIds.length - updated;
-
-    return json({ inserted, updated });
   } catch (err) {
     console.error("listings-ingest failed", err);
     return json({ error: "Unexpected error" }, 500);

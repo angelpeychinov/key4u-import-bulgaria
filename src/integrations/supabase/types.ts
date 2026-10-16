@@ -110,6 +110,107 @@ export type Database = {
         }
         Relationships: []
       }
+      encar_sync_lock: {
+        Row: {
+          id: number
+          locked_until: string | null
+        }
+        Insert: {
+          id: number
+          locked_until?: string | null
+        }
+        Update: {
+          id?: number
+          locked_until?: string | null
+        }
+        Relationships: []
+      }
+      encar_sync_runs: {
+        Row: {
+          build_maker_idx: number
+          error: string | null
+          finished_at: string | null
+          id: string
+          marked_sold: number
+          pages: number
+          started_at: string
+          status: string
+          upserted: number
+          windows_built: boolean
+        }
+        Insert: {
+          build_maker_idx?: number
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          marked_sold?: number
+          pages?: number
+          started_at?: string
+          status?: string
+          upserted?: number
+          windows_built?: boolean
+        }
+        Update: {
+          build_maker_idx?: number
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          marked_sold?: number
+          pages?: number
+          started_at?: string
+          status?: string
+          upserted?: number
+          windows_built?: boolean
+        }
+        Relationships: []
+      }
+      encar_sync_windows: {
+        Row: {
+          car_type: string
+          done: boolean
+          fetched: number
+          id: number
+          maker: string
+          next_offset: number
+          price_hi: number | null
+          price_lo: number | null
+          run_id: string
+          total: number
+        }
+        Insert: {
+          car_type: string
+          done?: boolean
+          fetched?: number
+          id?: number
+          maker: string
+          next_offset?: number
+          price_hi?: number | null
+          price_lo?: number | null
+          run_id: string
+          total?: number
+        }
+        Update: {
+          car_type?: string
+          done?: boolean
+          fetched?: number
+          id?: number
+          maker?: string
+          next_offset?: number
+          price_hi?: number | null
+          price_lo?: number | null
+          run_id?: string
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "encar_sync_windows_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "encar_sync_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_queue: {
         Row: {
           attempts: number
@@ -228,6 +329,27 @@ export type Database = {
           slug: string
         }[]
       }
+      encar_sync_release_lock: { Args: never; Returns: undefined }
+      encar_sync_status: {
+        Args: never
+        Returns: {
+          error: string
+          finished_at: string
+          id: string
+          marked_sold: number
+          pages: number
+          progress_pct: number
+          started_at: string
+          status: string
+          sum_fetched: number
+          sum_total: number
+          upserted: number
+          windows: number
+          windows_built: boolean
+          windows_done: number
+        }[]
+      }
+      encar_sync_try_lock: { Args: { _seconds?: number }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

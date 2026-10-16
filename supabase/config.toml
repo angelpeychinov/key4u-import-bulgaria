@@ -10,5 +10,5 @@ verify_jwt = false
 verify_jwt = false
 
 
-[functions.encar-probe]
+[functions.encar-sync]
 verify_jwt = false

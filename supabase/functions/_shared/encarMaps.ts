@@ -46,6 +46,26 @@ const mapText = (s?: string) => {
   return out;
 };
 
+// Trim words (Badge/BadgeDetail). Applied longest key first so phrases win.
+export const TRIM_MAP: Record<string, string> = {
+  "콰트로": "Quattro", "프리미엄": "Premium", "프레스티지": "Prestige", "익스클루시브": "Exclusive",
+  "럭셔리": "Luxury", "스포츠": "Sport", "다이나믹": "Dynamic", "인스크립션": "Inscription",
+  "모멘텀": "Momentum", "노블레스": "Noblesse", "시그니처": "Signature", "트렌디": "Trendy",
+  "모던": "Modern", "인스퍼레이션": "Inspiration", "캘리그래피": "Calligraphy", "그래비티": "Gravity",
+  "디럭스": "Deluxe", "스탠다드": "Standard", "밸류": "Value", "패키지": "Package",
+  "가솔린": "Gasoline", "디젤": "Diesel", "하이브리드": "Hybrid", "터보": "Turbo",
+  "롱레인지": "Long Range", "퍼포먼스": "Performance", "인승": "-seater", "페이스리프트": "Facelift",
+  "더 뉴": "The New", "올 뉴": "All New", "뉴": "New",
+};
+const TRIM_ENTRIES = Object.entries(TRIM_MAP).sort((a, b) => b[0].length - a[0].length);
+
+export const mapTrim = (s?: string) => {
+  if (!s) return s;
+  let out = s;
+  for (const [k, v] of TRIM_ENTRIES) out = out.split(k).join(v);
+  return out.replace(/\s+/g, " ").trim();
+};
+
 // deno-lint-ignore no-explicit-any
 export function translateListing<T extends Record<string, any>>(l: T): T {
   const out: Record<string, unknown> = { ...l };
@@ -60,6 +80,6 @@ export function translateListing<T extends Record<string, any>>(l: T): T {
     const m = mapText(l.model_name)!;
     if (m !== l.model_name) { out.model_name = m; out.model_slug = slugify(m); }
   }
-  if (l.trim) out.trim = mapText(l.trim);
+  if (l.trim) out.trim = mapTrim(mapText(l.trim));
   return out as T;
 }

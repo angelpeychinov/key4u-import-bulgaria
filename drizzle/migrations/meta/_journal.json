@@ -8,6 +8,13 @@
       "when": 1791715871881,
       "tag": "0000_encar_taxonomy_functions",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792162352546,
+      "tag": "0001_encar_sync_tables",
+      "breakpoints": true
     }
   ]
 }
