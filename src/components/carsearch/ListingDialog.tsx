@@ -262,6 +262,35 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                 </div>
               )}
 
+              {!ip && (
+                <div
+                  className="rounded-2xl border border-[#183e32]/15 bg-white p-6 shadow-card"
+                  style={{ fontFamily: "'Poppins', sans-serif" }}
+                >
+                  <h3 className="text-lg font-semibold text-[#183e32]">Цена до България</h3>
+                  <p className="mt-4 text-[28px] font-bold leading-none text-[#183e32]">Цена при запитване</p>
+                  <p className="mt-2 text-sm text-[#183e32]/70">
+                    Свържи се с нас и ще ти изготвим точна оферта с всички разходи до България.
+                  </p>
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                    <Button asChild className="flex-1 bg-[#183e32] text-white hover:bg-[#183e32]/90">
+                      <a href="tel:+359898252434">
+                        <Phone className="mr-2 h-4 w-4" /> Обади се
+                      </a>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
+                    >
+                      <a href="mailto:key4u.import@gmail.com?subject=Запитване%20за%20внос%20на%20автомобил">
+                        <Mail className="mr-2 h-4 w-4" /> Изпрати запитване
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {listing.url && (
                 <Button asChild variant="ghost" className="w-full sm:w-auto">
                   <a href={listing.url} target="_blank" rel="noopener noreferrer">
