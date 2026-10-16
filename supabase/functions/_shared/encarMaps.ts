@@ -63,8 +63,32 @@ export const TRIM_MAP: Record<string, string> = {
   "가솔린": "Gasoline", "디젤": "Diesel", "하이브리드": "Hybrid", "터보": "Turbo",
   "롱레인지": "Long Range", "퍼포먼스": "Performance", "인승": "-seater", "페이스리프트": "Facelift",
   "더 뉴": "The New", "올 뉴": "All New", "뉴": "New",
+  "기본형": "Base", "스타일": "Style", "어드밴스팩": "Advance Pack", "스마트": "Smart",
+  "밸류 플러스": "Value Plus", "플러스": "Plus", "베스트 셀렉션": "Best Selection", "블랙잉크": "Black Ink",
+  "마스터즈": "Masters", "고급형": "Premium", "최고급형": "Top", "일반형": "Standard", "초이스": "Choice",
+  "에디션": "Edition", "스페셜": "Special", "팩": "Pack", "오토": "Auto", "수동": "Manual",
+  "롱바디": "Long Body", "전기": "EV", "밴": "Van", "카고": "Cargo", "초장축": "Super Long", "장축": "Long",
+  "슈퍼캡": "Super Cab", "더블캡": "Double Cab", "킹캡": "King Cab",
 };
 const TRIM_ENTRIES = Object.entries(TRIM_MAP).sort((a, b) => b[0].length - a[0].length);
+
+export const MODEL_MAP: Record<string, string> = {
+  "아반떼": "Avante", "쏘나타": "Sonata", "그랜저": "Grandeur", "싼타페": "Santa Fe", "투싼": "Tucson",
+  "팰리세이드": "Palisade", "코나": "Kona", "베뉴": "Venue", "캐스퍼": "Casper", "스타리아": "Staria",
+  "스타렉스": "Starex", "그랜드 스타렉스": "Grand Starex", "포터": "Porter", "아이오닉": "Ioniq", "넥쏘": "Nexo",
+  "벨로스터": "Veloster", "엑센트": "Accent", "에쿠스": "Equus", "제네시스": "Genesis", "맥스크루즈": "Maxcruz",
+  "베라크루즈": "Veracruz", "쏘렌토": "Sorento", "스포티지": "Sportage", "카니발": "Carnival", "모닝": "Morning",
+  "레이": "Ray", "셀토스": "Seltos", "니로": "Niro", "봉고": "Bongo", "모하비": "Mohave", "스팅어": "Stinger",
+  "쏘울": "Soul", "프라이드": "Pride", "카렌스": "Carens", "오피러스": "Opirus", "포르테": "Forte", "로체": "Lotze",
+  "스토닉": "Stonic", "트랙스": "Trax", "트레일블레이저": "Trailblazer", "말리부": "Malibu", "스파크": "Spark",
+  "올란도": "Orlando", "크루즈": "Cruze", "캡티바": "Captiva", "임팔라": "Impala", "이쿼녹스": "Equinox",
+  "콜로라도": "Colorado", "타호": "Tahoe", "볼트": "Bolt", "다마스": "Damas", "라보": "Labo", "렉스턴": "Rexton",
+  "티볼리": "Tivoli", "코란도": "Korando", "토레스": "Torres", "액티언": "Actyon", "체어맨": "Chairman",
+  "무쏘": "Musso", "카이런": "Kyron", "그랑 콜레오스": "Grand Koleos", "콜레오스": "Koleos", "아르카나": "Arkana",
+  "클리오": "Clio", "마스터": "Master", "트위지": "Twizy", "디 올 뉴": "The All New", "더 뉴": "The New",
+  "올 뉴": "All New", "뉴": "New", "신형": "New", "하이브리드": "Hybrid", "일렉트릭": "Electric", "전기": "EV",
+};
+const MODEL_ENTRIES = Object.entries(MODEL_MAP).sort((a, b) => b[0].length - a[0].length);
 
 export const mapTrim = (s?: string) => {
   if (!s) return s;
@@ -73,20 +97,50 @@ export const mapTrim = (s?: string) => {
   return out.replace(/\s+/g, " ").trim();
 };
 
+export const mapModel = (s?: string) => {
+  if (!s) return s;
+  let out = s;
+  for (const [k, v] of MODEL_ENTRIES) out = out.split(k).join(v);
+  return out.replace(/\s+/g, " ").trim();
+};
+
+// Revised Romanization fallback for any Hangul syllables left after the maps.
+const RR_I = ["g","kk","n","d","tt","r","m","b","pp","s","ss","","j","jj","ch","k","t","p","h"];
+const RR_V = ["a","ae","ya","yae","eo","e","yeo","ye","o","wa","wae","oe","yo","u","wo","we","wi","yu","eu","ui","i"];
+const RR_F = ["","k","k","k","n","n","n","t","l","k","m","l","l","l","p","l","m","p","p","t","t","ng","t","t","k","t","p","t"];
+export const HANGUL_RE = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
+export function romanize(s: string): string {
+  const latin = s.replace(/[\uAC00-\uD7A3]+/g, (word) => {
+    let r = "";
+    for (const ch of word) {
+      const c = ch.charCodeAt(0) - 0xAC00;
+      r += RR_I[Math.floor(c / 588)] + RR_V[Math.floor((c % 588) / 28)] + RR_F[c % 28];
+    }
+    return r.charAt(0).toUpperCase() + r.slice(1);
+  });
+  return latin.replace(/[\u1100-\u11FF\u3130-\u318F]/g, "").replace(/\s+/g, " ").trim();
+}
+const fallback = (s: string) => (HANGUL_RE.test(s) ? romanize(s) : s);
+export const modelSlugOf = (m: string) =>
+  m.replace(/\([^)]*\)/g, "").trim().toLowerCase().replace(/\s+/g, "-");
+
 // deno-lint-ignore no-explicit-any
 export function translateListing<T extends Record<string, any>>(l: T): T {
   const out: Record<string, unknown> = { ...l };
   if (l.brand_name) {
-    const en = BRAND_MAP[String(l.brand_name).trim()];
+    const raw = String(l.brand_name).trim();
+    const en = BRAND_MAP[raw] ?? (HANGUL_RE.test(raw) ? romanize(raw) : null);
     if (en) { out.brand_name = en; out.brand_slug = slugify(en); }
   }
-  if (l.region) out.region = REGION_MAP[l.region] ?? l.region;
-  if (l.fuel_type) out.fuel_type = FUEL_MAP[l.fuel_type] ?? l.fuel_type;
-  if (l.transmission) out.transmission = TRANSMISSION_MAP[l.transmission] ?? l.transmission;
+  if (l.region) out.region = fallback(REGION_MAP[l.region] ?? l.region);
+  if (l.fuel_type) out.fuel_type = fallback(FUEL_MAP[l.fuel_type] ?? l.fuel_type);
+  if (l.transmission) out.transmission = fallback(TRANSMISSION_MAP[l.transmission] ?? l.transmission);
   if (l.model_name) {
-    const m = mapText(l.model_name)!;
-    if (m !== l.model_name) { out.model_name = m; out.model_slug = slugify(m); }
+    const m = fallback(mapModel(mapText(l.model_name))!);
+    if (m !== l.model_name || (l.model_slug && HANGUL_RE.test(l.model_slug))) {
+      out.model_name = m; out.model_slug = modelSlugOf(m);
+    }
   }
-  if (l.trim) out.trim = mapTrim(mapText(l.trim));
+  if (l.trim) out.trim = fallback(mapTrim(mapText(l.trim))!);
   return out as T;
 }

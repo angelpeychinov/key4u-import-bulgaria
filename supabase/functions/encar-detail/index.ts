@@ -92,6 +92,9 @@ Deno.serve(async (req) => {
     if (Number.isFinite(cc) && cc > 0) upd.engine_cc = Math.round(cc);
     const color = typeof spec?.colorName === "string" ? spec.colorName.trim() : "";
     if (color) upd.color = COLOR_MAP[color] ?? color;
+    const tr = typeof spec?.transmissionName === "string" ? spec.transmissionName.trim() : "";
+    const TR: Record<string, string> = { "오토": "auto", "수동": "manual", "CVT": "cvt", "세미오토": "semi_auto" };
+    if (TR[tr]) upd.transmission = TR[tr];
     const acc = inspection?.master?.accdient ?? inspection?.master?.accident;
     if (typeof acc === "boolean") upd.has_accident = acc;
     if (Object.keys(upd).length) {
