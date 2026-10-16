@@ -1,10 +1,11 @@
+import { VIBER_GROUP_URL } from "@/lib/contact";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 
 export const ViberSection = () => {
   const handleViberClick = () => {
-    window.open('https://invite.viber.com/?g2=AQBBYt8YUvNSclPkalAfJbQHTCgsYQCUoqTYEaki53CW%2FthpASyMvSk9yxEHGBS7', '_blank');
+    window.open(VIBER_GROUP_URL, '_blank');
   };
 
   return (
