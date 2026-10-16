@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Review monitoring findings: timeout evidence stale (current search/facets succeed); empty saved search fixed and verified through save/remove-last-car flow, tests passed, server deployed.
+
 - [x] Prevent Hangul in detail body/color writes and facet responses/cache; both functions deployed, 36 tests passed, default/BMW responses and cache verified clean; not published.
 
 - [x] Make Korea facets fast with a default/grouped cache, single-source scan, 10-minute scheduled refresh, and resilient brand/model fallback; live checks: default 0.52s, BMW 0.72s, brands/models visible; not published.

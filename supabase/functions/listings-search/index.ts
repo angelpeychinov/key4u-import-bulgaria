@@ -184,7 +184,7 @@ Deno.serve(async (req) => {
 
     // Saved cars: explicit list of encar ids.
     const idsRaw = incoming.get("ids");
-    if (idsRaw) {
+    if (idsRaw !== null) {
       const ids = idsRaw.split(",").map((s) => s.trim()).filter((s) => /^\d{1,20}$/.test(s)).slice(0, 200);
       if (ids.length === 0) {
         return json({ results: [], count: 0, page, pages: 0, page_size: pageSize, has_next: false });
