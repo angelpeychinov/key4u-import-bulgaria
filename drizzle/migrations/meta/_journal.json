@@ -85,6 +85,13 @@
       "when": 1792187831985,
       "tag": "0011_encar_facets_and_sort_indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792188067488,
+      "tag": "0012_encar_facets_single_scan",
+      "breakpoints": true
     }
   ]
 }
