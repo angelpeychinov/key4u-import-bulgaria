@@ -14,7 +14,7 @@ import Home from "./pages/Home";
 import Process from "./pages/Process";
 import FindCar from "./pages/FindCar";
 // Korea catalog paused — restore import + route below when re-enabling.
-// import CarSearch from "./pages/CarSearch";
+import CarSearch from "./pages/CarSearch";
 import FAQ from "./pages/FAQ";
 // Delivered cars page paused — restore import + route below when re-enabling.
 // import Delivered from "./pages/Delivered";
@@ -41,7 +41,8 @@ const App = () => (
                 <Route path="/process" element={<Process />} />
                 <Route path="/find-car" element={<FindCar />} />
                 {/* Korea catalog paused — restore route when re-enabling. */}
-                {/* <Route path="/car-search" element={<CarSearch />} /> */}
+                {/* /car-search stays disabled; unlisted preview route only. */}
+                <Route path="/korea-preview-k4u" element={<CarSearch />} />
                 {/* Delivered cars page paused — restore route when re-enabling. */}
                 {/* <Route path="/delivered" element={<Delivered />} /> */}
                 <Route path="/faq" element={<FAQ />} />

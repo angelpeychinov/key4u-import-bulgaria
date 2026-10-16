@@ -3,30 +3,39 @@
 
 User-agent: Googlebot
 Allow: /
+Disallow: /korea-preview-k4u
 
 User-agent: Bingbot
 Allow: /
+Disallow: /korea-preview-k4u
 
 User-agent: Twitterbot
 Allow: /
+Disallow: /korea-preview-k4u
 
 User-agent: facebookexternalhit
 Allow: /
+Disallow: /korea-preview-k4u
 
 # AI crawlers
 User-agent: GPTBot
 Allow: /
+Disallow: /korea-preview-k4u
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /korea-preview-k4u
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /korea-preview-k4u
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /korea-preview-k4u
 
 User-agent: *
 Allow: /
+Disallow: /korea-preview-k4u
 
 Sitemap: https://key4u.bg/sitemap.xml
