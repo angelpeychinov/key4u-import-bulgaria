@@ -72,7 +72,14 @@ async function fetchMakers(client: any): Promise<[string, string, number][]> {
 async function encarSearch(client: any, q: string, offset: number, limit: number) {
   const sr = `|ModifiedDate|${offset}|${limit}`;
   const url = `https://api.encar.com/search/car/list/general?count=true&q=${encodeURIComponent(q)}&sr=${encodeURIComponent(sr)}`;
-  const r = await fetch(url, { client, headers: HEADERS, redirect: "manual", signal: AbortSignal.timeout(20_000) } as any);
+  let r: Response;
+  try {
+    r = await fetch(url, { client, headers: HEADERS, redirect: "manual", signal: AbortSignal.timeout(20_000) } as any);
+  } catch (e) {
+    console.warn("encar fetch failed, retrying once", String(e));
+    await sleep(2000);
+    r = await fetch(url, { client, headers: HEADERS, redirect: "manual", signal: AbortSignal.timeout(25_000) } as any);
+  }
   const text = await r.text();
   if (!r.ok) console.error(`encar non-2xx ${r.status} ${url}`);
   if ([403, 407, 429].includes(r.status) || (r.status >= 300 && r.status < 400)) {
@@ -297,32 +304,36 @@ Deno.serve(async (req) => {
         await clearPause();
         await jitter();
       }
-      const windows: any[] = [];
       if (!count) {
         console.log(`maker ${maker} has 0 listings, skipped`);
       } else if (count <= MAX_DEPTH) {
-        windows.push({ run_id: run.id, maker, car_type: ct, total: count });
+        const { error } = await supabase.from("encar_sync_windows").insert({ run_id: run.id, maker, car_type: ct, total: count });
+        if (error) throw new Error("insert windows failed: " + error.message);
       } else {
-        const stack: [number, number][] = [];
-        for (let i = PRICE_EDGES.length - 2; i >= 0; i--) stack.push([PRICE_EDGES[i], PRICE_EDGES[i + 1]]);
-        while (stack.length) {
-          const [lo, hi] = stack.pop()!;
+        // Pending price ranges are persisted in run.build_stack so splitting resumes across invocations.
+        let stack: [number, number][] = Array.isArray(run.build_stack) ? run.build_stack : [];
+        if (!stack.length) for (let i = PRICE_EDGES.length - 2; i >= 0; i--) stack.push([PRICE_EDGES[i], PRICE_EDGES[i + 1]]);
+        while (stack.length && timeLeft()) {
+          const [lo, hi] = stack[stack.length - 1];
           const { count: c } = await encarSearch(client, buildQ(maker, ct, lo, hi), 0, 1);
           await clearPause();
-          await jitter();
-          if (c <= 0) continue;
+          stack = stack.slice(0, -1);
           if (c > MAX_DEPTH && hi - lo > 1) {
             const mid = Math.floor((lo + hi) / 2);
             stack.push([mid, hi], [lo, mid]);
-          } else windows.push({ run_id: run.id, maker, car_type: ct, price_lo: lo, price_hi: hi, total: c });
+          } else if (c > 0) {
+            const { error } = await supabase.from("encar_sync_windows").insert({ run_id: run.id, maker, car_type: ct, price_lo: lo, price_hi: hi, total: c });
+            if (error) throw new Error("insert windows failed: " + error.message);
+          }
+          run.build_stack = stack;
+          await supabase.from("encar_sync_runs").update({ build_stack: stack }).eq("id", run.id);
+          await jitter();
         }
-      }
-      if (windows.length) {
-        const { error } = await supabase.from("encar_sync_windows").insert(windows);
-        if (error) throw new Error("insert windows failed: " + error.message);
+        if (stack.length) break; // out of time; resume this maker next invocation
+        run.build_stack = null;
       }
       run.build_maker_idx = idx + 1;
-      await supabase.from("encar_sync_runs").update({ build_maker_idx: run.build_maker_idx }).eq("id", run.id);
+      await supabase.from("encar_sync_runs").update({ build_maker_idx: run.build_maker_idx, build_stack: null }).eq("id", run.id);
     }
 
     // --- process windows ---
