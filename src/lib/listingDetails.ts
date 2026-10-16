@@ -1,7 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const KRW_PER_EUR = 1544;
+// Matches the pricing_config fx (eur_to_cad × cad_to_krw); update if those rates change.
+const KRW_PER_EUR = 1433.92;
 const HANGUL = /[\u1100-\u11ff\u3130-\u318f\uac00-\ud7af]/;
 
 export interface ListingDetails {

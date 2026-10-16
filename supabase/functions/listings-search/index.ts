@@ -8,12 +8,41 @@ const corsHeaders = {
 
 const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
+// Live rates come from the pricing_config table (cached 5 min); these are
+// fallbacks if the table is unreachable. fx = eur_to_cad * cad_to_krw already
+// includes the exchange loss, so there is NO separate EUR->CAD conversion fee.
 // calibrated against Key4U's Rotterdam calculator
-const DEFAULT_FX_RATE = 1544; // KRW per EUR
-const DEFAULT_SHIPPING = 1720; // EUR, Korea -> Rotterdam base rate
-// Загуба при обмяна EUR -> CAD -> KRW (банката купува/продава на различен курс).
-// Смята се от сумата, изпратена до Ротердам (цена на колата + транспорт), не от крайната цена.
-const EUR_CAD_CONVERSION_PCT = 2.0;
+const FALLBACK_FX = 1.5557 * 921.72; // KRW per EUR
+const FALLBACK_SEA_BASE = 1917; // EUR, Korea -> Rotterdam base rate
+const CONFIG_TTL_MS = 5 * 60 * 1000;
+
+interface PricingConfig {
+  fx: number;
+  seaBase: number;
+}
+
+const FALLBACK_CFG: PricingConfig = { fx: FALLBACK_FX, seaBase: FALLBACK_SEA_BASE };
+let pricingCache: { cfg: PricingConfig; at: number } | null = null;
+
+const loadPricingConfig = async (
+  supabase: ReturnType<typeof createClient>,
+): Promise<PricingConfig> => {
+  if (pricingCache && Date.now() - pricingCache.at < CONFIG_TTL_MS) return pricingCache.cfg;
+  const cfg: PricingConfig = { ...FALLBACK_CFG };
+  try {
+    const { data } = await supabase.from("pricing_config").select("key,value");
+    const map = new Map((data ?? []).map((r: { key: string; value: number }) => [r.key, Number(r.value)]));
+    const eurToCad = map.get("eur_to_cad");
+    const cadToKrw = map.get("cad_to_krw");
+    const seaBase = map.get("sea_base_eur");
+    if (eurToCad && cadToKrw) cfg.fx = eurToCad * cadToKrw;
+    if (seaBase) cfg.seaBase = seaBase;
+  } catch (e) {
+    console.error("pricing_config load failed, using fallbacks", e);
+  }
+  pricingCache = { cfg, at: Date.now() };
+  return cfg;
+};
 
 const bracketPct = (adjusted: number): number => {
   if (adjusted <= 15000000) return 3.0;
@@ -40,37 +69,33 @@ const dutyVatFee = (priceEur: number): number => {
   return 2500;
 };
 
-const calculateKoreaImportPrice = (priceKrw: number, isOversize = false) => {
+const calculateKoreaImportPrice = (priceKrw: number, isOversize = false, cfg: PricingConfig = FALLBACK_CFG) => {
   const adjusted = priceKrw * 0.909;
   const bracketFee = (adjusted * bracketPct(adjusted)) / 100;
   const flatFees = 440000 + 250000;
-  const price = (adjusted + bracketFee + flatFees) / DEFAULT_FX_RATE;
+  // "Цена на автомобил" — цена до Ротердам в EUR (fx вече включва курсовата разлика).
+  const price = (adjusted + bracketFee + flatFees) / cfg.fx;
 
   const carSizeSurcharge = isOversize ? 350 : 0;
   const domTransportCost = isOversize ? 1150 : 900;
-  const transport = DEFAULT_SHIPPING + carSizeSurcharge + SEA_SURCHARGE + dutyVatFee(price);
-
-  // Превалутиране EUR -> CAD: 2% само от (цена на колата + морски транспорт до Ротердам),
-  // без митото/ДДС. Влиза в "Цена на автомобил", без отделен ред за клиента.
-  const conversionFee =
-    ((price + DEFAULT_SHIPPING + carSizeSurcharge + SEA_SURCHARGE) * EUR_CAD_CONVERSION_PCT) / 100;
-  const priceWithConversion = price + conversionFee;
-
+  // "Транспорт до България (вкл. мито и ДДС)"
+  const transport = cfg.seaBase + SEA_SURCHARGE + carSizeSurcharge + dutyVatFee(price);
+  // "Разходи по закупуване и разтоварване"
   const handling = HIDDEN_MARGIN + domTransportCost + commissionForPrice(priceKrw);
 
   return {
-    price: priceWithConversion,
+    price,
     transport,
     handling,
-    total: priceWithConversion + transport + handling,
+    total: price + transport + handling,
   };
 };
 
 // Smallest KRW price whose (non-oversize) final total reaches `eur`.
 // The total has tiny dips at fee-bracket edges, so we scan upward instead of
 // binary searching: everything below the result is guaranteed to cost < eur.
-const firstKrwReaching = (eur: number): number => {
-  const total = (k: number) => calculateKoreaImportPrice(k).total;
+const firstKrwReaching = (eur: number, cfg: PricingConfig = FALLBACK_CFG): number => {
+  const total = (k: number) => calculateKoreaImportPrice(k, false, cfg).total;
   if (total(0) >= eur) return 0;
   const STEP = 5000;
   let k = 0;
@@ -142,6 +167,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       { auth: { persistSession: false } },
     );
+    const pricing = await loadPricingConfig(supabase);
 
     const incoming = new URL(req.url).searchParams;
     const pageSize = Math.min(numParam(incoming, "limit") ?? 20, 48);
@@ -210,9 +236,9 @@ Deno.serve(async (req) => {
 
     // Price filters arrive in EUR as the final price to Bulgaria; translate to KRW bounds.
     const priceFrom = numParam(incoming, "price_from");
-    if (priceFrom) query = query.gte("price_original", firstKrwReaching(priceFrom));
+    if (priceFrom) query = query.gte("price_original", firstKrwReaching(priceFrom, pricing));
     const priceTo = numParam(incoming, "price_to");
-    if (priceTo) query = query.lte("price_original", firstKrwReaching(priceTo + 0.000001) - 1);
+    if (priceTo) query = query.lte("price_original", firstKrwReaching(priceTo + 0.000001, pricing) - 1);
 
     const sortParam = (incoming.get("sort") ?? "newest") as SortKey;
     const sort = SORTS[sortParam] ?? SORTS.newest;
@@ -243,7 +269,7 @@ Deno.serve(async (req) => {
       const krw = Number(row.price_original ?? 0);
       const importPrice =
         Number.isFinite(krw) && krw > 0
-          ? calculateKoreaImportPrice(krw, isOversizeVehicle(row))
+          ? calculateKoreaImportPrice(krw, isOversizeVehicle(row), pricing)
           : undefined;
       return {
         ...row,

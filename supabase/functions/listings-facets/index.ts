@@ -8,10 +8,41 @@ const corsHeaders = {
 
 const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
+// Live rates come from the pricing_config table (cached 5 min); these are
+// fallbacks. fx = eur_to_cad * cad_to_krw already includes the exchange loss,
+// so there is NO separate EUR->CAD conversion fee.
 // calibrated against Key4U's Rotterdam calculator
-const DEFAULT_FX_RATE = 1544;
-const DEFAULT_SHIPPING = 1720;
-const EUR_CAD_CONVERSION_PCT = 2.0;
+const FALLBACK_FX = 1.5557 * 921.72; // KRW per EUR
+const FALLBACK_SEA_BASE = 1917;
+const CONFIG_TTL_MS = 5 * 60 * 1000;
+
+interface PricingConfig {
+  fx: number;
+  seaBase: number;
+}
+
+const FALLBACK_CFG: PricingConfig = { fx: FALLBACK_FX, seaBase: FALLBACK_SEA_BASE };
+let pricingCache: { cfg: PricingConfig; at: number } | null = null;
+
+const loadPricingConfig = async (
+  supabase: ReturnType<typeof createClient>,
+): Promise<PricingConfig> => {
+  if (pricingCache && Date.now() - pricingCache.at < CONFIG_TTL_MS) return pricingCache.cfg;
+  const cfg: PricingConfig = { ...FALLBACK_CFG };
+  try {
+    const { data } = await supabase.from("pricing_config").select("key,value");
+    const map = new Map((data ?? []).map((r: { key: string; value: number }) => [r.key, Number(r.value)]));
+    const eurToCad = map.get("eur_to_cad");
+    const cadToKrw = map.get("cad_to_krw");
+    const seaBase = map.get("sea_base_eur");
+    if (eurToCad && cadToKrw) cfg.fx = eurToCad * cadToKrw;
+    if (seaBase) cfg.seaBase = seaBase;
+  } catch (e) {
+    console.error("pricing_config load failed, using fallbacks", e);
+  }
+  pricingCache = { cfg, at: Date.now() };
+  return cfg;
+};
 
 const bracketPct = (adjusted: number): number => {
   if (adjusted <= 15000000) return 3.0;
@@ -38,23 +69,21 @@ const dutyVatFee = (priceEur: number): number => {
   return 2500;
 };
 
-const calculateKoreaImportPrice = (priceKrw: number) => {
+const calculateKoreaImportPrice = (priceKrw: number, cfg: PricingConfig = FALLBACK_CFG) => {
   const adjusted = priceKrw * 0.909;
   const bracketFee = (adjusted * bracketPct(adjusted)) / 100;
-  const price = (adjusted + bracketFee + 440000 + 250000) / DEFAULT_FX_RATE;
-  const transport = DEFAULT_SHIPPING + SEA_SURCHARGE + dutyVatFee(price);
-  // 2% EUR->CAD only on (car price + sea transport to Rotterdam), not on duty/VAT.
-  const conversionFee = ((price + DEFAULT_SHIPPING + SEA_SURCHARGE) * EUR_CAD_CONVERSION_PCT) / 100;
+  const price = (adjusted + bracketFee + 440000 + 250000) / cfg.fx;
+  const transport = cfg.seaBase + SEA_SURCHARGE + dutyVatFee(price);
   const handling = HIDDEN_MARGIN + 900 + commissionForPrice(priceKrw);
-  return price + conversionFee + transport + handling;
+  return price + transport + handling;
 };
 
-const firstKrwReaching = (eur: number): number => {
-  if (calculateKoreaImportPrice(0) >= eur) return 0;
+const firstKrwReaching = (eur: number, cfg: PricingConfig = FALLBACK_CFG): number => {
+  if (calculateKoreaImportPrice(0, cfg) >= eur) return 0;
   const STEP = 5000;
   let k = 0;
-  while (calculateKoreaImportPrice(k + STEP) < eur && k < 5_000_000_000) k += STEP;
-  while (calculateKoreaImportPrice(k + 1) < eur) k += 1;
+  while (calculateKoreaImportPrice(k + STEP, cfg) < eur && k < 5_000_000_000) k += STEP;
+  while (calculateKoreaImportPrice(k + 1, cfg) < eur) k += 1;
   return k + 1;
 };
 
@@ -117,6 +146,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       { auth: { persistSession: false } },
     );
+    const pricing = await loadPricingConfig(supabase);
 
     const priceFrom = numParam(incoming, "price_from");
     const priceTo = numParam(incoming, "price_to");
@@ -126,8 +156,8 @@ Deno.serve(async (req) => {
       _model: textParam(incoming, "model") ?? null,
       _year_from: numParam(incoming, "year_from") ?? null,
       _year_to: numParam(incoming, "year_to") ?? null,
-      _price_min: priceFrom ? firstKrwReaching(priceFrom) : null,
-      _price_max: priceTo ? firstKrwReaching(priceTo + 0.000001) - 1 : null,
+      _price_min: priceFrom ? firstKrwReaching(priceFrom, pricing) : null,
+      _price_max: priceTo ? firstKrwReaching(priceTo + 0.000001, pricing) - 1 : null,
       _mileage_min: numParam(incoming, "mileage_min") ?? null,
       _mileage_max: numParam(incoming, "mileage_max") ?? null,
       _fuels: listParam(incoming, "fuel_type") ?? null,
