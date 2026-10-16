@@ -136,7 +136,10 @@ Deno.serve(async (req) => {
 
     for (const key of ["fuel_type", "transmission", "body_type"] as const) {
       const value = textParam(incoming, key);
-      if (value) query = query.ilike(key, value);
+      if (!value) continue;
+      // The Encar list API omits transmission; unknown rows are treated as automatic (~99% of Korean used cars).
+      if (key === "transmission" && value.toLowerCase() === "auto") query = query.or("transmission.ilike.auto,transmission.is.null");
+      else query = query.ilike(key, value);
     }
 
     if (incoming.get("has_accident") === "false") query = query.eq("has_accident", false);
