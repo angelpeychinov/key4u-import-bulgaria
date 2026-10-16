@@ -167,6 +167,7 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       { auth: { persistSession: false } },
     );
+    const pricing = await loadPricingConfig(supabase);
 
     const incoming = new URL(req.url).searchParams;
     const pageSize = Math.min(numParam(incoming, "limit") ?? 20, 48);
@@ -235,9 +236,9 @@ Deno.serve(async (req) => {
 
     // Price filters arrive in EUR as the final price to Bulgaria; translate to KRW bounds.
     const priceFrom = numParam(incoming, "price_from");
-    if (priceFrom) query = query.gte("price_original", firstKrwReaching(priceFrom));
+    if (priceFrom) query = query.gte("price_original", firstKrwReaching(priceFrom, pricing));
     const priceTo = numParam(incoming, "price_to");
-    if (priceTo) query = query.lte("price_original", firstKrwReaching(priceTo + 0.000001) - 1);
+    if (priceTo) query = query.lte("price_original", firstKrwReaching(priceTo + 0.000001, pricing) - 1);
 
     const sortParam = (incoming.get("sort") ?? "newest") as SortKey;
     const sort = SORTS[sortParam] ?? SORTS.newest;
@@ -268,7 +269,7 @@ Deno.serve(async (req) => {
       const krw = Number(row.price_original ?? 0);
       const importPrice =
         Number.isFinite(krw) && krw > 0
-          ? calculateKoreaImportPrice(krw, isOversizeVehicle(row))
+          ? calculateKoreaImportPrice(krw, isOversizeVehicle(row), pricing)
           : undefined;
       return {
         ...row,
