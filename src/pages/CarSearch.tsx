@@ -120,6 +120,7 @@ export default function CarSearch() {
   const [unavailable, setUnavailable] = useState(false);
   const resultsTop = useRef<HTMLDivElement>(null);
   const requestId = useRef(0);
+  const facetRequestId = useRef(0);
   const { ids: favoriteIds } = useFavorites();
 
   const savedMode = searchParams.get("saved") === "1";
@@ -150,8 +151,9 @@ export default function CarSearch() {
   };
 
   const runFacets = async (active: SearchFilters) => {
+    const id = ++facetRequestId.current;
     const next = await fetchFacets(active);
-    if (next) setFacets(next);
+    if (next && id === facetRequestId.current) setFacets(next);
   };
 
   // Debounced search + facets whenever filters change.
@@ -177,7 +179,7 @@ export default function CarSearch() {
   const resetFilters = () => setFilters({ ...emptyFilters });
 
   const chips = useMemo(() => buildChips(filters, facets), [filters, facets]);
-  const shownCount = savedMode ? count : facets?.total ?? count;
+  const shownCount = savedMode || facets?.fallback ? count : facets?.total ?? count;
 
   return (
     <main className="flex-1 bg-background">

@@ -98,7 +98,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
                 }
               />
               <span className="flex-1 truncate text-foreground">{b.name}</span>
-              <span className="text-xs text-muted-foreground">{b.count.toLocaleString("bg-BG")}</span>
+              {b.count !== undefined && <span className="text-xs text-muted-foreground">{b.count.toLocaleString("bg-BG")}</span>}
             </label>
           ))}
           {brands.length === 0 && <p className="px-1 text-sm text-muted-foreground">Няма марки по тези критерии.</p>}
@@ -117,7 +117,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
                   onCheckedChange={(checked) => set({ model: checked ? m.slug : "" })}
                 />
                 <span className="flex-1 truncate text-foreground">{m.name}</span>
-                <span className="text-xs text-muted-foreground">{m.count.toLocaleString("bg-BG")}</span>
+                {m.count !== undefined && <span className="text-xs text-muted-foreground">{m.count.toLocaleString("bg-BG")}</span>}
               </label>
             ))}
             {models.length === 0 && <p className="px-1 text-sm text-muted-foreground">Няма модели по тези критерии.</p>}

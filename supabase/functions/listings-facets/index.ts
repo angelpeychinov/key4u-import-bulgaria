@@ -1,10 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-};
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 const HIDDEN_MARGIN = 150;
 // Live rates come from the pricing_config table (cached 5 min); these are
@@ -141,11 +136,29 @@ Deno.serve(async (req) => {
       return json({ ...(hit.payload as Record<string, unknown>), cached: true });
     }
 
+    const url = Deno.env.get("SUPABASE_URL");
+    const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!url || !key) return json({ unavailable: true }, 503);
     const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      url,
+      key,
       { auth: { persistSession: false } },
     );
+    const readDefault = async () => {
+      const { data } = await supabase.from("encar_facets_cache")
+        .select("payload,updated_at").eq("key", "default").maybeSingle();
+      return data?.payload ? { ...data.payload, updated_at: data.updated_at } : null;
+    };
+    const hasFilters = ["brand", "model", "year_from", "year_to", "price_from", "price_to",
+      "mileage_min", "mileage_max", "fuel_type", "transmission", "body_type", "region"]
+      .some((key) => { const value = incoming.get(key)?.trim(); return !!value && value !== "all"; })
+      || incoming.get("has_accident") === "false";
+    if (!hasFilters) {
+      const started = Date.now();
+      const payload = await readDefault();
+      // Never run an expensive default calculation on a visitor's request.
+      return json(payload ? { ...payload, cached: true, took_ms: Date.now() - started } : { unavailable: true });
+    }
     const pricing = await loadPricingConfig(supabase);
 
     const priceFrom = numParam(incoming, "price_from");
@@ -171,7 +184,8 @@ Deno.serve(async (req) => {
     const { data, error } = await supabase.rpc("encar_facets", args);
     if (error) {
       console.error("encar_facets failed", error);
-      return json({ unavailable: true, total: 0, brands: [], models: [], fuels: [], transmissions: [], body_types: [], regions: [] });
+      const fallback = await readDefault();
+      return json({ ...fallback, unavailable: true, fallback: true, models: [] });
     }
 
     const payload = { ...(data as Record<string, unknown>), took_ms: Date.now() - started };

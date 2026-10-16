@@ -82,10 +82,11 @@ export interface FacetCount {
 export interface FacetNamed {
   slug: string;
   name: string;
-  count: number;
+  count?: number;
 }
 
 export interface Facets {
+  fallback?: boolean;
   total: number;
   brands: FacetNamed[];
   models: FacetNamed[];
@@ -271,9 +272,8 @@ export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null
   const { data, error } = await supabase.functions.invoke(`listings-facets?${params.toString()}`, {
     method: "GET",
   });
-  if (error) return null;
   const obj = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
-  if (obj.unavailable) return null;
+  const unavailable = !!error || obj.unavailable === true;
 
   const named = (v: unknown): FacetNamed[] =>
     Array.isArray(v)
@@ -288,7 +288,7 @@ export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null
           .filter((i) => i.value)
       : [];
 
-  return {
+  const result: Facets = {
     total: toNumber(obj.total) ?? 0,
     brands: named(obj.brands),
     models: named(obj.models),
@@ -296,6 +296,23 @@ export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null
     transmissions: counts(obj.transmissions),
     body_types: counts(obj.body_types),
     regions: counts(obj.regions),
+  };
+  if (!unavailable && result.brands.length) return result;
+
+  // Independent fallback requests preserve choices even when filtered counts time out.
+  const [defaults, brands, models] = await Promise.all([
+    supabase.from("encar_facets_cache").select("payload").eq("key", "default").maybeSingle()
+      .then(({ data }) => data?.payload as Record<string, unknown> | undefined),
+    result.brands.length ? Promise.resolve([]) : fetchTaxonomy("brands").catch(() => []),
+    filters.brand ? fetchTaxonomy("models", filters.brand).catch(() => []) : Promise.resolve([]),
+  ]);
+  const defaultBrands = named(defaults?.brands);
+  return {
+    ...result,
+    fallback: unavailable,
+    brands: result.brands.length ? result.brands : defaultBrands.length ? defaultBrands : brands,
+    // Default models span all manufacturers; never use them for a selected brand.
+    models: filters.brand ? (unavailable || !result.models.length ? models : result.models) : [],
   };
 };
 
