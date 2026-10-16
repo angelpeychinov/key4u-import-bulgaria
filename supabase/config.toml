@@ -12,3 +12,6 @@ verify_jwt = false
 
 [functions.encar-sync]
 verify_jwt = false
+
+[functions.encar-retranslate]
+verify_jwt = false
