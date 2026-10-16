@@ -297,7 +297,7 @@ export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null
     body_types: counts(obj.body_types),
     regions: counts(obj.regions),
   };
-  if (!unavailable && result.brands.length) return result;
+  if (!unavailable && result.brands.length && (!filters.brand || result.models.length)) return result;
 
   // Independent fallback requests preserve choices even when filtered counts time out.
   const [defaults, brands, models] = await Promise.all([
