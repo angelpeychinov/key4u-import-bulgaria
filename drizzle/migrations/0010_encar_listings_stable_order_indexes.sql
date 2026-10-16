@@ -1,0 +1,2 @@
+CREATE INDEX IF NOT EXISTS encar_listings_active_last_seen_id_idx ON public.encar_listings (last_seen_at DESC, encar_id DESC) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS encar_listings_active_brand_last_seen_id_idx ON public.encar_listings (brand_slug, last_seen_at DESC, encar_id DESC) WHERE status = 'active';
