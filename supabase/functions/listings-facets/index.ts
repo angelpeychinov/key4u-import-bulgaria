@@ -8,6 +8,7 @@ const corsHeaders = {
 
 const SEA_SURCHARGE = 150;
 const HIDDEN_MARGIN = 150;
+// calibrated against Key4U's Rotterdam calculator
 const DEFAULT_FX_RATE = 1544;
 const DEFAULT_SHIPPING = 1720;
 const EUR_CAD_CONVERSION_PCT = 2.0;
