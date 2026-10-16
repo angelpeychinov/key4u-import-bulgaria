@@ -77,13 +77,21 @@ const toUrl = (v: unknown): string | undefined => {
   return undefined;
 };
 
-const SPEC_KEYS: [string, string][] = [
-  ["fuel_type", "гориво"],
-  ["transmission", "скоростна кутия"],
-  ["body_type", "тип каросерия"],
-  ["color", "цвят"],
-  ["trim", "ниво на оборудване"],
-  ["region", "регион"],
+const FUEL_BG: Record<string, string> = {
+  gasoline: "Бензин", diesel: "Дизел", hybrid: "Хибрид", electric: "Електрически", lpg: "Газ (LPG)",
+  "gasoline+lpg": "Бензин/газ", hydrogen: "Водород", cng: "Метан",
+};
+const TRANSMISSION_BG: Record<string, string> = { auto: "Автоматична", manual: "Ръчна", cvt: "Вариатор (CVT)", semi_auto: "Полуавтоматична" };
+const BODY_BG: Record<string, string> = {
+  sedan: "Седан", hatchback: "Хечбек", coupe: "Купе", convertible: "Кабриолет", suv: "SUV",
+  wagon: "Комби", pickup: "Пикап", van: "Ван", minivan: "Миниван", other: "Друго",
+};
+const SPEC_KEYS: [string, string, Record<string, string>?][] = [
+  ["fuel_type", "Гориво", FUEL_BG],
+  ["transmission", "Скоростна кутия", TRANSMISSION_BG],
+  ["body_type", "Тип каросерия", BODY_BG],
+  ["color", "Цвят"],
+  ["trim", "Ниво на оборудване"],
 ];
 
 export const normalizeListing = (raw: Record<string, unknown>, index: number): Listing => {
@@ -95,14 +103,15 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
   const title = [year, brand, model, trim].filter(Boolean).join(" ") || "Listing";
 
   const specs: Record<string, string> = {};
-  for (const [key, label] of SPEC_KEYS) {
+  for (const [key, label, map] of SPEC_KEYS) {
     const v = raw[key];
+    if (map && typeof v === "string" && v) { specs[label] = map[v.toLowerCase()] ?? v; continue; }
     if (v !== undefined && v !== null && v !== "" && typeof v !== "object") {
       specs[label] = String(v);
     }
   }
   if (typeof raw.has_accident === "boolean") {
-    specs["щети"] = raw.has_accident ? "да" : "не";
+    specs["Щети"] = raw.has_accident ? "Да" : "Не";
   }
 
   const thumb = toUrl(raw.thumb);

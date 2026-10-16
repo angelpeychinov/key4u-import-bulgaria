@@ -67,6 +67,12 @@ export function parseDetails(d: any): ListingDetails {
   const history: [string, string][] = [];
   const acc = insp?.master?.accdient ?? insp?.master?.accident;
   if (typeof acc === "boolean") history.push(["ПТП", acc ? "Да" : "Не"]);
+  const simple = insp?.master?.simpleRepair;
+  if (typeof simple === "boolean") history.push(["Леки ремонти (без конструктивни)", simple ? "Да" : "Не"]);
+  const flooded = insp?.master?.detail?.waterlog === true || (num(rec?.floodTotalLossCnt) ?? 0) > 0 || (num(rec?.floodPartLossCnt) ?? 0) > 0;
+  if (insp?.master?.detail || rec) history.push(["Наводнение", flooded ? "Да" : "Не"]);
+  const totalLoss = num(rec?.totalLossCnt);
+  if (totalLoss !== undefined) history.push(["Тотална щета", totalLoss > 0 ? "Да" : "Не"]);
   const my = num(rec?.myAccidentCnt);
   const other = num(rec?.otherAccidentCnt);
   if (my !== undefined) history.push(["Застрахователни щети (собствени)", String(my)]);
