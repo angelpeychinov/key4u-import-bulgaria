@@ -82,7 +82,7 @@ async function encarSearch(client: any, q: string, offset: number, limit: number
   }
   const text = await r.text();
   if (!r.ok) console.error(`encar non-2xx ${r.status} ${url}`);
-  if ([403, 407, 429].includes(r.status) || (r.status >= 300 && r.status < 400)) {
+  if ([403, 407, 429].includes(r.status) || (r.status >= 300 && r.status < 400) || /blocked|captcha|client-verification/i.test(text.slice(0, 2000)) && !text.trimStart().startsWith("{")) {
     throw new BlockedError(`HTTP ${r.status} ${r.headers.get("location") ?? ""} ${text.slice(0, 200)}`.trim());
   }
   if (!r.ok) throw new Error(`HTTP ${r.status}: ${text.slice(0, 200)}`);
