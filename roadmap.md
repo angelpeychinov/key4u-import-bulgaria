@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Temporary expensive-car pricing: configurable cutoff, null calculated prices above limit, EUR filter exclusion, boundary tests, live card/dialog checks; deploy without publishing.
+- [x] Temporary expensive-car pricing: max_priced_krw configured at 100M; shared cutoff and EUR filter ceiling; 14 tests passed; search/facets deployed; real 860M car shows on-request in card/dialog with checklist, 50M car retains ~39,220 EUR; original KRW sorting preserved; not published.
 
 - [x] Encar sync: treat Price 9999 and 99999 (만원) as "price on request" → price_original NULL via shared priceKrwOr helper; 25 tests pass, encar-sync + encar-body-map deployed; 22 stale placeholder rows nulled via the maintenance action; not published.
 
