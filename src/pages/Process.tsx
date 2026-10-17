@@ -1,5 +1,6 @@
 import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { CONTACT_PHONE_DISPLAY } from "@/lib/contact";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, Search, Gavel, CreditCard, Ship, Camera, Anchor, Truck, FileCheck, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
 
