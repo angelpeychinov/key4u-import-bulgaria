@@ -22,6 +22,9 @@ const translations = {
     'inquiry.success': 'Your inquiry has been sent. We will contact you soon.',
     'inquiry.error': 'Unable to send your inquiry. Please call 0898252434.',
     'inquiry.invalid': 'Please enter a name, phone and a valid email if provided.',
+    'inquiry.viber': 'Chat on Viber',
+    'inquiry.viberHint': 'No Viber? Call',
+    'inquiry.viberMessage': 'Hello, I am interested in {title} – {link}',
 
     'catalog.clear': 'Clear',
     'catalog.brand': 'Brand',
@@ -173,6 +176,9 @@ const translations = {
     'inquiry.success': 'Запитването е изпратено. Ще се свържем с вас скоро.',
     'inquiry.error': 'Запитването не беше изпратено. Моля, обадете се на 0898252434.',
     'inquiry.invalid': 'Моля, въведете име, телефон и валиден имейл, ако е попълнен.',
+    'inquiry.viber': 'Пиши във Viber',
+    'inquiry.viberHint': 'Нямате Viber? Обадете се на',
+    'inquiry.viberMessage': 'Здравейте, интересувам се от {title} – {link}',
 
     'catalog.clear': 'Изчисти',
     'catalog.brand': 'Марка',
