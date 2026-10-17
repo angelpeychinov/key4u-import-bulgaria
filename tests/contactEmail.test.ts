@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, statSync } from "fs";
 import { join } from "path";
 import { CONTACT_EMAIL } from "../src/lib/contact";
 
-const ROOT = new File(import.meta.url).dirname + "/..";
+const ROOT = join(import.meta.dirname, "..");
 const SCAN_DIRS = ["src", "public"];
 const SCAN_FILES = ["index.html"];
 /** Old spellings that must never come back. */
