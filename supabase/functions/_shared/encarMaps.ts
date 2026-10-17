@@ -170,3 +170,16 @@ export function translateListing<T extends Record<string, any>>(l: T): T {
   if (l.trim) out.trim = fallback(mapTrim(mapText(preTranslate(l.trim)))!) || null;
   return out as T;
 }
+
+/** Encar "price on request" placeholders, in 만원 (the Price field unit). */
+export const PRICE_PLACEHOLDERS_WON: number[] = [9999, 99999];
+
+/**
+ * Convert Encar's Price (만원) to KRW. Returns null for absent prices and for
+ * Encar's "price on request" placeholders (9999 and 99999 만원).
+ */
+export const priceKrwOr = (price: unknown): number | null => {
+  const p = Number(price);
+  if (!Number.isFinite(p) || p <= 0 || PRICE_PLACEHOLDERS_WON.includes(p)) return null;
+  return Math.round(p * 10000);
+};
