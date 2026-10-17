@@ -26,6 +26,41 @@ const ViberIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const ContactButtons = ({ title, siteUrl, onInquiry }: { title: string; siteUrl: string; onInquiry: () => void }) => {
+  const { t } = useLanguage();
+  const draft = t("inquiry.viberMessage").replace("{title}", title).replace("{link}", siteUrl);
+  return (
+    <div className="mt-5 flex flex-col gap-3">
+      <Button asChild className="bg-[#183e32] text-white hover:bg-[#183e32]/90">
+        <a href={`tel:${CONTACT_PHONE}`}>
+          <Phone className="mr-2 h-4 w-4" /> Обади се
+        </a>
+      </Button>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button
+          onClick={onInquiry}
+          variant="outline"
+          className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
+        >
+          <Mail className="mr-2 h-4 w-4" /> {t("inquiry.send")}
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          className="flex-1 border-[#7360F2] text-[#7360F2] hover:bg-[#7360F2]/5"
+        >
+          <a href={`viber://chat?number=${encodeURIComponent(CONTACT_PHONE)}&draft=${encodeURIComponent(draft)}`}>
+            <ViberIcon className="mr-2 h-4 w-4" /> {t("inquiry.viber")}
+          </a>
+        </Button>
+      </div>
+      <p className="hidden text-center text-xs text-[#183e32]/60 sm:block">
+        {t("inquiry.viberHint")} {CONTACT_PHONE_DISPLAY}
+      </p>
+    </div>
+  );
+};
+
 interface Props {
   listing: Listing | null;
   onClose: () => void;
