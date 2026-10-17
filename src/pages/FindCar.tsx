@@ -81,6 +81,7 @@ export default function FindCar() {
         trim: "",
         additional: "",
       });
+      setOrigin(["any"]);
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.errors.forEach((err) => {
