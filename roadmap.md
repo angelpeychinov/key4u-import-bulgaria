@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] All catalog dropdowns and numeric suggestions share white scoped panels, field-width alignment and 4px gaps; desktop/mobile browser measurements and screenshots verified, presets/validation/internal scrolling checked, 8 filter tests pass; not published.
+
 - [x] FindCar "Откъде да търсим?" chips (Канада/САЩ/Южна Корея multi, Без значение exclusive default); sent as `origin` array, server-validated, email row "Откъде: …" near the top; send-car-request deployed; 6 new validation tests; browser-verified; not published.
 
 - [x] Inquiry fixes: Resend errors return 500 and successful ids are logged; inline listing form, validated attached car and working deep link; submissions persist server-only; deployed and exactly one real browser test accepted (200, email id 01a1494d-547d-7a90-82d7-f01074dc6bb8), database row verified then test row removed; 11 tests pass; desktop/mobile checked; not published.
