@@ -9,7 +9,7 @@ import { X, Heart } from "lucide-react";
 import { toast } from "sonner";
 import {
   Facets, Listing, SearchFilters, SortKey, SORT_OPTIONS,
-  searchListings, fetchFacets, formatNumber,
+  searchListings, fetchFacets, formatNumber, catalogSelection, removeCatalogBrand,
   fuelBg, transmissionBg, bodyBg, regionBg, formatEur, formatMileage,
 } from "@/lib/listings";
 import { ListingListCard } from "@/components/carsearch/ListingListCard";
@@ -35,8 +35,11 @@ const filtersFromParams = (params: URLSearchParams): SearchFilters => {
     const value = params.get(key);
     if (value === null) continue;
     if (key === "no_accident") next.no_accident = value === "1" || value === "true";
-    else (next as Record<string, unknown>)[key] = value.slice(0, 120);
+    else (next as Record<string, unknown>)[key] = value.slice(0, key === "brand" || key === "model" ? 22000 : 120);
   }
+  const selection = catalogSelection(next.brand, next.model);
+  next.brand = selection.brands.join(",");
+  next.model = selection.models.join(",");
   return next;
 };
 
@@ -61,13 +64,16 @@ interface Chip {
 
 const buildChips = (filters: SearchFilters, facets: Facets | null): Chip[] => {
   const chips: Chip[] = [];
-  if (filters.brand) {
-    const name = facets?.brands.find((b) => b.slug === filters.brand)?.name ?? filters.brand;
-    chips.push({ key: "brand", label: name, clear: (f) => ({ ...f, brand: "", model: "" }) });
+  const selection = catalogSelection(filters.brand, filters.model);
+  for (const brand of selection.brands) {
+    const name = facets?.brands.find((b) => b.slug === brand)?.name ?? brand;
+    chips.push({ key: `brand:${brand}`, label: name, clear: (f) => ({ ...f, ...removeCatalogBrand(f.brand, f.model, brand) }) });
   }
-  if (filters.model) {
-    const name = facets?.models.find((m) => m.slug === filters.model)?.name ?? filters.model;
-    chips.push({ key: "model", label: name, clear: (f) => ({ ...f, model: "" }) });
+  for (const model of selection.models) {
+    const brand = model.split(":")[0];
+    const brandName = facets?.brands.find((b) => b.slug === brand)?.name ?? brand;
+    const name = facets?.models.find((m) => m.slug === model)?.name ?? model.split(":")[1];
+    chips.push({ key: `model:${model}`, label: `${brandName}: ${name}`, clear: (f) => ({ ...f, model: catalogSelection(f.brand, f.model).models.filter((m) => m !== model).join(",") }) });
   }
   if (filters.price_from || filters.price_to) {
     const label = filters.price_from && filters.price_to
@@ -251,18 +257,18 @@ export default function CarSearch() {
             {chips.length > 0 && !savedMode && (
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 {chips.map((chip) => (
-                  <button
+                  <Button variant="outline" size="sm"
                     key={chip.key}
                     onClick={() => setFilters(chip.clear(filters))}
                     className="flex items-center gap-1 rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground transition-colors hover:bg-accent"
                   >
                     {chip.label}
                     <X className="h-3 w-3" />
-                  </button>
+                  </Button>
                 ))}
-                <button onClick={resetFilters} className="text-xs font-medium text-primary hover:underline">
+                <Button variant="link" size="sm" onClick={resetFilters} className="text-xs font-medium text-primary hover:underline">
                   Изчисти всички
-                </button>
+                </Button>
               </div>
             )}
 

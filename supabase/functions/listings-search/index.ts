@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { catalogSelection, catalogOrFilter } from "../_shared/catalogSelection.ts";
 import { FALLBACK_MAX_PRICED_KRW, filteredPriceMax, hasCalculatedPrice, resolveMaxPricedKrw } from "../_shared/pricingLimit.ts";
 
 const HIDDEN_MARGIN = 150;
@@ -194,10 +195,11 @@ Deno.serve(async (req) => {
       query = query.in("encar_id", ids);
     }
 
-    const brand = textParam(incoming, "brand");
-    if (brand) query = query.eq("brand_slug", brand);
-    const model = textParam(incoming, "model");
-    if (model) query = query.eq("model_slug", model);
+    const { brands, models } = catalogSelection(incoming.get("brand"), incoming.get("model"));
+    if (brands.length) {
+      query = query.in("brand_slug", brands);
+      if (models.length) query = query.or(catalogOrFilter(brands, models));
+    }
 
     const fuels = listParam(incoming, "fuel_type");
     if (fuels) query = query.in("fuel_type", fuels);

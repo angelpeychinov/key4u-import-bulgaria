@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { catalogSelection } from "../_shared/catalogSelection.ts";
 import { sanitizeFacets } from "../_shared/encarTextSafety.ts";
 import { FALLBACK_MAX_PRICED_KRW, filteredPriceMax, resolveMaxPricedKrw } from "../_shared/pricingLimit.ts";
 
@@ -128,6 +129,11 @@ Deno.serve(async (req) => {
 
   try {
     const incoming = new URL(req.url).searchParams;
+    const { brands, models } = catalogSelection(incoming.get("brand"), incoming.get("model"));
+    for (const [key, values] of [["brand", brands], ["model", models]] as const) {
+      if (values.length) incoming.set(key, [...values].sort().join(","));
+      else incoming.delete(key);
+    }
 
     // Normalize: drop empty/irrelevant params so the cache key is stable.
     const cacheKey = [...incoming.entries()]
@@ -170,8 +176,8 @@ Deno.serve(async (req) => {
     const priceTo = numParam(incoming, "price_to");
 
     const args = {
-      _brand: textParam(incoming, "brand") ?? null,
-      _model: textParam(incoming, "model") ?? null,
+      _brands: brands.length ? brands : null,
+      _models: models.length ? models : null,
       _year_from: numParam(incoming, "year_from") ?? null,
       _year_to: numParam(incoming, "year_to") ?? null,
       _price_min: priceFrom ? firstKrwReaching(priceFrom, pricing) : null,
