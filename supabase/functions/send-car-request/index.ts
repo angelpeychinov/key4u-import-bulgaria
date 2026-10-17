@@ -1,13 +1,13 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { requestSchema } from "./request.ts";
+import { escapeEmailHtml, emailSendResult, requestSubject } from "../_shared/carRequestEmail.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+const db = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
+const json = (body: unknown, status: number) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -25,150 +25,53 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT;
 }
 
-function escapeHtml(text: string): string {
-  const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-  };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
-}
-
-// Server-side validation
-function validateRequest(data: unknown): { valid: boolean; error?: string; parsed?: CarRequestData } {
-  if (!data || typeof data !== 'object') {
-    return { valid: false, error: "Invalid request body" };
-  }
-  const d = data as Record<string, unknown>;
-  
-  const name = typeof d.name === 'string' ? d.name.trim() : '';
-  const email = typeof d.email === 'string' ? d.email.trim() : '';
-  const phone = typeof d.phone === 'string' ? d.phone.trim() : '';
-  const model = typeof d.model === 'string' ? d.model.trim() : '';
-  const year = typeof d.year === 'string' ? d.year.trim() : '';
-  const color = typeof d.color === 'string' ? d.color.trim() : '';
-  const trim = typeof d.trim === 'string' ? d.trim.trim() : '';
-  const additional = typeof d.additional === 'string' ? d.additional.trim() : '';
-
-  if (!name || name.length > 100) return { valid: false, error: "Invalid name" };
-  if (!email || email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { valid: false, error: "Invalid email" };
-  if (!phone || phone.length > 20) return { valid: false, error: "Invalid phone" };
-  if (!model || model.length > 100) return { valid: false, error: "Invalid model" };
-  if (year.length > 4) return { valid: false, error: "Invalid year" };
-  if (color.length > 50) return { valid: false, error: "Invalid color" };
-  if (trim.length > 100) return { valid: false, error: "Invalid trim" };
-  if (additional.length > 1000) return { valid: false, error: "Invalid additional info" };
-
-  return { valid: true, parsed: { name, email, phone, model, year, color, trim, additional } };
-}
-
-interface CarRequestData {
-  name: string;
-  email: string;
-  phone: string;
-  model: string;
-  year?: string;
-  color?: string;
-  trim?: string;
-  additional?: string;
-}
-
 const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
   try {
-    // Rate limiting
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("cf-connecting-ip") || "unknown";
-    if (isRateLimited(ip)) {
-      return new Response(
-        JSON.stringify({ error: "Too many requests. Please try again later." }),
-        { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+    if (isRateLimited(ip)) return json({ error: "Too many requests. Please try again later." }, 429);
+    let body: unknown;
+    try { body = await req.json(); } catch { return json({ error: "Invalid JSON body" }, 400); }
+    const validation = requestSchema.safeParse(body);
+    if (!validation.success) return json({ error: validation.error.flatten().fieldErrors }, 400);
+    const data = validation.data;
+    const { data: saved, error: saveError } = await db.from("car_request_submissions").insert({
+      name: data.name, phone: data.phone, email: data.email || null, model: data.model, request_data: data,
+    }).select("id").single();
+    if (saveError || !saved) {
+      console.error("Car request storage failed", saveError?.code);
+      return json({ error: "Unable to save inquiry. Please call 0898252434." }, 500);
     }
-
-    const body = await req.json();
-    const validation = validateRequest(body);
-    if (!validation.valid || !validation.parsed) {
-      return new Response(
-        JSON.stringify({ error: validation.error || "Invalid request data" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    const data = validation.parsed;
-
-    // Build email HTML with escaped values
-    const emailHtml = `
-      <h2>Нова заявка за автомобил</h2>
-      <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Име:</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(data.name)}</td>
-        </tr>
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Имейл:</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(data.email)}</td>
-        </tr>
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Телефон:</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(data.phone)}</td>
-        </tr>
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Модел:</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(data.model)}</td>
-        </tr>
-        ${data.year ? `
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Година:</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(data.year)}</td>
-        </tr>
-        ` : ''}
-        ${data.color ? `
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Цвят:</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(data.color)}</td>
-        </tr>
-        ` : ''}
-        ${data.trim ? `
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Екстри/Пакет:</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(data.trim)}</td>
-        </tr>
-        ` : ''}
-        ${data.additional ? `
-        <tr>
-          <td style="padding: 10px; border: 1px solid #ddd; background: #f5f5f5;"><strong>Допълнителна информация:</strong></td>
-          <td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(data.additional)}</td>
-        </tr>
-        ` : ''}
-      </table>
-    `;
-
-    const emailResponse = await resend.emails.send({
-      from: "Key4U <onboarding@resend.dev>",
-      to: ["key4u.import@gmail.com"],
-      subject: `Нова заявка за автомобил: ${escapeHtml(data.model)}`,
-      html: emailHtml,
-      reply_to: data.email,
+    const row = (label: string, value: string | number | null | undefined) => `<tr><th align="left">${escapeEmailHtml(label)}</th><td>${escapeEmailHtml(value === null || value === undefined || value === "" ? "—" : String(value))}</td></tr>`;
+    const listing = data.listing;
+    const listingHtml = listing ? `<h2>Обява</h2><table>
+      ${row("Автомобил", listing.title)}
+      ${row("Пробег (км)", listing.mileage)}
+      ${row("Encar ID", listing.encarId)}
+      ${row("Encar URL", listing.encarUrl)}
+      ${row("Обява в Key4U", listing.siteUrl)}
+      ${row("Цена в Корея", listing.priceKrw === null ? "Цена при запитване" : listing.priceKrw.toLocaleString("bg-BG") + " ₩")}
+      ${row("Прогнозна цена до България", listing.estimatedTotalEur === null ? "Цена при запитване" : "~" + Math.round(listing.estimatedTotalEur).toLocaleString("bg-BG") + " €")}
+    </table>` : "";
+    const html = `${listingHtml}<h2>Нова заявка за автомобил</h2><table>
+      ${row("Име", data.name)}${row("Телефон", data.phone)}${row("Имейл", data.email)}
+      ${row("Модел", data.model)}${row("Година", data.year)}${row("Цвят", data.color)}
+      ${row("Екстри/Пакет", data.trim)}${row("Съобщение", data.additional)}</table>`;
+    const response = await resend.emails.send({
+      from: "Key4U <onboarding@resend.dev>", to: ["key4u.import@gmail.com"],
+      subject: requestSubject(data.model, listing), html,
+      ...(data.email ? { reply_to: data.email } : {}),
     });
-
-    console.log("Email sent successfully:", emailResponse);
-
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
-  } catch (error: any) {
-    console.error("Error in send-car-request function:", error);
-    return new Response(
-      JSON.stringify({ error: "Unable to process your request. Please try again later." }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    const result = emailSendResult(response);
+    const emailId = "emailId" in result.body ? result.body.emailId : null;
+    await db.from("car_request_submissions").update({ email_status: result.status === 200 ? "sent" : "failed", email_id: emailId }).eq("id", saved.id);
+    if (result.status !== 200) console.error("Resend send failed:", result.body);
+    else console.log(`Car request email sent: ${emailId}`);
+    return json(result.body, result.status);
+  } catch (error) {
+    console.error("Car request processing failed:", error instanceof Error ? error.message : "Unknown error");
+    return json({ error: "Unable to process your request. Please call 0898252434." }, 500);
   }
 };
-
 serve(handler);

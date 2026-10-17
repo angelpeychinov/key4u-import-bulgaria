@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      car_request_submissions: {
+        Row: {
+          created_at: string
+          email: string | null
+          email_id: string | null
+          email_status: string
+          id: string
+          model: string
+          name: string
+          phone: string
+          request_data: Json
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          email_id?: string | null
+          email_status?: string
+          id?: string
+          model: string
+          name: string
+          phone: string
+          request_data: Json
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          email_id?: string | null
+          email_status?: string
+          id?: string
+          model?: string
+          name?: string
+          phone?: string
+          request_data?: Json
+        }
+        Relationships: []
+      }
       encar_facets_cache: {
         Row: {
           key: string

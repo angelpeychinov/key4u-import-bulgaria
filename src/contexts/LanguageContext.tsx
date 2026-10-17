@@ -10,6 +10,19 @@ interface LanguageContextType {
 
 const translations = {
   en: {
+    'inquiry.title': 'Listing inquiry',
+    'inquiry.name': 'Name',
+    'inquiry.phone': 'Phone',
+    'inquiry.email': 'Email (optional)',
+    'inquiry.message': 'Message',
+    'inquiry.messageDefault': 'Hello, I am interested in this car.',
+    'inquiry.close': 'Close inquiry',
+    'inquiry.send': 'Send inquiry',
+    'inquiry.sending': 'Sending…',
+    'inquiry.success': 'Your inquiry has been sent. We will contact you soon.',
+    'inquiry.error': 'Unable to send your inquiry. Please call 0898252434.',
+    'inquiry.invalid': 'Please enter a name, phone and a valid email if provided.',
+
     'catalog.clear': 'Clear',
     'catalog.brand': 'Brand',
     'catalog.model': 'Model',
@@ -148,6 +161,19 @@ const translations = {
     'footer.allRightsReserved': 'All rights reserved.',
   },
   bg: {
+    'inquiry.title': 'Запитване за обява',
+    'inquiry.name': 'Име',
+    'inquiry.phone': 'Телефон',
+    'inquiry.email': 'Имейл (по избор)',
+    'inquiry.message': 'Съобщение',
+    'inquiry.messageDefault': 'Здравейте, интересувам се от този автомобил.',
+    'inquiry.close': 'Затвори запитването',
+    'inquiry.send': 'Изпрати запитване',
+    'inquiry.sending': 'Изпращане…',
+    'inquiry.success': 'Запитването е изпратено. Ще се свържем с вас скоро.',
+    'inquiry.error': 'Запитването не беше изпратено. Моля, обадете се на 0898252434.',
+    'inquiry.invalid': 'Моля, въведете име, телефон и валиден имейл, ако е попълнен.',
+
     'catalog.clear': 'Изчисти',
     'catalog.brand': 'Марка',
     'catalog.model': 'Модел',

@@ -8,7 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ExternalLink, Mail, Phone } from "lucide-react";
 import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, formatKrw, encarImg } from "@/lib/listings";
 import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
-import { CONTACT_EMAIL } from "@/lib/contact";
+import { ListingInquiryForm } from "./ListingInquiryForm";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const INCLUDED_IN_PRICE = [
   "Покупка и проверка на колата в Корея",
@@ -24,6 +25,8 @@ interface Props {
 }
 
 export const ListingDialog = ({ listing, onClose }: Props) => {
+  const { t } = useLanguage();
+  const [inquiryOpen, setInquiryOpen] = useState(false);
   const [insurance, setInsurance] = useState(false);
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
   const [activePhoto, setActivePhoto] = useState(0);
@@ -35,6 +38,8 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
   const [detailsLoading, setDetailsLoading] = useState(false);
 
   useEffect(() => {
+    setInquiryOpen(false);
+    setInsurance(false);
     setDetails(null);
     setActivePhoto(0);
     const id = listing?.encarId;
@@ -204,15 +209,15 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                         </a>
                       </Button>
                       <Button
-                        asChild
+                        onClick={() => setInquiryOpen((open) => !open)}
                         variant="outline"
                         className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
                       >
-                        <a href={`mailto:${CONTACT_EMAIL}?subject=Запитване%20за%20внос%20на%20автомобил`}>
-                          <Mail className="mr-2 h-4 w-4" /> Изпрати запитване
-                        </a>
+                        <Mail className="mr-2 h-4 w-4" /> {t("inquiry.send")}
                       </Button>
                     </div>
+
+                    {inquiryOpen && <ListingInquiryForm listing={listing} total={total} onClose={() => setInquiryOpen(false)} />}
 
                     <p className="mt-4 text-xs leading-relaxed text-[#183e32]/60">
                       * Сумата е ориентировъчна. Крайната цена може да варира според митническата оценка и валутния курс
@@ -250,15 +255,14 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                         </a>
                       </Button>
                       <Button
-                        asChild
+                        onClick={() => setInquiryOpen((open) => !open)}
                         variant="outline"
                         className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
                       >
-                        <a href={`mailto:${CONTACT_EMAIL}?subject=Запитване%20за%20внос%20на%20автомобил`}>
-                          <Mail className="mr-2 h-4 w-4" /> Изпрати запитване
-                        </a>
+                        <Mail className="mr-2 h-4 w-4" /> {t("inquiry.send")}
                       </Button>
                     </div>
+                    {inquiryOpen && <ListingInquiryForm listing={listing} onClose={() => setInquiryOpen(false)} />}
                   </div>
                 )}
               </div>

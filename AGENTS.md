@@ -1,5 +1,8 @@
 # Architecture rules
 
+- Car inquiries validate and persist server-side before emailing; a returned Resend error fails the request and only a returned email ID confirms acceptance, preventing false success.
+- Listing inquiries use a dedicated inline form and attach a canonical catalog deep link; CarSearch resolves listing IDs independently of current filters so emailed links open the intended car.
+
 - The desktop catalog aside is the sticky, viewport-height scroll container and aligns at flex-start, preventing stretched parents from delaying filter scrolling; overscroll containment isolates wheel gestures from the results page.
 
 - Brand and model controls share a portaled multi-select FacetDropdown; qualified brand:model keys and a shared selection helper preserve per-brand restrictions and dependent removal across desktop, mobile, URLs, chips, and server queries.
