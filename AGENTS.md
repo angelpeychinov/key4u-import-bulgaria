@@ -1,5 +1,7 @@
 # Architecture rules
 
+- Catalog year, price, and mileage fields share PresetOrInput with unique suggestion lists; year validation stays in a tested helper so desktop and mobile apply identical complete-year rules.
+
 - Search and facets share the pricing-limit helper for calculated-price eligibility and EUR-filter ceilings, so configurable limits never diverge while original-price sorting remains unchanged.
 
 - Navigation owns route-aware scroll appearance and uses the global photo-header style only at the homepage top; other pages and expanded menus retain the solid header for legibility.- Encar data enters encar_listings only through the shared _shared/upsertListings.ts helper (used by listings-ingest and encar-sync), so price-history and first_seen_at rules stay identical.
