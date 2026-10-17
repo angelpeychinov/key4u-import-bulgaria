@@ -18,6 +18,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Autoplay from "embla-carousel-autoplay";
+import { CONTACT_PHONE_DISPLAY } from "@/lib/contact";
 import heroAsset from "@/assets/home-hero-2.jpg.asset.json";
 const heroImage = heroAsset.url;
 import bmwLogo from "@/assets/brands/bmw-logo.png";
@@ -260,7 +261,7 @@ export default function Home() {
               >
                 <Phone className="w-5 h-5" />
                 <span className="border-b border-primary-foreground/30 group-hover:border-primary-foreground transition-colors">
-                  0898 252 434
+                  {CONTACT_PHONE_DISPLAY}
                 </span>
               </a>
             </div>

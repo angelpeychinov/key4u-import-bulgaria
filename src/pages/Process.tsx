@@ -1,5 +1,6 @@
 import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { CONTACT_PHONE_DISPLAY } from "@/lib/contact";
 import { Button } from "@/components/ui/button";
 import { ClipboardList, Search, Gavel, CreditCard, Ship, Camera, Anchor, Truck, FileCheck, Phone, ArrowRight, CheckCircle2 } from "lucide-react";
 
@@ -144,7 +145,7 @@ export default function Process() {
                     <Phone className="w-5 h-5 group-hover:animate-pulse" />
                     {t('process.ctaButton')}
                   </span>
-                  <span className="text-primary/70">0898252434</span>
+                  <span className="text-primary/70">{CONTACT_PHONE_DISPLAY}</span>
                 </a>
               </Button>
             </div>

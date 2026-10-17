@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { CONTACT_PHONE_DISPLAY } from '@/lib/contact';
 
 type Language = 'en' | 'bg';
 
@@ -20,7 +21,7 @@ const translations = {
     'inquiry.send': 'Send inquiry',
     'inquiry.sending': 'Sending…',
     'inquiry.success': 'Your inquiry has been sent. We will contact you soon.',
-    'inquiry.error': 'Unable to send your inquiry. Please call 0898252434.',
+    'inquiry.error': `Unable to send your inquiry. Please call ${CONTACT_PHONE_DISPLAY}.`,
     'inquiry.invalid': 'Please enter a name, phone and a valid email if provided.',
     'inquiry.viber': 'Chat on Viber',
     'inquiry.viberHint': 'No Viber? Call',
@@ -174,7 +175,7 @@ const translations = {
     'inquiry.send': 'Изпрати запитване',
     'inquiry.sending': 'Изпращане…',
     'inquiry.success': 'Запитването е изпратено. Ще се свържем с вас скоро.',
-    'inquiry.error': 'Запитването не беше изпратено. Моля, обадете се на 0898252434.',
+    'inquiry.error': `Запитването не беше изпратено. Моля, обадете се на ${CONTACT_PHONE_DISPLAY}.`,
     'inquiry.invalid': 'Моля, въведете име, телефон и валиден имейл, ако е попълнен.',
     'inquiry.viber': 'Пиши във Viber',
     'inquiry.viberHint': 'Нямате Viber? Обадете се на',
