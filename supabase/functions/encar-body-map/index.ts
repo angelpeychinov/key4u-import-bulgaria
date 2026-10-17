@@ -4,7 +4,7 @@ import { z } from "npm:zod@3";
 import { HEADERS, makeClient } from "../_shared/encarHttp.ts";
 import { categoryBody, mergeModelBody, pairKey, type ModelBody } from "../_shared/encarModelBody.ts";
 
-const schema = z.object({ action: z.enum(["explore", "build", "backfill"]), ct: z.enum(["Y", "N"]).default("Y"), category: z.string().max(100).optional(), manufacturer: z.string().max(100).optional(), manufacturers: z.array(z.string().max(100)).max(100).optional(), groups: z.array(z.string().max(100)).max(300).optional(), inav: z.string().max(500).default("|Metadata|Sort") });
+const schema = z.object({ action: z.enum(["explore", "build", "backfill", "null-placeholders"]), ct: z.enum(["Y", "N"]).default("Y"), category: z.string().max(100).optional(), manufacturer: z.string().max(100).optional(), manufacturers: z.array(z.string().max(100)).max(100).optional(), groups: z.array(z.string().max(100)).max(300).optional(), inav: z.string().max(500).default("|Metadata|Sort") });
 function facet(node: any, name: string): any {
  if (!node || typeof node !== "object") return null;
  if (node.Name === name && Array.isArray(node.Facets)) return node;
@@ -40,6 +40,16 @@ Deno.serve(async (req) => {
     if (!data) return json({ updated, batches, done: true });
    }
    return json({ updated, batches, done: false });
+  }
+  if (action === "null-placeholders") {
+    // Encar "price on request" placeholders (9999 / 99999 만원) stored before the sync rule.
+    const { data, error } = await db
+      .from("encar_listings")
+      .update({ price_original: null })
+      .in("price_original", [99990000, 999990000])
+      .select("id");
+    if (error) return json({ error: error.message }, 500);
+    return json({ nulled: (data ?? []).length });
   }
   client = makeClient(proxy);
   let requests = 0;

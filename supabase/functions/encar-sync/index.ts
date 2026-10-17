@@ -6,6 +6,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { upsertListings } from "../_shared/upsertListings.ts";
 import { HEADERS, makeClient } from "../_shared/encarHttp.ts";
 import { loadModelBodies, pairKey } from "../_shared/encarModelBody.ts";
+import { priceKrwOr } from "../_shared/encarMaps.ts";
 
 const MAKERS: [string, "Y" | "N"][] = [
   ["현대", "Y"], ["기아", "Y"], ["제네시스", "Y"], ["쉐보레(GM대우)", "Y"], ["르노코리아(삼성)", "Y"],
@@ -118,8 +119,8 @@ function toRow(r: any, maker: string, bodies: Map<string, string>) {
     model_slug: modelSlug(r.Model) ?? null,
     trim: [r.Badge, r.BadgeDetail].filter(Boolean).join(" ") || null,
     year: parseInt(r.FormYear) || (r.Year ? Math.floor(Number(r.Year) / 100) : null),
-    // 9999 (만원) is Encar's "price on request" placeholder — store as NULL
-    price_original: Number(r.Price) === 9999 ? null : Math.round(Number(r.Price) * 10000),
+    // 9999 / 99999 (만원) are Encar's "price on request" placeholders — store as NULL
+    price_original: priceKrwOr(r.Price),
     mileage: r.Mileage ?? null,
     fuel_type: r.FuelType ?? null,
     transmission: r.Transmission ?? null,
