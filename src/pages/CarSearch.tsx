@@ -214,10 +214,8 @@ export default function CarSearch() {
 
         <div className="flex gap-8">
           {/* Desktop sidebar */}
-          <aside className="hidden w-72 shrink-0 lg:block">
-            <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2">
-              <FilterSidebar filters={filters} facets={facets} onChange={setFilters} onReset={resetFilters} />
-            </div>
+          <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 self-start overflow-y-auto overscroll-contain pr-2 lg:block">
+            <FilterSidebar filters={filters} facets={facets} onChange={setFilters} onReset={resetFilters} />
           </aside>
 
           {/* Results */}
