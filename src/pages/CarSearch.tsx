@@ -129,6 +129,16 @@ export default function CarSearch() {
   const facetRequestId = useRef(0);
   const { ids: favoriteIds } = useFavorites();
 
+  const linkedListingId = searchParams.get("listing");
+  useEffect(() => {
+    if (!linkedListingId || !/^\d{1,20}$/.test(linkedListingId)) return;
+    let cancelled = false;
+    searchListings({ ids: linkedListingId }, 1, 1).then((result) => {
+      if (!cancelled) setSelected(result.listings[0] ?? null);
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [linkedListingId]);
+
   const savedMode = searchParams.get("saved") === "1";
 
   const effectiveFilters = useMemo<SearchFilters>(() => {
@@ -168,6 +178,7 @@ export default function CarSearch() {
     const timer = window.setTimeout(() => {
       const params = filtersToParams(filters);
       if (savedMode) params.set("saved", "1");
+      if (linkedListingId) params.set("listing", linkedListingId);
       setSearchParams(params, { replace: true });
       runSearch(effectiveFilters, 1);
       runFacets(effectiveFilters);
