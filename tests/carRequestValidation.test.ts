@@ -24,3 +24,11 @@ test("original Find Car form still requires email", () => {
   expect(requestSchema.safeParse({ name: "Test", phone: "0000000000", model: "BMW" }).success).toBe(false);
   expect(requestSchema.safeParse({ name: "Test", phone: "0000000000", model: "BMW", email: "key4u.import@gmail.com" }).success).toBe(true);
 });
+test("origin accepts only the four allowed values and needs at least one", () => {
+  const base = { name: "Test", phone: "0000000000", model: "BMW", email: "key4u.import@gmail.com" };
+  expect(requestSchema.safeParse({ ...base, origin: ["canada", "usa"] }).success).toBe(true);
+  expect(requestSchema.safeParse({ ...base, origin: ["any"] }).success).toBe(true);
+  expect(requestSchema.safeParse({ ...base, origin: ["canada", "usa", "south-korea", "any"] }).success).toBe(true);
+  expect(requestSchema.safeParse({ ...base, origin: ["korea"] }).success).toBe(false);
+  expect(requestSchema.safeParse({ ...base, origin: [] }).success).toBe(false);
+});
