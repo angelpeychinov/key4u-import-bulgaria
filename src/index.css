@@ -17,6 +17,12 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
+    --catalog-panel: 0 0% 100%;
+    --catalog-panel-text: 0 0% 10%;
+    --catalog-panel-green: 161 44.186% 16.863%;
+    --catalog-panel-hover: 220 14.286% 95.882%;
+    --catalog-panel-shadow: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
+
     --primary: 161 44% 17%;
     --primary-foreground: 0 0% 100%;
 
@@ -87,6 +93,40 @@ All colors MUST be HSL.
 }
 
 /* The homepage header sits directly on the unaltered hero photograph. */
+.catalog-dropdown-panel {
+  z-index: 100;
+  max-height: min(320px, var(--radix-popover-content-available-height, var(--radix-select-content-available-height, 320px)));
+  border: 1px solid hsl(var(--catalog-panel-green) / 0.12);
+  border-radius: 8px;
+  background: hsl(var(--catalog-panel));
+  color: hsl(var(--catalog-panel-text));
+  box-shadow: var(--catalog-panel-shadow);
+}
+
+.catalog-dropdown-panel[data-catalog-select] {
+  width: var(--radix-select-trigger-width);
+  min-width: var(--radix-select-trigger-width);
+  transform: none;
+}
+
+.catalog-dropdown-panel .catalog-dropdown-row:hover,
+.catalog-dropdown-panel .catalog-dropdown-row:focus,
+.catalog-dropdown-panel .catalog-dropdown-row[data-highlighted] {
+  background: hsl(var(--catalog-panel-hover));
+  color: hsl(var(--catalog-panel-text));
+}
+
+.catalog-dropdown-panel .catalog-dropdown-row[data-selected="true"],
+.catalog-dropdown-panel .catalog-dropdown-row[data-state="checked"] {
+  color: hsl(var(--catalog-panel-green));
+}
+
+.catalog-dropdown-panel [role="checkbox"][data-state="checked"] {
+  background: hsl(var(--catalog-panel));
+  border-color: hsl(var(--catalog-panel-green));
+  color: hsl(var(--catalog-panel-green));
+}
+
 .navigation-on-photo a,
 .navigation-on-photo button {
   color: hsl(var(--primary-foreground));

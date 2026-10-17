@@ -49,9 +49,9 @@ export const MobileFilterBar = ({ filters, facets, activeCount, onChange, onRese
           <SelectTrigger className="h-9 flex-1">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent side="bottom" align="start" sideOffset={4} data-catalog-select className="catalog-dropdown-panel">
             {SORT_OPTIONS.map((o) => (
-              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+              <SelectItem className="catalog-dropdown-row" key={o.value} value={o.value}>{o.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>

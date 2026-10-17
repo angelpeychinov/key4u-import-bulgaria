@@ -5,9 +5,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PopoverAnchor } from "@radix-ui/react-popover";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, RotateCcw, Search } from "lucide-react";
+import { Check, ChevronDown, RotateCcw, Search } from "lucide-react";
 import {
   Facets, SearchFilters, fuelBg, transmissionBg, bodyBg, regionBg, catalogSelection, removeCatalogBrand, selectionValues,
 } from "@/lib/listings";
@@ -268,7 +269,7 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" aria-labelledby={labelId} className="flex max-h-[var(--radix-popover-content-available-height)] w-[var(--radix-popover-trigger-width)] flex-col overflow-hidden p-2">
+        <PopoverContent side="bottom" sideOffset={4} align="start" aria-labelledby={labelId} className="catalog-dropdown-panel flex w-[var(--radix-popover-trigger-width)] flex-col overflow-hidden p-2">
           <div className="relative mb-2 shrink-0">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={searchPlaceholder} aria-label={searchPlaceholder} className="h-9 pl-8" />
@@ -277,9 +278,9 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
             {filtered.map((option, index) => (
               <div key={option.slug}>
               {option.group && option.group !== filtered[index - 1]?.group && <div className="border-b border-border px-1 py-2 text-xs font-semibold text-muted-foreground">{option.group}</div>}
-              <label className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
+              <label data-selected={selectedValues.includes(option.slug)} className="catalog-dropdown-row flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm">
                 <Checkbox aria-label={option.group ? `${option.group}: ${option.name}` : option.name} checked={selectedValues.includes(option.slug)} onCheckedChange={() => onChange(toggleInList(value, option.slug))} />
-                <span className="min-w-0 flex-1 truncate text-foreground">{option.name}</span>
+                <span className="min-w-0 flex-1 truncate">{option.name}</span>
                 {option.count !== undefined && <span className="text-xs text-muted-foreground">{option.count.toLocaleString(language === "bg" ? "bg-BG" : "en-GB")}</span>}
               </label>
               </div>
@@ -298,14 +299,44 @@ const PresetOrInput = ({
 }: { value: string; placeholder: string; presets: number[]; onChange: (v: string) => void; yearOnly?: boolean }) => {
   const listId = useId();
   const [draft, setDraft] = useState(value);
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   useEffect(() => setDraft(value), [value]);
 
+  const choose = (preset: number) => {
+    const next = String(preset);
+    setDraft(next);
+    onChange(next);
+    setOpen(false);
+  };
+
   return (
-  <div className="w-full">
+  <Popover open={open} onOpenChange={setOpen}>
+  <PopoverAnchor asChild>
+  <div className="relative min-w-0 w-full">
     <Input
       value={draft}
       inputMode="numeric"
       placeholder={placeholder}
+      role="combobox"
+      aria-expanded={open}
+      aria-controls={listId}
+      aria-autocomplete="list"
+      aria-activedescendant={open ? `${listId}-${activeIndex}` : undefined}
+      onFocus={() => setOpen(true)}
+      onClick={() => setOpen(true)}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          setOpen(true);
+          setActiveIndex((index) => Math.max(0, Math.min(presets.length - 1, index + (event.key === "ArrowDown" ? 1 : -1))));
+        } else if (event.key === "Enter" && open) {
+          event.preventDefault();
+          choose(presets[activeIndex]);
+        } else if (event.key === "Escape" || event.key === "Tab") {
+          setOpen(false);
+        }
+      }}
       maxLength={yearOnly ? 4 : undefined}
       onChange={(e) => {
         const next = yearOnly ? normalizeYearInput(e.target.value) : e.target.value.replace(/[^\d]/g, "");
@@ -315,12 +346,20 @@ const PresetOrInput = ({
       onBlur={() => {
         if (yearOnly && !isCompleteYearInput(draft)) setDraft(value);
       }}
-      className="h-9"
-      list={listId}
+      className="h-9 pr-7"
     />
-    <datalist id={listId}>
-      {presets.map((p) => <option key={p} value={p} />)}
-    </datalist>
+    <ChevronDown className="pointer-events-none absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
   </div>
+  </PopoverAnchor>
+  <PopoverContent side="bottom" sideOffset={4} align="start" onOpenAutoFocus={(event) => event.preventDefault()} onCloseAutoFocus={(event) => event.preventDefault()} className="catalog-dropdown-panel w-[var(--radix-popover-trigger-width)] overflow-y-auto overscroll-contain p-1">
+    <div id={listId} role="listbox">
+      {presets.map((preset, index) => (
+        <Button key={preset} id={`${listId}-${index}`} role="option" aria-selected={String(preset) === draft} data-selected={String(preset) === draft} variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => choose(preset)} className="catalog-dropdown-row h-8 w-full justify-between px-2 text-sm font-normal" ref={(element) => { if (open && activeIndex === index) element?.scrollIntoView({ block: "nearest" }); }}>
+          {preset}{String(preset) === draft && <Check className="h-3.5 w-3.5 shrink-0" />}
+        </Button>
+      ))}
+    </div>
+  </PopoverContent>
+  </Popover>
   );
 };

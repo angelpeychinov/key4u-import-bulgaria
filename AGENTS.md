@@ -8,6 +8,7 @@
 - Brand and model controls share a portaled multi-select FacetDropdown; qualified brand:model keys and a shared selection helper preserve per-brand restrictions and dependent removal across desktop, mobile, URLs, chips, and server queries.
 
 - Catalog year, price, and mileage fields share PresetOrInput with unique suggestion lists; year validation stays in a tested helper so desktop and mobile apply identical complete-year rules.
+- Catalog filter popovers, portaled numeric presets and sort selects share the scoped catalog-dropdown-panel style; trigger-width positioning keeps desktop/mobile aligned without altering the global popover theme.
 
 - Search and facets share the pricing-limit helper for calculated-price eligibility and EUR-filter ceilings, so configurable limits never diverge while original-price sorting remains unchanged.
 
