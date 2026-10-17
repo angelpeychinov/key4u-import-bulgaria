@@ -5,9 +5,17 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExternalLink, Mail, Phone } from "lucide-react";
-import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, encarImg } from "@/lib/listings";
+import { Check, ExternalLink, Mail, Phone } from "lucide-react";
+import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, formatKrw, encarImg } from "@/lib/listings";
 import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
+
+const INCLUDED_IN_PRICE = [
+  "Покупка и проверка на колата в Корея",
+  "Транспорт до Ротердам",
+  "Транспорт до България",
+  "Мито и ДДС",
+  "Комисионна Key4U",
+];
 
 interface Props {
   listing: Listing | null;
@@ -151,43 +159,42 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                   >
                     <h3 className="text-base font-semibold text-[#183e32]">Цена до България</h3>
 
-                    <div className="mt-3 space-y-2.5 text-sm">
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-[#183e32]/70">Цена до Ротердам</span>
-                        <span className="font-semibold text-[#183e32]">{formatEur(ip.price)}</span>
-                      </div>
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-[#183e32]/70">Транспорт до България + мито и ДДС</span>
-                        <span className="font-semibold text-[#183e32]">{formatEur(ip.transport)}</span>
-                      </div>
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-[#183e32]/70">Комисионна и обработка</span>
-                        <span className="font-semibold text-[#183e32]">{formatEur(ip.handling)}</span>
-                      </div>
-
-                      <label className="flex cursor-pointer items-center justify-between gap-4">
-                        <span className="flex items-center gap-2 text-[#183e32]/70">
-                          <Checkbox
-                            checked={insurance}
-                            onCheckedChange={(v) => setInsurance(v === true)}
-                            className="border-[#183e32]/40 data-[state=checked]:border-[#183e32] data-[state=checked]:bg-[#183e32]"
-                          />
-                          Застраховка (2.2%)
-                        </span>
-                        <span className="font-semibold text-[#183e32]">
-                          {insurance ? formatEur(insuranceAmount) : "—"}
-                        </span>
-                      </label>
-                    </div>
-
-                    <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-[#c9a227] to-transparent" />
-
-                    <div className="flex flex-wrap items-end justify-between gap-3">
-                      <span className="text-sm uppercase tracking-wide text-[#183e32]/70">Прогнозна цена</span>
+                    <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
+                      <span className="text-sm uppercase tracking-wide text-[#183e32]/70">Прогнозна цена:</span>
                       <span className="text-3xl font-bold leading-none text-[#183e32]">
                         {formatApproxEur(total)}
                       </span>
                     </div>
+
+                    {listing.priceKrw !== undefined && (
+                      <p className="mt-2 text-xs text-[#183e32]/60">
+                        Цена в Корея: {formatKrw(listing.priceKrw)}
+                      </p>
+                    )}
+
+                    <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-[#c9a227] to-transparent" />
+
+                    <p className="text-sm font-semibold text-[#183e32]">Включено в цената:</p>
+                    <ul className="mt-2 space-y-1.5">
+                      {INCLUDED_IN_PRICE.map((item) => (
+                        <li key={item} className="flex items-start gap-2 text-sm text-[#183e32]/80">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#16a34a]" aria-hidden="true" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <label className="mt-4 flex cursor-pointer items-center justify-between gap-4 text-sm">
+                      <span className="flex items-center gap-2 text-[#183e32]/70">
+                        <Checkbox
+                          checked={insurance}
+                          onCheckedChange={(v) => setInsurance(v === true)}
+                          className="border-[#183e32]/40 data-[state=checked]:border-[#183e32] data-[state=checked]:bg-[#183e32]"
+                        />
+                        Застраховка (по избор)
+                      </span>
+                      <span className="font-semibold text-[#183e32]">+{formatEur(insuranceAmount)}</span>
+                    </label>
 
                     <div className="mt-5 flex flex-col gap-3">
                       <Button asChild className="flex-1 bg-[#183e32] text-white hover:bg-[#183e32]/90">
@@ -223,6 +230,18 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                     <p className="mt-2 text-sm text-[#183e32]/70">
                       Свържи се с нас и ще ти изготвим точна оферта с всички разходи до България.
                     </p>
+                    <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-[#c9a227] to-transparent" />
+
+                    <p className="text-sm font-semibold text-[#183e32]">Включено в цената:</p>
+                    <ul className="mt-2 space-y-1.5">
+                      {INCLUDED_IN_PRICE.map((item) => (
+                        <li key={item} className="flex items-start gap-2 text-sm text-[#183e32]/80">
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#16a34a]" aria-hidden="true" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+
                     <div className="mt-5 flex flex-col gap-3">
                       <Button asChild className="flex-1 bg-[#183e32] text-white hover:bg-[#183e32]/90">
                         <a href="tel:+359898252434">
