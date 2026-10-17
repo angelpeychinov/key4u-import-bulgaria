@@ -1,10 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-};
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { FALLBACK_MAX_PRICED_KRW, filteredPriceMax, hasCalculatedPrice, resolveMaxPricedKrw } from "../_shared/pricingLimit.ts";
 
 const HIDDEN_MARGIN = 150;
 // Live rates come from the pricing_config table (cached 5 min); these are
@@ -20,12 +16,14 @@ interface PricingConfig {
   fx: number;
   carMarkupPct: number;
   rotterdamFixed: number;
+  maxPricedKrw: number;
 }
 
 const FALLBACK_CFG: PricingConfig = {
   fx: FALLBACK_FX,
   carMarkupPct: FALLBACK_CAR_MARKUP_PCT,
   rotterdamFixed: FALLBACK_ROTTERDAM_FIXED,
+  maxPricedKrw: FALLBACK_MAX_PRICED_KRW,
 };
 let pricingCache: { cfg: PricingConfig; at: number } | null = null;
 
@@ -41,6 +39,7 @@ const loadPricingConfig = async (
     const cadToKrw = map.get("cad_to_krw");
     const carMarkupPct = map.get("car_markup_pct");
     const rotterdamFixed = map.get("rotterdam_fixed_eur");
+    cfg.maxPricedKrw = resolveMaxPricedKrw(map.get("max_priced_krw"));
     if (eurToCad && cadToKrw) cfg.fx = eurToCad * cadToKrw;
     if (carMarkupPct) cfg.carMarkupPct = carMarkupPct;
     if (rotterdamFixed) cfg.rotterdamFixed = rotterdamFixed;
@@ -159,9 +158,12 @@ Deno.serve(async (req) => {
     });
 
   try {
+    const url = Deno.env.get("SUPABASE_URL");
+    const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!url || !key) return json({ unavailable: true }, 503);
     const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      url,
+      key,
       { auth: { persistSession: false } },
     );
     const pricing = await loadPricingConfig(supabase);
@@ -235,7 +237,9 @@ Deno.serve(async (req) => {
     const priceFrom = numParam(incoming, "price_from");
     if (priceFrom) query = query.gte("price_original", firstKrwReaching(priceFrom, pricing));
     const priceTo = numParam(incoming, "price_to");
-    if (priceTo) query = query.lte("price_original", firstKrwReaching(priceTo + 0.000001, pricing) - 1);
+    const priceMax = filteredPriceMax(priceFrom, priceTo,
+      priceTo ? firstKrwReaching(priceTo + 0.000001, pricing) - 1 : null, pricing.maxPricedKrw);
+    if (priceMax !== null) query = query.lte("price_original", priceMax);
 
     const sortParam = (incoming.get("sort") ?? "newest") as SortKey;
     const sort = SORTS[sortParam] ?? SORTS.newest;
@@ -268,12 +272,12 @@ Deno.serve(async (req) => {
     const results = (data ?? []).slice(0, pageSize).map((row: any) => {
       const krw = Number(row.price_original ?? 0);
       const importPrice =
-        Number.isFinite(krw) && krw > 0
+        hasCalculatedPrice(krw, pricing.maxPricedKrw)
           ? calculateKoreaImportPrice(krw, isOversizeVehicle(row), pricing)
-          : undefined;
+          : null;
       return {
         ...row,
-        price_eur: importPrice?.total,
+        price_eur: importPrice?.total ?? null,
         import_price: importPrice,
       };
     });

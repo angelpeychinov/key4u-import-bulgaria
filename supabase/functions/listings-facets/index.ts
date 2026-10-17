@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { sanitizeFacets } from "../_shared/encarTextSafety.ts";
+import { FALLBACK_MAX_PRICED_KRW, filteredPriceMax, resolveMaxPricedKrw } from "../_shared/pricingLimit.ts";
 
 const HIDDEN_MARGIN = 150;
 // Live rates come from the pricing_config table (cached 5 min); these are
@@ -16,12 +17,14 @@ interface PricingConfig {
   fx: number;
   carMarkupPct: number;
   rotterdamFixed: number;
+  maxPricedKrw: number;
 }
 
 const FALLBACK_CFG: PricingConfig = {
   fx: FALLBACK_FX,
   carMarkupPct: FALLBACK_CAR_MARKUP_PCT,
   rotterdamFixed: FALLBACK_ROTTERDAM_FIXED,
+  maxPricedKrw: FALLBACK_MAX_PRICED_KRW,
 };
 let pricingCache: { cfg: PricingConfig; at: number } | null = null;
 
@@ -37,6 +40,7 @@ const loadPricingConfig = async (
     const cadToKrw = map.get("cad_to_krw");
     const carMarkupPct = map.get("car_markup_pct");
     const rotterdamFixed = map.get("rotterdam_fixed_eur");
+    cfg.maxPricedKrw = resolveMaxPricedKrw(map.get("max_priced_krw"));
     if (eurToCad && cadToKrw) cfg.fx = eurToCad * cadToKrw;
     if (carMarkupPct) cfg.carMarkupPct = carMarkupPct;
     if (rotterdamFixed) cfg.rotterdamFixed = rotterdamFixed;
@@ -171,7 +175,8 @@ Deno.serve(async (req) => {
       _year_from: numParam(incoming, "year_from") ?? null,
       _year_to: numParam(incoming, "year_to") ?? null,
       _price_min: priceFrom ? firstKrwReaching(priceFrom, pricing) : null,
-      _price_max: priceTo ? firstKrwReaching(priceTo + 0.000001, pricing) - 1 : null,
+      _price_max: filteredPriceMax(priceFrom, priceTo,
+        priceTo ? firstKrwReaching(priceTo + 0.000001, pricing) - 1 : null, pricing.maxPricedKrw),
       _mileage_min: numParam(incoming, "mileage_min") ?? null,
       _mileage_max: numParam(incoming, "mileage_max") ?? null,
       _fuels: listParam(incoming, "fuel_type") ?? null,
