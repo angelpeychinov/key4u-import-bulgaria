@@ -4,3 +4,7 @@ export const VIBER_GROUP_URL =
 
 /** Key4U contact email — change here only. */
 export const CONTACT_EMAIL = "key4u.import@gmail.com";
+
+/** Key4U phone number — change here only. */
+export const CONTACT_PHONE = "+359898252434";
+export const CONTACT_PHONE_DISPLAY = "0898 252 434";
