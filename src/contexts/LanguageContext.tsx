@@ -10,6 +10,15 @@ interface LanguageContextType {
 
 const translations = {
   en: {
+    'catalog.brand': 'Brand',
+    'catalog.model': 'Model',
+    'catalog.allBrands': 'All brands',
+    'catalog.allModels': 'All models',
+    'catalog.chooseBrand': 'Choose a brand first',
+    'catalog.searchBrands': 'Search brands…',
+    'catalog.searchModels': 'Search models…',
+    'catalog.noBrands': 'No matching brands.',
+    'catalog.noModels': 'No matching models.',
     // Navigation
     'nav.home': 'Home',
     'nav.process': 'Import Process',
@@ -138,6 +147,15 @@ const translations = {
     'footer.allRightsReserved': 'All rights reserved.',
   },
   bg: {
+    'catalog.brand': 'Марка',
+    'catalog.model': 'Модел',
+    'catalog.allBrands': 'Всички марки',
+    'catalog.allModels': 'Всички модели',
+    'catalog.chooseBrand': 'Първо изберете марка',
+    'catalog.searchBrands': 'Търси марка…',
+    'catalog.searchModels': 'Търси модел…',
+    'catalog.noBrands': 'Няма марки по тези критерии.',
+    'catalog.noModels': 'Няма модели по тези критерии.',
     // Navigation
     'nav.home': 'Начало',
     'nav.process': 'Процес',

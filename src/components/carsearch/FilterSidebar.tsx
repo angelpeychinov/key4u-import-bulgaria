@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, RotateCcw, Search } from "lucide-react";
 import {
@@ -51,20 +53,18 @@ const toggleInList = (csv: string | undefined, value: string): string => {
 const inList = (csv: string | undefined, value: string) => !!csv?.split(",").includes(value);
 
 export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => {
-  const [brandQuery, setBrandQuery] = useState("");
+  const { t } = useLanguage();
   const set = (patch: Partial<SearchFilters>) => onChange({ ...filters, ...patch });
 
   const brands = useMemo(() => {
     const list = facets?.brands ?? [];
-    const q = brandQuery.trim().toLowerCase();
-    const filtered = q ? list.filter((b) => b.name.toLowerCase().includes(q)) : list;
-    if (q) return filtered;
+    const filtered = list;
     const pinned = PINNED_BRANDS
       .map((slug) => filtered.find((b) => b.slug.toLowerCase() === slug))
       .filter((b): b is NonNullable<typeof b> => !!b);
     const rest = filtered.filter((b) => !PINNED_BRANDS.includes(b.slug.toLowerCase()));
     return [...pinned, ...rest];
-  }, [facets, brandQuery]);
+  }, [facets]);
 
   const models = facets?.models ?? [];
   const showTransmission = (facets?.transmissions.length ?? 0) > 1;
@@ -79,52 +79,27 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
         </Button>
       </div>
 
-      <Section title="Марка">
-        <div className="relative mb-2">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={brandQuery}
-            onChange={(e) => setBrandQuery(e.target.value)}
-            placeholder="Търси марка…"
-            className="pl-8 h-9"
-          />
-        </div>
-        <div className="max-h-64 space-y-1 overflow-y-auto pr-1">
-          {brands.map((b) => (
-            <label key={b.slug} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
-              <Checkbox
-                checked={filters.brand === b.slug}
-                onCheckedChange={(checked) =>
-                  set({ brand: checked ? b.slug : "", model: "" })
-                }
-              />
-              <span className="flex-1 truncate text-foreground">{b.name}</span>
-              {b.count !== undefined && <span className="text-xs text-muted-foreground">{b.count.toLocaleString("bg-BG")}</span>}
-            </label>
-          ))}
-          {brands.length === 0 && <p className="px-1 text-sm text-muted-foreground">Няма марки по тези критерии.</p>}
-        </div>
-      </Section>
-
-      <Section title="Модел">
-        {!filters.brand ? (
-          <p className="text-sm text-muted-foreground">Първо изберете марка.</p>
-        ) : (
-          <div className="max-h-64 space-y-1 overflow-y-auto pr-1">
-            {models.map((m) => (
-              <label key={m.slug} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
-                <Checkbox
-                  checked={filters.model === m.slug}
-                  onCheckedChange={(checked) => set({ model: checked ? m.slug : "" })}
-                />
-                <span className="flex-1 truncate text-foreground">{m.name}</span>
-                {m.count !== undefined && <span className="text-xs text-muted-foreground">{m.count.toLocaleString("bg-BG")}</span>}
-              </label>
-            ))}
-            {models.length === 0 && <p className="px-1 text-sm text-muted-foreground">Няма модели по тези критерии.</p>}
-          </div>
-        )}
-      </Section>
+      <div className="space-y-3 border-b border-border/60 py-3">
+        <FacetDropdown
+          title={t("catalog.brand")}
+          placeholder={t("catalog.allBrands")}
+          searchPlaceholder={t("catalog.searchBrands")}
+          emptyLabel={t("catalog.noBrands")}
+          options={brands}
+          value={filters.brand ?? ""}
+          onChange={(brand) => set({ brand, model: "" })}
+        />
+        <FacetDropdown
+          title={t("catalog.model")}
+          placeholder={filters.brand ? t("catalog.allModels") : t("catalog.chooseBrand")}
+          searchPlaceholder={t("catalog.searchModels")}
+          emptyLabel={t("catalog.noModels")}
+          options={models}
+          value={filters.model ?? ""}
+          disabled={!filters.brand}
+          onChange={(model) => set({ model })}
+        />
+      </div>
 
       <Section title="Цена до България (€)">
         <div className="flex items-center gap-2">
@@ -253,6 +228,54 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
           onCheckedChange={(checked) => set({ no_accident: checked })}
         />
       </div>
+    </div>
+  );
+};
+
+const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, options, value, disabled, onChange }: {
+  title: string;
+  placeholder: string;
+  searchPlaceholder: string;
+  emptyLabel: string;
+  options: { slug: string; name: string; count?: number }[];
+  value: string;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const { language } = useLanguage();
+  const labelId = useId();
+  const selected = options.find((option) => option.slug === value)?.name ?? value;
+  const filtered = options.filter((option) => option.name.toLowerCase().includes(query.trim().toLowerCase()));
+
+  return (
+    <div className="space-y-2">
+      <div id={labelId} className="text-sm font-semibold text-foreground">{title}</div>
+      <Popover open={open && !disabled} onOpenChange={(next) => { setOpen(next); setQuery(""); }}>
+        <PopoverTrigger asChild>
+          <Button variant="outline" disabled={disabled} aria-label={`${title}: ${selected || placeholder}`} className="h-9 w-full justify-between border-input bg-background px-3 text-sm font-normal">
+            <span className="truncate">{selected || placeholder}</span>
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="start" aria-labelledby={labelId} className="flex max-h-[var(--radix-popover-content-available-height)] w-[var(--radix-popover-trigger-width)] flex-col overflow-hidden p-2">
+          <div className="relative mb-2 shrink-0">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={searchPlaceholder} aria-label={searchPlaceholder} className="h-9 pl-8" />
+          </div>
+          <div className="min-h-0 max-h-64 space-y-1 overflow-y-auto overscroll-contain pr-1">
+            {filtered.map((option) => (
+              <label key={option.slug} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
+                <Checkbox aria-label={option.name} checked={value === option.slug} onCheckedChange={(checked) => onChange(checked ? option.slug : "")} />
+                <span className="min-w-0 flex-1 truncate text-foreground">{option.name}</span>
+                {option.count !== undefined && <span className="text-xs text-muted-foreground">{option.count.toLocaleString(language === "bg" ? "bg-BG" : "en-GB")}</span>}
+              </label>
+            ))}
+            {filtered.length === 0 && <p className="px-1 text-sm text-muted-foreground">{emptyLabel}</p>}
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
