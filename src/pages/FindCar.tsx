@@ -7,14 +7,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Car, Search, User, Mail, Phone, Calendar, Palette, Settings, MessageSquare } from "lucide-react";
+import { Car, Search, User, Mail, Phone, Calendar, Palette, Settings, MessageSquare, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
+const ORIGIN_OPTIONS: { value: string; labelKey: string }[] = [
+  { value: "canada", labelKey: "form.originCanada" },
+  { value: "usa", labelKey: "form.originUsa" },
+  { value: "south-korea", labelKey: "form.originSouthKorea" },
+  { value: "any", labelKey: "form.originAny" },
+];
 
 const carRequestSchema = z.object({
   name: z.string().trim().min(1, { message: "Name is required" }).max(100),
   email: z.string().trim().email({ message: "Invalid email address" }).max(255),
   phone: z.string().trim().min(1, { message: "Phone is required" }).max(20),
   model: z.string().trim().min(1, { message: "Car model is required" }).max(100),
+  origin: z.array(z.enum(["canada", "usa", "south-korea", "any"])).min(1),
   year: z.string().trim().max(4),
   color: z.string().trim().max(50),
   trim: z.string().trim().max(100),
@@ -35,13 +43,25 @@ export default function FindCar() {
     additional: "",
   });
 
+  const [origin, setOrigin] = useState<string[]>(["any"]);
+
+  const toggleOrigin = (value: string) => {
+    setOrigin((prev) => {
+      if (value === "any") return ["any"];
+      const next = prev.includes(value)
+        ? prev.filter((v) => v !== "any" && v !== value)
+        : [...prev.filter((v) => v !== "any"), value];
+      return next.length ? next : ["any"];
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const validated = carRequestSchema.parse(formData);
-      
+      const validated = carRequestSchema.parse({ ...formData, origin });
+
       const { data, error } = await supabase.functions.invoke('send-car-request', {
         body: validated,
       });
@@ -61,6 +81,7 @@ export default function FindCar() {
         trim: "",
         additional: "",
       });
+      setOrigin(["any"]);
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.errors.forEach((err) => {
@@ -201,6 +222,33 @@ export default function FindCar() {
                         <Car className="w-4 h-4 text-accent" />
                       </div>
                       <h3 className="font-semibold text-foreground">Детайли за автомобила</h3>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium flex items-center gap-2">
+                        <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+                        {t('form.origin')}
+                      </Label>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {ORIGIN_OPTIONS.map((option) => {
+                          const selected = origin.includes(option.value);
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => toggleOrigin(option.value)}
+                              aria-pressed={selected}
+                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
+                                selected
+                                  ? "bg-primary text-primary-foreground border-primary shadow-elegant"
+                                  : "bg-background/50 border-border/50 text-foreground hover:border-primary/40"
+                              }`}
+                            >
+                              {t(option.labelKey)}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     <div className="space-y-2">

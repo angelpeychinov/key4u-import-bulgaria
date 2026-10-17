@@ -8,6 +8,7 @@ import { escapeEmailHtml, emailSendResult, requestSubject } from "../_shared/car
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const db = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
 const json = (body: unknown, status: number) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+const ORIGIN_LABELS: Record<string, string> = { canada: "Канада", usa: "САЩ", "south-korea": "Южна Корея", any: "Без значение" };
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -55,7 +56,7 @@ const handler = async (req: Request): Promise<Response> => {
       ${row("Прогнозна цена до България", listing.estimatedTotalEur === null ? "Цена при запитване" : "~" + Math.round(listing.estimatedTotalEur).toLocaleString("bg-BG") + " €")}
     </table>` : "";
     const html = `${listingHtml}<h2>Нова заявка за автомобил</h2><table>
-      ${row("Име", data.name)}${row("Телефон", data.phone)}${row("Имейл", data.email)}
+      ${row("Име", data.name)}${row("Телефон", data.phone)}${row("Имейл", data.email)}${data.origin?.length ? row("Откъде", data.origin.map((o) => ORIGIN_LABELS[o] ?? o).join(", ")) : ""}
       ${row("Модел", data.model)}${row("Година", data.year)}${row("Цвят", data.color)}
       ${row("Екстри/Пакет", data.trim)}${row("Съобщение", data.additional)}</table>`;
     const response = await resend.emails.send({

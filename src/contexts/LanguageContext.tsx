@@ -90,6 +90,11 @@ const translations = {
     'form.color': 'Preferred Color',
     'form.trim': 'Trim / Features',
     'form.additional': 'Additional Requirements',
+    'form.origin': 'Where should we search?',
+    'form.originCanada': 'Canada',
+    'form.originUsa': 'USA',
+    'form.originSouthKorea': 'South Korea',
+    'form.originAny': 'No preference',
     'form.submit': 'Submit Request',
     'form.success': 'Request submitted! We\'ll contact you soon.',
     
@@ -244,6 +249,11 @@ const translations = {
     'form.color': 'Предпочитан Цвят',
     'form.trim': 'Версия / Характеристики',
     'form.additional': 'Допълнителни Изисквания',
+    'form.origin': 'Откъде да търсим?',
+    'form.originCanada': 'Канада',
+    'form.originUsa': 'САЩ',
+    'form.originSouthKorea': 'Южна Корея',
+    'form.originAny': 'Без значение',
     'form.submit': 'Изпрати Заявка',
     'form.success': 'Заявката е изпратена! Ще се свържем скоро.',
     
