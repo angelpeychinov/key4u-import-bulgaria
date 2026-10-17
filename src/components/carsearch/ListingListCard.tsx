@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Gauge, Calendar, Fuel, MapPin, Heart, Car } from "lucide-react";
-import { Listing, formatMileage, formatApproxEur, formatEur, regionBg, fuelBg, transmissionBg, encarImg } from "@/lib/listings";
+import { Listing, formatMileage, formatApproxEur, regionBg, fuelBg, transmissionBg, encarImg } from "@/lib/listings";
 import { useFavorites } from "@/hooks/useFavorites";
 
 interface Props {
@@ -117,10 +117,7 @@ export const ListingListCard = ({ listing, onOpen, priority = false }: Props) =>
       <div className="flex shrink-0 flex-col justify-center gap-1 border-t border-border/60 p-4 sm:w-52 sm:border-l sm:border-t-0">
         <p className="text-xs uppercase tracking-wide text-muted-foreground">Цена до България</p>
         {listing.importPrice ? (
-          <>
-            <p className="text-xl font-bold text-[#183e32]">{formatApproxEur(listing.importPrice.total)}</p>
-            <p className="text-xs text-muted-foreground">Автомобил: {formatEur(listing.importPrice.price)}</p>
-          </>
+          <p className="text-xl font-bold text-[#183e32]">{formatApproxEur(listing.importPrice.total)}</p>
         ) : (
           <p className="text-xl font-bold text-[#183e32]">Цена при запитване</p>
         )}
