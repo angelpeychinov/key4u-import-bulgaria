@@ -176,6 +176,13 @@
       "when": 1792194607070,
       "tag": "0024_encar_body_backfill_indexed_batches",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1792217268073,
+      "tag": "0025_encar_listings_skip_jsonb_stats",
+      "breakpoints": true
     }
   ]
 }
