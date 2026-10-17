@@ -10,7 +10,6 @@ import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, form
 import { CONTACT_PHONE, CONTACT_PHONE_DISPLAY } from "@/lib/contact";
 import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
 import { ListingInquiryForm } from "./ListingInquiryForm";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const INCLUDED_IN_PRICE = [
   "Покупка и проверка на колата в Корея",
@@ -67,7 +66,6 @@ interface Props {
 }
 
 export const ListingDialog = ({ listing, onClose }: Props) => {
-  const { t } = useLanguage();
   const [inquiryOpen, setInquiryOpen] = useState(false);
   const [insurance, setInsurance] = useState(false);
   const [zoomIndex, setZoomIndex] = useState<number | null>(null);
@@ -120,6 +118,13 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
         ["Щети", listing.specs["Щети"]],
       ]
     : [];
+
+  const inquiryTitle = listing
+    ? [listing.brand, listing.model, listing.trim, listing.year].filter(Boolean).join(" ") || listing.title
+    : "";
+  const siteUrl = listing?.encarId
+    ? `https://key4u.bg/car-search?listing=${encodeURIComponent(listing.encarId)}`
+    : "https://key4u.bg/car-search";
 
   return (
     <Dialog
@@ -244,20 +249,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                       <span className="font-semibold text-[#183e32]">+{formatEur(insuranceAmount)}</span>
                     </label>
 
-                    <div className="mt-5 flex flex-col gap-3">
-                      <Button asChild className="flex-1 bg-[#183e32] text-white hover:bg-[#183e32]/90">
-                        <a href="tel:+359898252434">
-                          <Phone className="mr-2 h-4 w-4" /> Обади се
-                        </a>
-                      </Button>
-                      <Button
-                        onClick={() => setInquiryOpen((open) => !open)}
-                        variant="outline"
-                        className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
-                      >
-                        <Mail className="mr-2 h-4 w-4" /> {t("inquiry.send")}
-                      </Button>
-                    </div>
+                    <ContactButtons title={inquiryTitle} siteUrl={siteUrl} onInquiry={() => setInquiryOpen((open) => !open)} />
 
                     {inquiryOpen && <ListingInquiryForm listing={listing} total={total} onClose={() => setInquiryOpen(false)} />}
 
@@ -290,20 +282,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                       ))}
                     </ul>
 
-                    <div className="mt-5 flex flex-col gap-3">
-                      <Button asChild className="flex-1 bg-[#183e32] text-white hover:bg-[#183e32]/90">
-                        <a href="tel:+359898252434">
-                          <Phone className="mr-2 h-4 w-4" /> Обади се
-                        </a>
-                      </Button>
-                      <Button
-                        onClick={() => setInquiryOpen((open) => !open)}
-                        variant="outline"
-                        className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
-                      >
-                        <Mail className="mr-2 h-4 w-4" /> {t("inquiry.send")}
-                      </Button>
-                    </div>
+                    <ContactButtons title={inquiryTitle} siteUrl={siteUrl} onInquiry={() => setInquiryOpen((open) => !open)} />
                     {inquiryOpen && <ListingInquiryForm listing={listing} onClose={() => setInquiryOpen(false)} />}
                   </div>
                 )}
