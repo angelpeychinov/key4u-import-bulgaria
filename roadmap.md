@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Inquiry fixes: check Resend errors/id, listing inquiry form with attached car and working deep link, persist submissions, deploy and send exactly one test; do not publish.
+- [x] Inquiry fixes: Resend errors return 500 and successful ids are logged; inline listing form, validated attached car and working deep link; submissions persist server-only; deployed and exactly one real browser test accepted (200, email id 01a1494d-547d-7a90-82d7-f01074dc6bb8), database row verified then test row removed; 11 tests pass; desktop/mobile checked; not published.
 
 - [x] Contact email standardised to key4u.import@gmail.com via shared CONTACT_EMAIL constant in src/lib/contact.ts; SEO.tsx/Contact/Footer/ListingDialog import it; index.html schema + public/llms.txt literals corrected; 2 tests guard the constant and ban old spellings; live Contact, footer and car dialog show the correct address; not published.
 
