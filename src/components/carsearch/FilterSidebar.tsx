@@ -329,7 +329,16 @@ const PresetOrInput = ({
         if (event.key === "ArrowDown" || event.key === "ArrowUp") {
           event.preventDefault();
           setOpen(true);
-          setActiveIndex((index) => Math.max(0, Math.min(presets.length - 1, index + (event.key === "ArrowDown" ? 1 : -1))));
+          const nextIndex = Math.max(0, Math.min(presets.length - 1, activeIndex + (event.key === "ArrowDown" ? 1 : -1)));
+          setActiveIndex(nextIndex);
+          requestAnimationFrame(() => {
+            const option = document.getElementById(`${listId}-${nextIndex}`);
+            const panel = option?.closest(".catalog-dropdown-panel");
+            if (option && panel) {
+              if (option.offsetTop < panel.scrollTop) panel.scrollTop = option.offsetTop;
+              else if (option.offsetTop + option.offsetHeight > panel.scrollTop + panel.clientHeight) panel.scrollTop = option.offsetTop + option.offsetHeight - panel.clientHeight;
+            }
+          });
         } else if (event.key === "Enter" && open) {
           event.preventDefault();
           choose(presets[activeIndex]);
@@ -354,7 +363,7 @@ const PresetOrInput = ({
   <PopoverContent side="bottom" sideOffset={4} align="start" onOpenAutoFocus={(event) => event.preventDefault()} onCloseAutoFocus={(event) => event.preventDefault()} className="catalog-dropdown-panel w-[var(--radix-popover-trigger-width)] overflow-y-auto overscroll-contain p-1">
     <div id={listId} role="listbox">
       {presets.map((preset, index) => (
-        <Button key={preset} id={`${listId}-${index}`} role="option" aria-selected={String(preset) === draft} data-selected={String(preset) === draft} variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => choose(preset)} className="catalog-dropdown-row h-8 w-full justify-between px-2 text-sm font-normal" ref={(element) => { if (open && activeIndex === index) element?.scrollIntoView({ block: "nearest" }); }}>
+        <Button key={preset} id={`${listId}-${index}`} role="option" aria-selected={String(preset) === draft} data-selected={String(preset) === draft} variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => choose(preset)} className="catalog-dropdown-row h-8 w-full justify-between px-2 text-sm font-normal">
           {preset}{String(preset) === draft && <Check className="h-3.5 w-3.5 shrink-0" />}
         </Button>
       ))}

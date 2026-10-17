@@ -256,7 +256,7 @@ export default function CarSearch() {
                   <SelectTrigger className="h-9 w-56">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent side="bottom" align="start" sideOffset={4} data-catalog-select className="catalog-dropdown-panel">
+                  <SelectContent side="bottom" align="start" sideOffset={4} data-catalog-select className="catalog-dropdown-panel data-[side=bottom]:translate-y-0 data-[side=top]:translate-y-0">
                     {SORT_OPTIONS.map((o) => (
                       <SelectItem className="catalog-dropdown-row" key={o.value} value={o.value}>{o.label}</SelectItem>
                     ))}
