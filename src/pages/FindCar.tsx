@@ -7,14 +7,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Car, Search, User, Mail, Phone, Calendar, Palette, Settings, MessageSquare } from "lucide-react";
+import { Car, Search, User, Mail, Phone, Calendar, Palette, Settings, MessageSquare, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+
+const ORIGIN_OPTIONS: { value: string; labelKey: string }[] = [
+  { value: "canada", labelKey: "form.originCanada" },
+  { value: "usa", labelKey: "form.originUsa" },
+  { value: "south-korea", labelKey: "form.originSouthKorea" },
+  { value: "any", labelKey: "form.originAny" },
+];
 
 const carRequestSchema = z.object({
   name: z.string().trim().min(1, { message: "Name is required" }).max(100),
   email: z.string().trim().email({ message: "Invalid email address" }).max(255),
   phone: z.string().trim().min(1, { message: "Phone is required" }).max(20),
   model: z.string().trim().min(1, { message: "Car model is required" }).max(100),
+  origin: z.array(z.enum(["canada", "usa", "south-korea", "any"])).min(1),
   year: z.string().trim().max(4),
   color: z.string().trim().max(50),
   trim: z.string().trim().max(100),
@@ -35,16 +43,17 @@ export default function FindCar() {
     additional: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const [origin, setOrigin] = useState<string[]>(["any"]);
 
-    try {
-      const validated = carRequestSchema.parse(formData);
-      
-      const { data, error } = await supabase.functions.invoke('send-car-request', {
-        body: validated,
-      });
+  const toggleOrigin = (value: string) => {
+    setOrigin((prev) => {
+      if (value === "any") return ["any"];
+      const next = prev.includes(value)
+        ? prev.filter((v) => v !== "any" && v !== value)
+        : [...prev.filter((v) => v !== "any"), value];
+      return next.length ? next : ["any"];
+    });
+  };
 
       if (error) {
         throw error;
