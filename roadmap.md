@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Korea dialog price box redesign: itemized euro breakdown removed, always-visible box with "Прогнозна цена", "Цена в Корея" in ₩, "Включено в цената" checklist and optional insurance; on-request variant keeps its block plus the checklist; verified in browser; not published.
+
 - [ ] Finish Encar body backfill and verify final coverage/samples: mapping and sync enrichment deployed, tests passed; last verified 155k+ classified, remaining work blocked by unavailable database connection pooler. Do not publish.
 
 - [x] Review monitoring findings: timeout evidence stale (current search/facets succeed); empty saved search fixed and verified through save/remove-last-car flow, tests passed, server deployed.

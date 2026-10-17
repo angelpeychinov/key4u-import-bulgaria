@@ -16,6 +16,7 @@ export interface Listing {
   trim?: string;
   year?: number;
   price?: number;
+  priceKrw?: number;
   currency?: string;
   mileage?: number;
   engineCc?: number;
@@ -208,6 +209,7 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
     trim,
     year,
     price: toNumber(raw.price_eur),
+    priceKrw: krw,
     currency: "EUR",
     mileage: toNumber(raw.mileage),
     engineCc: toNumber(raw.engine_cc),
@@ -330,6 +332,9 @@ const numFormatter = new Intl.NumberFormat("bg-BG");
 export const formatEur = (value?: number) => (value === undefined ? "—" : eurFormatter.format(value));
 
 export const formatApproxEur = (value?: number) => (value === undefined ? "—" : `~${formatEur(value)}`);
+
+/** Korean list price, e.g. "45 000 000 ₩". */
+export const formatKrw = (value?: number) => (value === undefined ? "—" : `${numFormatter.format(value)} ₩`);
 
 export const formatNumber = (value?: number) => (value === undefined ? "—" : numFormatter.format(value));
 
