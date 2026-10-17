@@ -225,6 +225,33 @@ export default function FindCar() {
                     </div>
 
                     <div className="space-y-2">
+                      <Label className="text-sm font-medium flex items-center gap-2">
+                        <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+                        {t('form.origin')}
+                      </Label>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {ORIGIN_OPTIONS.map((option) => {
+                          const selected = origin.includes(option.value);
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => toggleOrigin(option.value)}
+                              aria-pressed={selected}
+                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
+                                selected
+                                  ? "bg-primary text-primary-foreground border-primary shadow-elegant"
+                                  : "bg-background/50 border-border/50 text-foreground hover:border-primary/40"
+                              }`}
+                            >
+                              {t(option.labelKey)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
                       <Label htmlFor="model" className="text-sm font-medium flex items-center gap-2">
                         <Car className="w-3.5 h-3.5 text-muted-foreground" />
                         {t('form.model')}
