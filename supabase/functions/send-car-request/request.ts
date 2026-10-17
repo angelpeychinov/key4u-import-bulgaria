@@ -7,6 +7,7 @@ export const requestSchema = z.object({
   phone: text(20).min(1),
   email: z.union([text(255).email(), z.literal("")]).optional(),
   model: text(300).min(1),
+  origin: z.array(z.enum(["canada", "usa", "south-korea", "any"])).min(1).max(4).optional(),
   year: text(4).optional(), color: text(50).optional(), trim: text(100).optional(),
   additional: text(1000).optional(),
   listing: z.object({
