@@ -144,7 +144,7 @@ export default function Process() {
                     <Phone className="w-5 h-5 group-hover:animate-pulse" />
                     {t('process.ctaButton')}
                   </span>
-                  <span className="text-primary/70">0898252434</span>
+                  <span className="text-primary/70">{CONTACT_PHONE_DISPLAY}</span>
                 </a>
               </Button>
             </div>

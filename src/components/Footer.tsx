@@ -1,7 +1,7 @@
 import { Facebook, Instagram, MessageCircle } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logoFooter from "@/assets/logo-footer.png";
-import { CONTACT_EMAIL } from "@/lib/contact";
+import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY } from "@/lib/contact";
 
 export const Footer = () => {
   const { t } = useLanguage();
@@ -42,7 +42,7 @@ export const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">{t('footer.contacts')}</h3>
             <ul className="space-y-2 text-sm opacity-90">
               <li>{t('footer.emailLabel')} {CONTACT_EMAIL}</li>
-              <li>{t('footer.phoneLabel')} 0898 252 434</li>
+              <li>{t('footer.phoneLabel')} {CONTACT_PHONE_DISPLAY}</li>
             </ul>
           </div>
         </div>
