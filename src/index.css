@@ -109,6 +109,17 @@ All colors MUST be HSL.
   transform: none;
 }
 
+.catalog-dropdown-panel[data-catalog-presets] {
+  width: var(--radix-popover-trigger-width);
+  min-width: var(--radix-popover-trigger-width);
+  max-width: var(--radix-popover-trigger-width);
+}
+
+.catalog-dropdown-panel[data-catalog-presets]::before,
+.catalog-dropdown-panel[data-catalog-presets]::after {
+  content: none;
+}
+
 .catalog-dropdown-panel .catalog-dropdown-row:hover,
 .catalog-dropdown-panel .catalog-dropdown-row:focus,
 .catalog-dropdown-panel .catalog-dropdown-row[data-highlighted] {

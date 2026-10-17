@@ -28,6 +28,7 @@ const translations = {
     'inquiry.viberMessage': 'Hello, I am interested in {title} – {link}',
 
     'catalog.clear': 'Clear',
+    'catalog.mileageUnit': 'km',
     'catalog.brand': 'Brand',
     'catalog.model': 'Model',
     'catalog.allBrands': 'All brands',
@@ -187,6 +188,7 @@ const translations = {
     'inquiry.viberMessage': 'Здравейте, интересувам се от {title} – {link}',
 
     'catalog.clear': 'Изчисти',
+    'catalog.mileageUnit': 'км',
     'catalog.brand': 'Марка',
     'catalog.model': 'Модел',
     'catalog.allBrands': 'Всички марки',

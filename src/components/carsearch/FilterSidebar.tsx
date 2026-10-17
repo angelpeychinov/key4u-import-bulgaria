@@ -153,6 +153,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
             value={filters.mileage_min ?? ""}
             placeholder="От"
             presets={MILEAGE_PRESETS}
+            mileage
             onChange={(v) => set({ mileage_min: v })}
           />
           <span className="text-muted-foreground">–</span>
@@ -160,6 +161,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
             value={filters.mileage_max ?? ""}
             placeholder="До"
             presets={MILEAGE_PRESETS}
+            mileage
             onChange={(v) => set({ mileage_max: v })}
           />
         </div>
@@ -295,8 +297,10 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
 };
 
 const PresetOrInput = ({
-  value, placeholder, presets, onChange, yearOnly = false,
-}: { value: string; placeholder: string; presets: number[]; onChange: (v: string) => void; yearOnly?: boolean }) => {
+  value, placeholder, presets, onChange, yearOnly = false, mileage = false,
+}: { value: string; placeholder: string; presets: number[]; onChange: (v: string) => void; yearOnly?: boolean; mileage?: boolean }) => {
+  const { t } = useLanguage();
+  const presetLabel = (preset: number) => yearOnly ? String(preset) : `${String(preset).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ${mileage ? t("catalog.mileageUnit") : "€"}`;
   const listId = useId();
   const [draft, setDraft] = useState(value);
   const [open, setOpen] = useState(false);
@@ -360,11 +364,11 @@ const PresetOrInput = ({
     <ChevronDown className="pointer-events-none absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
   </div>
   </PopoverAnchor>
-  <PopoverContent side="bottom" sideOffset={4} align="start" onOpenAutoFocus={(event) => event.preventDefault()} onCloseAutoFocus={(event) => event.preventDefault()} className="catalog-dropdown-panel w-[var(--radix-popover-trigger-width)] overflow-y-auto overscroll-contain p-1">
+  <PopoverContent data-catalog-presets side="bottom" sideOffset={4} align="start" onOpenAutoFocus={(event) => event.preventDefault()} onCloseAutoFocus={(event) => event.preventDefault()} className="catalog-dropdown-panel w-[var(--radix-popover-trigger-width)] overflow-y-auto overscroll-contain p-1">
     <div id={listId} role="listbox">
       {presets.map((preset, index) => (
         <Button key={preset} id={`${listId}-${index}`} role="option" aria-selected={String(preset) === draft} data-selected={String(preset) === draft} variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => choose(preset)} className="catalog-dropdown-row h-8 w-full justify-between px-2 text-sm font-normal">
-          {preset}{String(preset) === draft && <Check className="h-3.5 w-3.5 shrink-0" />}
+          <span className="whitespace-nowrap">{presetLabel(preset)}</span>{String(preset) === draft && <Check className="h-3.5 w-3.5 shrink-0" />}
         </Button>
       ))}
     </div>
