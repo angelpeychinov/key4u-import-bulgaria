@@ -144,6 +144,13 @@ export function CarImportServiceSchema() {
             "@type": "Service",
             "name": "Внос на автомобили от САЩ"
           }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Внос на автомобили от Южна Корея"
+          }
         }
       ]
     }

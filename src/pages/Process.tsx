@@ -21,8 +21,8 @@ export default function Process() {
   return (
     <div className="min-h-screen pt-20 pb-16 relative overflow-hidden">
       <SEO 
-        title="Key4U | Как работи вносът на коли от Канада"
-        description="Научете как Key4U внася автомобили от Канада и САЩ в България. Лесен 4-стъпков процес: заявка, търсене, транспорт и доставка. Прозрачни цени и пълна подкрепа."
+        title="Key4U | Как работи вносът на коли от Канада, САЩ и Корея"
+        description="Научете как Key4U внася автомобили от Канада, САЩ и Южна Корея в България. Лесен 4-стъпков процес: заявка, търсене, транспорт и доставка. Прозрачни цени и пълна подкрепа."
         canonicalUrl="https://key4u.bg/process"
       />
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />

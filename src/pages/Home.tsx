@@ -45,8 +45,8 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <SEO 
-        title="Key4U България | Внос на автомобили от Канада и САЩ"
-        description="Key4U внася луксозни автомобили от Канада и САЩ в България. Пълна услуга от заявка до доставка - BMW, Mercedes, Audi, Tesla. 100+ внесени автомобила, 100% доволни клиенти."
+        title="Key4U България | Внос на автомобили от Канада, САЩ и Южна Корея"
+        description="Key4U внася луксозни автомобили от Канада, САЩ и Южна Корея в България. Пълна услуга от заявка до доставка - BMW, Mercedes, Audi, Tesla. 100+ внесени автомобила, 100% доволни клиенти."
         canonicalUrl="https://key4u.bg"
       />
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -58,9 +58,9 @@ export default function Home() {
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary-foreground drop-shadow-lg">
             {language === 'bg' ? (
-              <>Внос на автомобили<br />от Канада и САЩ</>
+              <>Внос на автомобили<br />от Северна Америка и Южна Корея</>
             ) : (
-              <>Car Import<br />from Canada and USA</>
+              <>Car Import<br />from North America and South Korea</>
             )}
           </h1>
           <p className="text-lg md:text-xl text-primary-foreground/90 font-medium mb-12 max-w-2xl mx-auto drop-shadow-md inline-block">
