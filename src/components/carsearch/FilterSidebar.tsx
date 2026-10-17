@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
+import { isCompleteYearInput, normalizeYearInput, yearPresets } from "@/lib/yearFilter";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
@@ -17,7 +18,7 @@ const PINNED_BRANDS = [
 const PRICE_PRESETS = [10000, 15000, 20000, 25000, 30000, 40000, 50000, 75000, 100000, 150000, 200000, 300000, 500000];
 const MILEAGE_PRESETS = [30000, 60000, 100000, 150000, 200000];
 const currentYear = new Date().getFullYear();
-const YEAR_OPTIONS = Array.from({ length: currentYear - 2009 }, (_, i) => currentYear - i);
+const YEAR_OPTIONS = yearPresets(currentYear);
 
 interface Props {
   filters: SearchFilters;
@@ -145,23 +146,21 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
 
       <Section title="Година">
         <div className="flex items-center gap-2">
-          <select
+          <PresetOrInput
             value={filters.year_from ?? ""}
-            onChange={(e) => set({ year_from: e.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-          >
-            <option value="">От</option>
-            {YEAR_OPTIONS.map((y) => <option key={y} value={y}>{y}</option>)}
-          </select>
+            placeholder="От"
+            presets={YEAR_OPTIONS}
+            yearOnly
+            onChange={(v) => set({ year_from: v })}
+          />
           <span className="text-muted-foreground">–</span>
-          <select
+          <PresetOrInput
             value={filters.year_to ?? ""}
-            onChange={(e) => set({ year_to: e.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-          >
-            <option value="">До</option>
-            {YEAR_OPTIONS.map((y) => <option key={y} value={y}>{y}</option>)}
-          </select>
+            placeholder="До"
+            presets={YEAR_OPTIONS}
+            yearOnly
+            onChange={(v) => set({ year_to: v })}
+          />
         </div>
       </Section>
 
@@ -259,19 +258,33 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
 };
 
 const PresetOrInput = ({
-  value, placeholder, presets, onChange,
-}: { value: string; placeholder: string; presets: number[]; onChange: (v: string) => void }) => (
+  value, placeholder, presets, onChange, yearOnly = false,
+}: { value: string; placeholder: string; presets: number[]; onChange: (v: string) => void; yearOnly?: boolean }) => {
+  const listId = useId();
+  const [draft, setDraft] = useState(value);
+  useEffect(() => setDraft(value), [value]);
+
+  return (
   <div className="w-full">
     <Input
-      value={value}
+      value={draft}
       inputMode="numeric"
       placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value.replace(/[^\d]/g, ""))}
+      maxLength={yearOnly ? 4 : undefined}
+      onChange={(e) => {
+        const next = yearOnly ? normalizeYearInput(e.target.value) : e.target.value.replace(/[^\d]/g, "");
+        setDraft(next);
+        if (!yearOnly || isCompleteYearInput(next)) onChange(next);
+      }}
+      onBlur={() => {
+        if (yearOnly && !isCompleteYearInput(draft)) setDraft(value);
+      }}
       className="h-9"
-      list={`presets-${placeholder}`}
+      list={listId}
     />
-    <datalist id={`presets-${placeholder}`}>
+    <datalist id={listId}>
       {presets.map((p) => <option key={p} value={p} />)}
     </datalist>
   </div>
-);
+  );
+};
