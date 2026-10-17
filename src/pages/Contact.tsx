@@ -3,6 +3,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
+import { CONTACT_EMAIL } from "@/lib/contact";
 
 export default function Contact() {
   const { t } = useLanguage();
@@ -17,8 +18,8 @@ export default function Contact() {
     {
       icon: <Mail className="w-8 h-8 text-primary" />,
       label: t('contact.email'),
-      value: "key4u.import@gmail.com",
-      href: "mailto:key4u.import@gmail.com",
+      value: CONTACT_EMAIL,
+      href: `mailto:${CONTACT_EMAIL}`,
     },
     {
       icon: <MapPin className="w-8 h-8 text-primary" />,
@@ -36,7 +37,7 @@ export default function Contact() {
     <div className="min-h-screen pt-24 pb-16 bg-card">
       <SEO 
         title="Контакти - Свържете се с нас"
-        description="Свържете се с Key4U за внос на автомобили от Канада, САЩ и Южна Корея. Телефон: 0898 252 434, Email: key4u.import@gmail.com. Viber, Facebook, Instagram. София, България."
+        description={`Свържете се с Key4U за внос на автомобили от Канада, САЩ и Южна Корея. Телефон: 0898 252 434, Email: ${CONTACT_EMAIL}. Viber, Facebook, Instagram. София, България.`}
         canonicalUrl="https://key4u.bg/contact"
       />
       <div className="container mx-auto px-4">

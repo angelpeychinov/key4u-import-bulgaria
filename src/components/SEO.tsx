@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { CONTACT_EMAIL } from '@/lib/contact';
 
 interface SEOProps {
   title?: string;
@@ -74,7 +75,7 @@ export function LocalBusinessSchema() {
     "url": "https://key4u.bg",
     "logo": "https://key4u.bg/favicon.png",
     "telephone": "+359898252434",
-    "email": "key4uimport@gmail.com",
+    "email": CONTACT_EMAIL,
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "София",
