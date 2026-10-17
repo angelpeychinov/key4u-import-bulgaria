@@ -332,7 +332,15 @@ const translations = {
   },
 };
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+// Keep provider and consumers on the same context during Vite hot updates.
+// This module exports both a component and a hook, so it can be re-evaluated
+// while existing provider instances are still mounted.
+const LanguageContext: React.Context<LanguageContextType | undefined> =
+  import.meta.hot?.data.languageContext ?? createContext<LanguageContextType | undefined>(undefined);
+
+if (import.meta.hot) {
+  import.meta.hot.data.languageContext = LanguageContext;
+}
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>('bg');

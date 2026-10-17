@@ -1,5 +1,7 @@
 # Architecture rules
 
+- LanguageContext preserves its context identity in Vite hot data so mounted providers and refreshed consumers cannot diverge during preview updates; the missing-provider guard remains strict.
+
 - Car inquiries validate and persist server-side before emailing; a returned Resend error fails the request and only a returned email ID confirms acceptance, preventing false success.
 - Listing inquiries use a dedicated inline form and attach a canonical catalog deep link; CarSearch resolves listing IDs independently of current filters so emailed links open the intended car.
 
