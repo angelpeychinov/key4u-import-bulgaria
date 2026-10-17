@@ -55,6 +55,17 @@ export default function FindCar() {
     });
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const validated = carRequestSchema.parse({ ...formData, origin });
+
+      const { data, error } = await supabase.functions.invoke('send-car-request', {
+        body: validated,
+      });
+
       if (error) {
         throw error;
       }
