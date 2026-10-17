@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Align and restyle all catalog dropdowns and numeric suggestions; verify desktop/mobile; do not publish.
+- [x] All catalog dropdowns and numeric suggestions share white scoped panels, field-width alignment and 4px gaps; desktop/mobile browser measurements and screenshots verified, presets/validation/internal scrolling checked, 8 filter tests pass; not published.
 
 - [x] FindCar "Откъде да търсим?" chips (Канада/САЩ/Южна Корея multi, Без значение exclusive default); sent as `origin` array, server-validated, email row "Откъде: …" near the top; send-car-request deployed; 6 new validation tests; browser-verified; not published.
 
