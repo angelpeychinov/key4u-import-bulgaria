@@ -16,3 +16,4 @@
 - Encar model/category bodies are resolved through the protected model mapping table cached per sync invocation; shared upserts preserve existing non-null bodies so detail classifications are never lost.
 - Body-category mapping uses Encar-provided facet expressions and size-bounded grouped queries to preserve punctuation and avoid rejected URLs; backfill updates only null classifications through indexed batches.
 - encar_listings raw_data/photos have planner statistics disabled (SET STATISTICS 0), because analyzing those large JSON columns stalled autovacuum for hours and timed out the catalog.
+- Customer contact details (email, Viber invite link) come from the shared constants in src/lib/contact.ts; static files that cannot import them (index.html structured data, public/llms.txt) must repeat the same literal value, and a test guards against stale spellings.

@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Contact email standardised to key4u.import@gmail.com via shared CONTACT_EMAIL constant in src/lib/contact.ts; SEO.tsx/Contact/Footer/ListingDialog import it; index.html schema + public/llms.txt literals corrected; 2 tests guard the constant and ban old spellings; live Contact, footer and car dialog show the correct address; not published.
+
+
 - [x] Multi-select brands and qualified models: grouped desktop/mobile checkbox dropdowns and clear actions, qualified URL/chips, shared per-brand selection semantics, array facets RPC with grouped-cache path; search/facets deployed; 17 tests passed; real BMW+Audi and BMW X5+Audi verified (search/facet counts both 5,445), dependent removal and compact mobile labels verified; not published.
 
 - [x] Temporary expensive-car pricing: max_priced_krw configured at 100M; shared cutoff and EUR filter ceiling; 14 tests passed; search/facets deployed; real 860M car shows on-request in card/dialog with checklist, 50M car retains ~39,220 EUR; original KRW sorting preserved; not published.

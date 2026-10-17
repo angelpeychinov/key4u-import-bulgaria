@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ExternalLink, Mail, Phone } from "lucide-react";
 import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, formatKrw, encarImg } from "@/lib/listings";
 import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
+import { CONTACT_EMAIL } from "@/lib/contact";
 
 const INCLUDED_IN_PRICE = [
   "Покупка и проверка на колата в Корея",
@@ -207,7 +208,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                         variant="outline"
                         className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
                       >
-                        <a href="mailto:key4u.import@gmail.com?subject=Запитване%20за%20внос%20на%20автомобил">
+                        <a href={`mailto:${CONTACT_EMAIL}?subject=Запитване%20за%20внос%20на%20автомобил`}>
                           <Mail className="mr-2 h-4 w-4" /> Изпрати запитване
                         </a>
                       </Button>
@@ -253,7 +254,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                         variant="outline"
                         className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
                       >
-                        <a href="mailto:key4u.import@gmail.com?subject=Запитване%20за%20внос%20на%20автомобил">
+                        <a href={`mailto:${CONTACT_EMAIL}?subject=Запитване%20за%20внос%20на%20автомобил`}>
                           <Mail className="mr-2 h-4 w-4" /> Изпрати запитване
                         </a>
                       </Button>
