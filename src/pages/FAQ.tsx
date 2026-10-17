@@ -28,7 +28,7 @@ export default function FAQ() {
     <div className="min-h-screen pt-24 pb-16 bg-background">
       <SEO 
         title="Често задавани въпроси за внос на автомобили"
-        description="Отговори на най-честите въпроси за внос на автомобили от Канада и САЩ в България. Цени, срокове, гаранции и процес на доставка от Key4U."
+        description="Отговори на най-честите въпроси за внос на автомобили от Канада, САЩ и Южна Корея в България. Цени, срокове, гаранции и процес на доставка от Key4U."
         canonicalUrl="https://key4u.bg/faq"
       />
       <FAQSchema faqs={faqSchemaData} />

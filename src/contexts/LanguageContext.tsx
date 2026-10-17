@@ -29,7 +29,7 @@ const translations = {
     'nav.contact': 'Contact',
     
     // Hero
-    'hero.title': 'Cars from Canada & USA',
+    'hero.title': 'Cars from North America & South Korea',
     'hero.subtitle': 'Easy, Fast, Affordable',
     'hero.description': 'We handle everything from request to delivery. Your dream car, simplified.',
     'hero.cta': 'Find Your Car',
@@ -131,8 +131,8 @@ const translations = {
     
     // Licensed Importer
     'licensed.badge': 'Licensed Importer',
-    'licensed.title': 'Licensed Car Importer from Canada and USA',
-    'licensed.subtitle': 'We work with the largest and most trusted auto auction and sales platforms in North America.',
+    'licensed.title': 'Licensed Car Importer from Canada, USA and South Korea',
+    'licensed.subtitle': 'We work with the largest and most trusted auto auction and sales platforms in North America and South Korea.',
     
     // CTA
     'cta.title': 'Ready for your',
@@ -166,7 +166,7 @@ const translations = {
     'nav.contact': 'Контакт',
     
     // Hero
-    'hero.title': 'Внос на Автомобили от Канада и САЩ',
+    'hero.title': 'Внос на автомобили от Северна Америка и Южна Корея',
     'hero.subtitle': 'Лесно, Бързо, Достъпно',
     'hero.description': 'Вашата мечтана кола е наша работа!',
     'hero.cta': 'Намери Автомобил',
@@ -221,7 +221,7 @@ const translations = {
     'faq.q3': 'Занимавате ли се с регистрацията?',
     'faq.a3': 'Да, бихме могли да се погрижим, както за регистрацията на автомобила, така и за всички останали дейности по него.',
     'faq.q4': 'Какви марки внасяте?',
-    'faq.a4': 'Внасяме всички марки, които присъстват на канадския и американския пазар, с други думи почти всички марки, които присъстват и на европейския пазар.',
+    'faq.a4': 'Внасяме всички марки, които присъстват на канадския, американския и южнокорейския пазар, с други думи почти всички марки, които присъстват и на европейския пазар.',
     'faq.q5': 'Мога ли да видя колата преди покупка?',
     'faq.a5': 'Предоставяме пълна и обстойна информация за всеки автомобил, за да може клиентът ни да е сигурен в покупката си, преди да е заплатил за нея.',
     
@@ -268,8 +268,8 @@ const translations = {
     
     // Licensed Importer
     'licensed.badge': 'Лицензиран Вносител',
-    'licensed.title': 'Лицензиран вносител на автомобили от Канада и САЩ',
-    'licensed.subtitle': 'Работим с най-големите и доверени платформи за автомобилни търгове и продажби в Северна Америка.',
+    'licensed.title': 'Лицензиран вносител на автомобили от Канада, САЩ и Южна Корея',
+    'licensed.subtitle': 'Работим с най-големите и доверени платформи за автомобилни търгове и продажби в Северна Америка и Южна Корея.',
     
     // CTA
     'cta.title': 'Готови ли сте за',
