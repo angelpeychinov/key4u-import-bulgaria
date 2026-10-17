@@ -10,6 +10,7 @@ import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, form
 import { CONTACT_PHONE, CONTACT_PHONE_DISPLAY } from "@/lib/contact";
 import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
 import { ListingInquiryForm } from "./ListingInquiryForm";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const INCLUDED_IN_PRICE = [
   "Покупка и проверка на колата в Корея",
