@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Inquiry fixes: check Resend errors/id, listing inquiry form with attached car and working deep link, persist submissions, deploy and send exactly one test; do not publish.
+
 - [x] Contact email standardised to key4u.import@gmail.com via shared CONTACT_EMAIL constant in src/lib/contact.ts; SEO.tsx/Contact/Footer/ListingDialog import it; index.html schema + public/llms.txt literals corrected; 2 tests guard the constant and ban old spellings; live Contact, footer and car dialog show the correct address; not published.
 
 
