@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Temporary expensive-car pricing: configurable cutoff, null calculated prices above limit, EUR filter exclusion, boundary tests, live card/dialog checks; deploy without publishing.
+
 - [x] Encar sync: treat Price 9999 and 99999 (만원) as "price on request" → price_original NULL via shared priceKrwOr helper; 25 tests pass, encar-sync + encar-body-map deployed; 22 stale placeholder rows nulled via the maintenance action; not published.
 
 - [x] Korea dialog price box redesign: itemized euro breakdown removed, always-visible box with "Прогнозна цена", "Цена в Корея" in ₩, "Включено в цената" checklist and optional insurance; on-request variant keeps its block plus the checklist; verified in browser; not published.
