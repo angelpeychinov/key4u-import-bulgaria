@@ -2,7 +2,7 @@
 
 - The desktop catalog aside is the sticky, viewport-height scroll container and aligns at flex-start, preventing stretched parents from delaying filter scrolling; overscroll containment isolates wheel gestures from the results page.
 
-- Brand and model controls share a portaled FacetDropdown inside FilterSidebar, keeping lists out of the sidebar scroll flow and preserving existing single-selection and brand-dependent model reset behavior on desktop and mobile.
+- Brand and model controls share a portaled multi-select FacetDropdown; qualified brand:model keys and a shared selection helper preserve per-brand restrictions and dependent removal across desktop, mobile, URLs, chips, and server queries.
 
 - Catalog year, price, and mileage fields share PresetOrInput with unique suggestion lists; year validation stays in a tested helper so desktop and mobile apply identical complete-year rules.
 

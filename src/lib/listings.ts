@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { isEmptySavedSearch } from "./savedSearch";
+import { catalogSelection } from "../../supabase/functions/_shared/catalogSelection";
+export { catalogSelection, removeCatalogBrand, selectionValues } from "../../supabase/functions/_shared/catalogSelection";
 
 export interface ImportPrice {
   price: number;
@@ -45,8 +47,8 @@ export const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 ];
 
 export interface SearchFilters {
-  brand?: string;
-  model?: string;
+  brand?: string; // comma-separated brand slugs
+  model?: string; // comma-separated qualified brand:model keys
   year_from?: string;
   year_to?: string;
   price_from?: string;
@@ -271,6 +273,7 @@ export const searchListings = async (
 };
 
 export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null> => {
+  const selection = catalogSelection(filters.brand, filters.model);
   const params = filtersToParams(filters);
   params.delete("sort");
   params.delete("ids");
@@ -297,7 +300,7 @@ export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null
   const result: Facets = {
     total: toNumber(obj.total) ?? 0,
     brands: named(obj.brands),
-    models: named(obj.models),
+    models: selection.brands.length ? named(obj.models).map((m) => ({ ...m, slug: m.slug.includes(":") ? m.slug : `${selection.brands[0]}:${m.slug}` })) : [],
     fuels: counts(obj.fuels),
     transmissions: counts(obj.transmissions),
     body_types: counts(obj.body_types),
@@ -310,7 +313,8 @@ export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null
     supabase.from("encar_facets_cache").select("payload").eq("key", "default").maybeSingle()
       .then(({ data }) => data?.payload as Record<string, unknown> | undefined),
     result.brands.length ? Promise.resolve([]) : fetchTaxonomy("brands").catch(() => []),
-    filters.brand ? fetchTaxonomy("models", filters.brand).catch(() => []) : Promise.resolve([]),
+    Promise.all(selection.brands.map((brand) => fetchTaxonomy("models", brand)
+      .then((items) => items.map((m) => ({ ...m, slug: `${brand}:${m.slug}` }))).catch(() => []))).then((groups) => groups.flat()),
   ]);
   const defaultBrands = named(defaults?.brands);
   return {

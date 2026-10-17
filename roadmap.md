@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Multi-select brands and qualified models: grouped desktop/mobile checkbox dropdowns and clear actions, qualified URL/chips, shared per-brand selection semantics, array facets RPC with grouped-cache path; search/facets deployed; 17 tests passed; real BMW+Audi and BMW X5+Audi verified (search/facet counts both 5,445), dependent removal and compact mobile labels verified; not published.
+
 - [x] Temporary expensive-car pricing: max_priced_krw configured at 100M; shared cutoff and EUR filter ceiling; 14 tests passed; search/facets deployed; real 860M car shows on-request in card/dialog with checklist, 50M car retains ~39,220 EUR; original KRW sorting preserved; not published.
 
 - [x] Encar sync: treat Price 9999 and 99999 (만원) as "price on request" → price_original NULL via shared priceKrwOr helper; 25 tests pass, encar-sync + encar-body-map deployed; 22 stale placeholder rows nulled via the maintenance action; not published.

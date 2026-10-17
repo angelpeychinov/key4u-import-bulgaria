@@ -190,6 +190,13 @@
       "when": 1792217913398,
       "tag": "0026_encar_listings_analyze_key_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1792230609603,
+      "tag": "0027_encar_facets_multi_selection",
+      "breakpoints": true
     }
   ]
 }

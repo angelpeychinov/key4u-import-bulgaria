@@ -9,7 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, RotateCcw, Search } from "lucide-react";
 import {
-  Facets, SearchFilters, fuelBg, transmissionBg, bodyBg, regionBg,
+  Facets, SearchFilters, fuelBg, transmissionBg, bodyBg, regionBg, catalogSelection, removeCatalogBrand, selectionValues,
 } from "@/lib/listings";
 
 const PINNED_BRANDS = [
@@ -66,7 +66,10 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
     return [...pinned, ...rest];
   }, [facets]);
 
-  const models = facets?.models ?? [];
+  const selection = catalogSelection(filters.brand, filters.model);
+  const models = (facets?.models ?? []).filter((m) => selection.brands.includes(m.slug.split(":")[0]))
+    .map((m) => ({ ...m, group: brands.find((b) => b.slug === m.slug.split(":")[0])?.name ?? m.slug.split(":")[0] }))
+    .sort((a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
   const showTransmission = (facets?.transmissions.length ?? 0) > 1;
   const showBody = (facets?.body_types.length ?? 0) > 1;
 
@@ -87,7 +90,11 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
           emptyLabel={t("catalog.noBrands")}
           options={brands}
           value={filters.brand ?? ""}
-          onChange={(brand) => set({ brand, model: "" })}
+          onChange={(brand) => {
+            const removed = selection.brands.filter((b) => !selectionValues(brand).includes(b));
+            const next = removed.reduce((next, b) => removeCatalogBrand(next.brand, next.model, b), { brand: filters.brand ?? "", model: filters.model ?? "" });
+            set({ brand, model: next.model });
+          }}
         />
         <FacetDropdown
           title={t("catalog.model")}
@@ -95,7 +102,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
           searchPlaceholder={t("catalog.searchModels")}
           emptyLabel={t("catalog.noModels")}
           options={models}
-          value={filters.model ?? ""}
+          value={selection.models.join(",")}
           disabled={!filters.brand}
           onChange={(model) => set({ model })}
         />
@@ -237,16 +244,18 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
   placeholder: string;
   searchPlaceholder: string;
   emptyLabel: string;
-  options: { slug: string; name: string; count?: number }[];
+  options: { slug: string; name: string; count?: number; group?: string }[];
   value: string;
   disabled?: boolean;
   onChange: (value: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const labelId = useId();
-  const selected = options.find((option) => option.slug === value)?.name ?? value;
+  const selectedValues = selectionValues(value);
+  const names = selectedValues.map((v) => options.find((option) => option.slug === v)?.name ?? v.split(":").pop() ?? v);
+  const selected = names.length > 2 ? `${names[0]} + ${names.length - 1}` : names.join(", ");
   const filtered = options.filter((option) => option.name.toLowerCase().includes(query.trim().toLowerCase()));
 
   return (
@@ -265,15 +274,19 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
             <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={searchPlaceholder} aria-label={searchPlaceholder} className="h-9 pl-8" />
           </div>
           <div className="min-h-0 max-h-64 space-y-1 overflow-y-auto overscroll-contain pr-1">
-            {filtered.map((option) => (
-              <label key={option.slug} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
-                <Checkbox aria-label={option.name} checked={value === option.slug} onCheckedChange={(checked) => onChange(checked ? option.slug : "")} />
+            {filtered.map((option, index) => (
+              <div key={option.slug}>
+              {option.group && option.group !== filtered[index - 1]?.group && <div className="border-b border-border px-1 py-2 text-xs font-semibold text-muted-foreground">{option.group}</div>}
+              <label className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
+                <Checkbox aria-label={option.group ? `${option.group}: ${option.name}` : option.name} checked={selectedValues.includes(option.slug)} onCheckedChange={() => onChange(toggleInList(value, option.slug))} />
                 <span className="min-w-0 flex-1 truncate text-foreground">{option.name}</span>
                 {option.count !== undefined && <span className="text-xs text-muted-foreground">{option.count.toLocaleString(language === "bg" ? "bg-BG" : "en-GB")}</span>}
               </label>
+              </div>
             ))}
             {filtered.length === 0 && <p className="px-1 text-sm text-muted-foreground">{emptyLabel}</p>}
           </div>
+          <Button variant="ghost" size="sm" className="mt-2 shrink-0 border-t border-border text-muted-foreground" disabled={!value} onClick={() => onChange("")}>{t("catalog.clear")}</Button>
         </PopoverContent>
       </Popover>
     </div>

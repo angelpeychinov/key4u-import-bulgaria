@@ -10,6 +10,7 @@ interface LanguageContextType {
 
 const translations = {
   en: {
+    'catalog.clear': 'Clear',
     'catalog.brand': 'Brand',
     'catalog.model': 'Model',
     'catalog.allBrands': 'All brands',
@@ -147,6 +148,7 @@ const translations = {
     'footer.allRightsReserved': 'All rights reserved.',
   },
   bg: {
+    'catalog.clear': 'Изчисти',
     'catalog.brand': 'Марка',
     'catalog.model': 'Модел',
     'catalog.allBrands': 'Всички марки',
