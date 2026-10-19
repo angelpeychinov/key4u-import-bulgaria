@@ -30,7 +30,7 @@ export const KoreaCatalogSection = () => {
         const n = Number((data?.payload as Record<string, unknown> | undefined)?.total);
         if (alive && Number.isFinite(n) && n >= 1000) setTotal(Math.floor(n / 1000) * 1000);
       });
-    searchListings({ sort: "random" as SortKey }, 1, 24)
+    searchListings({ sort: "random" as SortKey }, 1, 30)
       .then((r) => {
         if (alive) setCars(r.listings.filter((l) => l.importPrice && (l.photos[0] || l.thumb) && l.encarId));
       })
@@ -57,15 +57,15 @@ export const KoreaCatalogSection = () => {
     : t("korea.home.headingFallback");
 
   const facts = [
-    { icon: Tag, text: t("korea.home.fact1") },
-    { icon: Camera, text: t("korea.home.fact2") },
-    { icon: Clock, text: t("korea.home.fact3") },
+    { icon: Tag, text: t("korea.home.fact1"), sub: t("korea.home.fact1Sub") },
+    { icon: Camera, text: t("korea.home.fact2"), sub: t("korea.home.fact2Sub") },
+    { icon: Clock, text: t("korea.home.fact3"), sub: t("korea.home.fact3Sub") },
   ];
 
   return (
     <section className="bg-background py-16 md:py-24">
       <div className="container mx-auto px-4">
-        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-14">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-14">
           <div>
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">{t("korea.home.eyebrow")}</p>
             <h2 className="mb-5 text-3xl font-bold leading-tight text-primary md:text-[40px]">{heading}</h2>
@@ -83,17 +83,6 @@ export const KoreaCatalogSection = () => {
               ))}
             </div>
 
-            <ul className="mb-9 space-y-3">
-              {facts.map(({ icon: Icon, text }) => (
-                <li key={text} className="flex items-center gap-3 text-foreground">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Icon className="h-4 w-4" />
-                  </span>
-                  {text}
-                </li>
-              ))}
-            </ul>
-
             <Button asChild size="lg" className="group">
               <Link to="/car-search">
                 {t("korea.home.cta")}
@@ -102,14 +91,30 @@ export const KoreaCatalogSection = () => {
             </Button>
           </div>
 
+          <ul className="space-y-4">
+            {facts.map(({ icon: Icon, text, sub }) => (
+              <li key={text} className="flex items-center gap-5 rounded-xl border border-primary/10 bg-card p-5 shadow-card">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                  <Icon className="h-6 w-6" />
+                </span>
+                <div>
+                  <p className="text-lg font-bold leading-snug text-foreground">{text}</p>
+                  <p className="text-sm text-muted-foreground">{sub}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
           {cars.length > 0 && (
-            <div className="min-w-0">
+            <div className="mt-14 min-w-0 md:mt-20">
+              <h3 className="mb-5 text-xl font-bold text-primary">{t("korea.home.samplesTitle")}</h3>
               <Carousel setApi={setApi} plugins={plugins} opts={{ loop: true, align: "start", slidesToScroll: "auto", duration: 30 }}>
                 <CarouselContent className="-ml-4">
                   {cars.map((car) => {
                     const photo = car.photos[0] ?? car.thumb;
                     return (
-                      <CarouselItem key={car.encarId} className="basis-[82%] pl-4 sm:basis-1/2 lg:basis-1/3">
+                      <CarouselItem key={car.encarId} className="basis-[75%] pl-4 sm:basis-1/3 lg:basis-1/4 2xl:basis-1/5">
                         <Link
                           to={`/car-search?listing=${car.encarId}`}
                           className="block h-full overflow-hidden rounded-lg border border-border/60 bg-card shadow-card transition-smooth hover:shadow-elegant"
@@ -132,11 +137,11 @@ export const KoreaCatalogSection = () => {
                     );
                   })}
                 </CarouselContent>
-                <CarouselPrevious className="left-1 h-8 w-8 bg-card/90 lg:-left-4" />
-                <CarouselNext className="right-1 h-8 w-8 bg-card/90 lg:-right-4" />
+                <CarouselPrevious className="left-1 h-8 w-8 bg-card/90 xl:-left-4" />
+                <CarouselNext className="right-1 h-8 w-8 bg-card/90 xl:-right-4" />
               </Carousel>
               {snaps > 1 && (
-                <div className="mt-4 flex justify-center gap-1.5">
+                <div className="mt-4 hidden justify-center gap-1.5 sm:flex">
                   {Array.from({ length: snaps }).map((_, i) => (
                     <button
                       key={i}
@@ -149,7 +154,6 @@ export const KoreaCatalogSection = () => {
               )}
             </div>
           )}
-        </div>
       </div>
     </section>
   );
