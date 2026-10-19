@@ -2,7 +2,6 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { isCompleteYearInput, normalizeYearInput, yearPresets } from "@/lib/yearFilter";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverAnchor } from "@radix-ui/react-popover";
