@@ -249,7 +249,11 @@ Deno.serve(async (req) => {
     // "Price on request" rows (NULL price) must not flood price sorts
     if (sort.column === "price_original") query = query.not("price_original", "is", null);
 
-    const { data, error, count } = await query
+    // Random sample (homepage teaser): sampled server-side, never a full-table random sort.
+    const randomResult = incoming.get("sort") === "random"
+      ? await supabase.rpc("encar_random_listings", { _n: pageSize }).select(COLS)
+      : null;
+    const { data, error, count } = randomResult ?? await query
       // No nullsFirst override: DESC NULLS LAST can't use our plain DESC indexes
       // and forces a full sort of 180k+ rows (statement timeout). NULLS FIRST
       // matches the indexes; last_seen_at is always set on active rows anyway.

@@ -525,6 +525,46 @@ export type Database = {
           slug: string
         }[]
       }
+      encar_random_listings: {
+        Args: { _n?: number }
+        Returns: {
+          body_type: string | null
+          brand_name: string | null
+          brand_slug: string | null
+          color: string | null
+          created_at: string
+          encar_id: string
+          engine_cc: number | null
+          first_seen_at: string
+          fuel_type: string | null
+          has_accident: boolean | null
+          id: string
+          last_seen_at: string
+          listing_url: string | null
+          mileage: number | null
+          model_name: string | null
+          model_slug: string | null
+          photos: Json
+          previous_price_krw: number | null
+          price_changed_at: string | null
+          price_original: number | null
+          raw_data: Json
+          region: string | null
+          source_code: string
+          status: string
+          thumb: string | null
+          transmission: string | null
+          trim: string | null
+          updated_at: string
+          year: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "encar_listings"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       encar_refresh_default_facets: { Args: never; Returns: undefined }
       encar_sanitize_facets_payload: {
         Args: { _grouped?: boolean; _payload: Json }
