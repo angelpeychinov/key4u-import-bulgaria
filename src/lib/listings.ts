@@ -59,7 +59,6 @@ export interface SearchFilters {
   transmission?: string; // comma-separated multi-select
   body_type?: string; // comma-separated multi-select
   region?: string; // comma-separated multi-select
-  no_accident?: boolean;
   sort?: SortKey;
   ids?: string; // comma-separated encar ids (saved cars)
 }
@@ -231,10 +230,6 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
 const filtersToParams = (filters: SearchFilters): URLSearchParams => {
   const params = new URLSearchParams();
   Object.entries(filters).forEach(([key, value]) => {
-    if (key === "no_accident") {
-      if (value === true) params.set("has_accident", "false");
-      return;
-    }
     if (typeof value === "string" && value && value !== "all") params.set(key, value);
   });
   return params;

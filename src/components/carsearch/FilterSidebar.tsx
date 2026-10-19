@@ -230,14 +230,6 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
           ))}
         </div>
       </Section>
-
-      <div className="flex items-center justify-between py-4">
-        <span className="text-sm font-semibold text-foreground">Само без катастрофи</span>
-        <Switch
-          checked={filters.no_accident === true}
-          onCheckedChange={(checked) => set({ no_accident: checked })}
-        />
-      </div>
     </div>
   );
 };
