@@ -2,7 +2,6 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { isCompleteYearInput, normalizeYearInput, yearPresets } from "@/lib/yearFilter";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PopoverAnchor } from "@radix-ui/react-popover";
@@ -230,14 +229,6 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
           ))}
         </div>
       </Section>
-
-      <div className="flex items-center justify-between py-4">
-        <span className="text-sm font-semibold text-foreground">Само без катастрофи</span>
-        <Switch
-          checked={filters.no_accident === true}
-          onCheckedChange={(checked) => set({ no_accident: checked })}
-        />
-      </div>
     </div>
   );
 };

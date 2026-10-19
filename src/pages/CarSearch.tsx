@@ -24,7 +24,7 @@ const PAGE_SIZE = 20;
 const emptyFilters: SearchFilters = {
   brand: "", model: "", year_from: "", year_to: "", price_from: "", price_to: "",
   mileage_min: "", mileage_max: "", fuel_type: "", transmission: "", body_type: "",
-  region: "", no_accident: false, sort: "newest",
+  region: "", sort: "newest",
 };
 
 const FILTER_KEYS = Object.keys(emptyFilters) as (keyof SearchFilters)[];
@@ -34,8 +34,7 @@ const filtersFromParams = (params: URLSearchParams): SearchFilters => {
   for (const key of FILTER_KEYS) {
     const value = params.get(key);
     if (value === null) continue;
-    if (key === "no_accident") next.no_accident = value === "1" || value === "true";
-    else (next as Record<string, unknown>)[key] = value.slice(0, key === "brand" || key === "model" ? 22000 : 120);
+    (next as Record<string, unknown>)[key] = value.slice(0, key === "brand" || key === "model" ? 22000 : 120);
   }
   const selection = catalogSelection(next.brand, next.model);
   next.brand = selection.brands.join(",");
@@ -47,9 +46,7 @@ const filtersToParams = (filters: SearchFilters): URLSearchParams => {
   const params = new URLSearchParams();
   for (const key of FILTER_KEYS) {
     const value = filters[key];
-    if (key === "no_accident") {
-      if (value === true) params.set(key, "1");
-    } else if (key === "sort") {
+    if (key === "sort") {
       if (value && value !== "newest") params.set(key, String(value));
     } else if (typeof value === "string" && value.trim()) params.set(key, value.trim());
   }
@@ -106,9 +103,6 @@ const buildChips = (filters: SearchFilters, facets: Facets | null): Chip[] => {
   }
   for (const v of filters.region?.split(",").filter(Boolean) ?? []) {
     chips.push({ key: `region:${v}`, label: regionBg(v), clear: (f) => ({ ...f, region: f.region?.split(",").filter((x) => x && x !== v).join(",") ?? "" }) });
-  }
-  if (filters.no_accident) {
-    chips.push({ key: "no_accident", label: "Без катастрофи", clear: (f) => ({ ...f, no_accident: false }) });
   }
   return chips;
 };
