@@ -1,5 +1,6 @@
 import { useEffect, useId, useMemo, useState } from "react";
 import { isCompleteYearInput, normalizeYearInput, yearPresets } from "@/lib/yearFilter";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";

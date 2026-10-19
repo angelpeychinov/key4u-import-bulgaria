@@ -27,6 +27,7 @@ const translations = {
     'inquiry.viberMessage': 'Hello, I am interested in {title} – {link}',
 
     'catalog.clear': 'Clear',
+    'catalog.done': 'Done',
     'catalog.mileageUnit': 'km',
     'korea.home.eyebrow': 'NEW · SOUTH KOREA',
     'korea.home.heading': 'Over {n} cars from Korea with a price to Bulgaria',
@@ -199,6 +200,7 @@ const translations = {
     'inquiry.viberMessage': 'Здравейте, интересувам се от {title} – {link}',
 
     'catalog.clear': 'Изчисти',
+    'catalog.done': 'Готово',
     'catalog.mileageUnit': 'км',
     'korea.home.eyebrow': 'НОВО · ЮЖНА КОРЕЯ',
     'korea.home.heading': 'Над {n} коли от Корея с цена до България',
