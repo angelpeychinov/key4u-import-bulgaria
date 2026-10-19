@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ExternalLink, Mail, Phone } from "lucide-react";
 import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, formatKrw, encarImg } from "@/lib/listings";
-import { CONTACT_PHONE, CONTACT_PHONE_DISPLAY } from "@/lib/contact";
+import { CONTACT_PHONE } from "@/lib/contact";
 import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
 import { ListingInquiryForm } from "./ListingInquiryForm";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -54,9 +54,6 @@ const ContactButtons = ({ title, siteUrl, onInquiry }: { title: string; siteUrl:
           </a>
         </Button>
       </div>
-      <p className="hidden text-center text-xs text-[#183e32]/60 sm:block">
-        {t("inquiry.viberHint")} {CONTACT_PHONE_DISPLAY}
-      </p>
     </div>
   );
 };
