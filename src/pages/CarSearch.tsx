@@ -189,6 +189,14 @@ export default function CarSearch() {
 
   const resetFilters = () => setFilters({ ...emptyFilters });
 
+  const toggleSaved = () => {
+    const params = new URLSearchParams(searchParams);
+    if (savedMode) params.delete("saved");
+    else params.set("saved", "1");
+    params.delete("page");
+    setSearchParams(params, { replace: true });
+  };
+
   const chips = useMemo(() => buildChips(filters, facets), [filters, facets]);
   const shownCount = savedMode || facets?.fallback ? count : facets?.total ?? count;
 
@@ -221,12 +229,15 @@ export default function CarSearch() {
           activeCount={chips.length}
           onChange={setFilters}
           onReset={resetFilters}
+          savedMode={savedMode}
+          savedCount={favoriteIds.length}
+          onToggleSaved={toggleSaved}
         />
 
         <div className="flex gap-8">
           {/* Desktop sidebar */}
           <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 self-start overflow-y-auto overscroll-contain pr-2 lg:block">
-            <FilterSidebar filters={filters} facets={facets} onChange={setFilters} onReset={resetFilters} />
+            <FilterSidebar filters={filters} facets={facets} onChange={setFilters} onReset={resetFilters} savedMode={savedMode} savedCount={favoriteIds.length} onToggleSaved={toggleSaved} />
           </aside>
 
           {/* Results */}

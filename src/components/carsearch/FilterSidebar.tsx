@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { PopoverAnchor } from "@radix-ui/react-popover";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Check, ChevronDown, RotateCcw, Search } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, Heart, RotateCcw, Search } from "lucide-react";
 import {
   Facets, SearchFilters, fuelBg, transmissionBg, bodyBg, regionBg, catalogSelection, removeCatalogBrand, selectionValues,
 } from "@/lib/listings";
@@ -27,6 +27,9 @@ interface Props {
   facets: Facets | null;
   onChange: (next: SearchFilters) => void;
   onReset: () => void;
+  savedMode?: boolean;
+  savedCount?: number;
+  onToggleSaved?: () => void;
 }
 
 const Section = ({
@@ -52,7 +55,7 @@ const toggleInList = (csv: string | undefined, value: string): string => {
 
 const inList = (csv: string | undefined, value: string) => !!csv?.split(",").includes(value);
 
-export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => {
+export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = false, savedCount = 0, onToggleSaved }: Props) => {
   const { t } = useLanguage();
   const set = (patch: Partial<SearchFilters>) => onChange({ ...filters, ...patch });
 
@@ -81,6 +84,20 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
           <RotateCcw className="mr-1 h-3.5 w-3.5" /> Изчисти
         </Button>
       </div>
+      {onToggleSaved && (
+        <Button
+          variant={savedMode ? "default" : "outline"}
+          className="mb-2 w-full justify-center"
+          aria-pressed={savedMode}
+          onClick={onToggleSaved}
+        >
+          {savedMode ? (
+            <><ArrowLeft className="mr-2 h-4 w-4" /> Всички обяви</>
+          ) : (
+            <><Heart className={`mr-2 h-4 w-4 ${savedCount > 0 ? "fill-destructive text-destructive" : ""}`} /> Запазени ({savedCount})</>
+          )}
+        </Button>
+      )}
 
       <div className="space-y-3 border-b border-border/60 py-3">
         <FacetDropdown
