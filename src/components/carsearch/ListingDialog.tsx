@@ -255,8 +255,8 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
                     {inquiryOpen && <ListingInquiryForm listing={listing} total={total} onClose={() => setInquiryOpen(false)} />}
 
                     <p className="mt-4 text-xs leading-relaxed text-[#183e32]/60">
-                      * Сумата е ориентировъчна. Крайната цена може да варира според митническата оценка и валутния курс
-                      към датата на плащане.
+                      * Сумата е ориентировъчна. Крайната цена може да варира според тарифите на корабните линии от Корея
+                      до Европа към момента на натоварване и валутния курс към датата на плащане.
                     </p>
                   </div>
                 )}
