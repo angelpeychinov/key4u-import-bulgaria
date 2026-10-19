@@ -137,7 +137,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
         }
       }}
     >
-      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto overflow-x-hidden">
         {listing && (
           <>
             <div className="grid gap-6 md:grid-cols-5">
