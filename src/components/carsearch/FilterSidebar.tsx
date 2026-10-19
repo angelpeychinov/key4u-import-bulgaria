@@ -31,7 +31,7 @@ interface Props {
 }
 
 const Section = ({
-  title, children, defaultOpen = true,
+  title, children, defaultOpen = false,
 }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
