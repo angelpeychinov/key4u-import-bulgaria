@@ -31,7 +31,7 @@ interface Props {
 }
 
 const Section = ({
-  title, children, defaultOpen = true,
+  title, children, defaultOpen = false,
 }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -216,7 +216,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset }: Props) => 
         </Section>
       )}
 
-      <Section title="Регион в Корея" defaultOpen={false}>
+      <Section title="Регион в Корея">
         <div className="max-h-56 space-y-1 overflow-y-auto pr-1">
           {(facets?.regions ?? []).map((r) => (
             <label key={r.value} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
