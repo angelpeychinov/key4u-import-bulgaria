@@ -36,6 +36,7 @@ import mobileBgLogo from "@/assets/mobile-bg-logo.png";
 import mobileBgSectionBg from "@/assets/mobile-bg-section-background.jpg";
 import { ViberSection } from "@/components/ViberSection";
 import { LicensedImporterSection } from "@/components/LicensedImporterSection";
+import { KoreaCatalogSection } from "@/components/KoreaCatalogSection";
 import { WhyKey4USection } from "@/components/WhyKey4USection";
 
 export default function Home() {
@@ -74,6 +75,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <KoreaCatalogSection />
 
       {/* Features Section */}
       <WhyKey4USection />
