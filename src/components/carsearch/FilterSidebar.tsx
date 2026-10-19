@@ -261,6 +261,7 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
   disabled?: boolean;
   onChange: (value: string) => void;
 }) => {
+  const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const { language, t } = useLanguage();
@@ -290,7 +291,7 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
               <div key={option.slug}>
               {option.group && option.group !== filtered[index - 1]?.group && <div className="border-b border-border px-1 py-2 text-xs font-semibold text-muted-foreground">{option.group}</div>}
               <label data-selected={selectedValues.includes(option.slug)} className="catalog-dropdown-row flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm">
-                <Checkbox aria-label={option.group ? `${option.group}: ${option.name}` : option.name} checked={selectedValues.includes(option.slug)} onCheckedChange={() => onChange(toggleInList(value, option.slug))} />
+                <Checkbox aria-label={option.group ? `${option.group}: ${option.name}` : option.name} checked={selectedValues.includes(option.slug)} onCheckedChange={() => { onChange(toggleInList(value, option.slug)); if (isMobile) setOpen(false); }} />
                 <span className="min-w-0 flex-1 truncate">{option.name}</span>
                 {option.count !== undefined && <span className="text-xs text-muted-foreground">{option.count.toLocaleString(language === "bg" ? "bg-BG" : "en-GB")}</span>}
               </label>
@@ -298,7 +299,14 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
             ))}
             {filtered.length === 0 && <p className="px-1 text-sm text-muted-foreground">{emptyLabel}</p>}
           </div>
-          <Button variant="ghost" size="sm" className="mt-2 shrink-0 border-t border-border text-muted-foreground" disabled={!value} onClick={() => onChange("")}>{t("catalog.clear")}</Button>
+          {isMobile ? (
+            <div className="sticky bottom-0 -mx-2 -mb-2 mt-2 flex shrink-0 items-center gap-2 border-t border-border bg-popover px-2 py-2">
+              <Button variant="ghost" size="sm" className="shrink-0 text-muted-foreground" disabled={!value} onClick={() => onChange("")}>{t("catalog.clear")}</Button>
+              <Button size="sm" className="ml-auto flex-1 justify-center" onClick={() => setOpen(false)}>{t("catalog.done")}</Button>
+            </div>
+          ) : (
+            <Button variant="ghost" size="sm" className="mt-2 shrink-0 border-t border-border text-muted-foreground" disabled={!value} onClick={() => onChange("")}>{t("catalog.clear")}</Button>
+          )}
         </PopoverContent>
       </Popover>
     </div>
