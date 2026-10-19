@@ -12,9 +12,12 @@ interface Props {
   activeCount: number;
   onChange: (next: SearchFilters) => void;
   onReset: () => void;
+  savedMode?: boolean;
+  savedCount?: number;
+  onToggleSaved?: () => void;
 }
 
-export const MobileFilterBar = ({ filters, facets, activeCount, onChange, onReset }: Props) => {
+export const MobileFilterBar = ({ filters, facets, activeCount, onChange, onReset, savedMode, savedCount, onToggleSaved }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -32,7 +35,7 @@ export const MobileFilterBar = ({ filters, facets, activeCount, onChange, onRese
               <SheetTitle>Филтри</SheetTitle>
             </SheetHeader>
             <div className="flex-1 overflow-y-auto px-4 pb-4">
-              <FilterSidebar filters={filters} facets={facets} onChange={onChange} onReset={onReset} />
+              <FilterSidebar filters={filters} facets={facets} onChange={onChange} onReset={onReset} savedMode={savedMode} savedCount={savedCount} onToggleSaved={onToggleSaved} />
             </div>
             <div className="border-t border-border p-3">
               <Button className="w-full bg-[#183e32] text-white hover:bg-[#183e32]/90" onClick={() => setOpen(false)}>
