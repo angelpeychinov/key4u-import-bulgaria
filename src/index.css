@@ -138,6 +138,13 @@ All colors MUST be HSL.
   color: hsl(var(--catalog-panel-green));
 }
 
+/* Hero headline: fluid size so the first row always stays on one line and the
+   region row stays on its own second row. */
+.hero-title {
+  font-size: clamp(24px, 4.2vw, 62px);
+  line-height: 1.15;
+}
+
 .navigation-on-photo a,
 .navigation-on-photo button {
   color: hsl(var(--primary-foreground));

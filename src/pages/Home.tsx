@@ -57,7 +57,7 @@ export default function Home() {
         />
 
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-7 text-primary-foreground drop-shadow-lg">
+          <h1 className="hero-title font-bold mb-7 text-primary-foreground drop-shadow-lg">
             {language === 'bg' ? (
               <>Внос на автомобили от Северна Америка<br />и Южна Корея</>
             ) : (
