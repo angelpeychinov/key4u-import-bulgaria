@@ -36,21 +36,21 @@ const ContactButtons = ({ title, siteUrl, onInquiry }: { title: string; siteUrl:
           <Phone className="mr-2 h-4 w-4" /> Обади се
         </a>
       </Button>
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Button
           onClick={onInquiry}
           variant="outline"
-          className="flex-1 border-[#183e32] text-[#183e32] hover:bg-[#183e32]/5"
+          className="h-auto min-w-0 whitespace-normal border-[#183e32] px-2 py-2 text-center text-[#183e32] hover:bg-[#183e32]/5"
         >
-          <Mail className="mr-2 h-4 w-4" /> {t("inquiry.send")}
+          <Mail className="mr-2 h-4 w-4 shrink-0" /> {t("inquiry.send")}
         </Button>
         <Button
           asChild
           variant="outline"
-          className="flex-1 border-[#7360F2] text-[#7360F2] hover:bg-[#7360F2]/5"
+          className="h-auto min-w-0 whitespace-normal border-[#7360F2] px-2 py-2 text-center text-[#7360F2] hover:bg-[#7360F2]/5"
         >
           <a href={`viber://chat?number=${encodeURIComponent(CONTACT_PHONE)}&draft=${encodeURIComponent(draft)}`}>
-            <ViberIcon className="mr-2 h-4 w-4" /> {t("inquiry.viber")}
+            <ViberIcon className="mr-2 h-4 w-4 shrink-0" /> {t("inquiry.viber")}
           </a>
         </Button>
       </div>
@@ -137,7 +137,7 @@ export const ListingDialog = ({ listing, onClose }: Props) => {
         }
       }}
     >
-      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto overflow-x-hidden">
         {listing && (
           <>
             <div className="grid gap-6 md:grid-cols-5">
