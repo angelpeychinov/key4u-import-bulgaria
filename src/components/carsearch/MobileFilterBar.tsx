@@ -33,8 +33,8 @@ export const MobileFilterBar = ({ filters, facets, activeCount, resultCount, onC
               {t("catalog.filters")}{activeCount > 0 ? ` (${activeCount})` : ""}
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="catalog-filter-sheet flex w-screen max-w-none sm:max-w-none flex-col p-0" onOpenAutoFocus={e => e.preventDefault()}>
-            <SheetHeader className="border-b border-border px-4 py-3">
+          <SheetContent side="left" className="catalog-filter-sheet flex h-[100dvh] w-screen max-w-none sm:max-w-none flex-col gap-0 overflow-hidden p-0" onOpenAutoFocus={e => e.preventDefault()}>
+            <SheetHeader className="shrink-0 border-b border-border bg-background px-4 py-3">
               <SheetTitle>{t("catalog.filters")}</SheetTitle>
             </SheetHeader>
             <div className="catalog-touch-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
