@@ -10,6 +10,7 @@
 
 - Brand/model controls use desktop FacetDropdowns and in-sheet full-screen MobileFacetPicker below 768px; keeping touch scroll inside the sheet avoids modal scroll-lock interference, while qualified brand:model keys preserve dependent selections.
 - Catalog base models use the shared modelBase normalizer plus equivalent database functions/write guard; model_scope=base selects additive RPCs/caches and model_base_slug while legacy clients and original listing titles retain generation-specific names.
+- Conditional model-name shortening requires exact standalone-name evidence scoped to the same brand; use indexed candidate lookups rather than catalog-wide scans, and correct already-filled rows through cursor-bounded protected maintenance after rule updates.
 - Catalog listing history entries contain the listing ID without changing list filters/page; closing pops the entry and restores recorded scroll without reloading results.
 - Catalog backfill and base-cache refresh run only through service-role RPCs and the secret-protected catalog-maintenance function; never expose maintenance credentials or grant public write access.
 

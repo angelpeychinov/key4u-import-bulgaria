@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Part 1 model-base addendum: shared helper and 35 tests pass for leading codes, conditional subnames and Hyundai Starex. BLOCKED: database migration timed out; pending SQL in .lovable/pending-model-base-addendum.sql must be applied, then wire indexed standalone lookups into shared upsert, add protected correction action, deploy affected functions, correct existing rows and include new mappings in final report. Nothing published or deployed.
+
 - [x] Part 1 addendum: dynamic-height mobile sheet with anchored header/results button and one touch-scroll area; 390px native touch emulation reaches both boundaries, background stays at scrollY=0, screenshots checked; desktop sticky/independent scrolling unchanged. Real-data sections remain unavailable during the existing catalog outage. Not published.
 
 - [ ] Part 1 catalog: code/schema implemented; 34 filter tests pass, desktop/mobile screen layout checked. BLOCKED by Cloud pooler outage: complete base-model backfill (last confirmed 81,991/210,477), refresh counts, top-60 mappings/suspicious report, real touch multi-select/priced-only/Back/scroll end-to-end checks. Do not publish. Maintenance requires healthy database connections; nothing continues after this turn.
