@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Focused listing share fix: clean published links, native JPEG file sharing with safe photo-proxy if CORS requires it, text/menu fallbacks; verify at 390px; do not publish.
+
 - [x] Part 2 UI: listing pages/legacy redirect, retained list filters/sort/loaded results and exact scroll, galleries/swipe/pinch, sticky contacts, native/fallback sharing, six similar cars, mobile card swipe/load-more, single filter heading. Real 390px + desktop flows verified; 94 tests pass. No publishing/database maintenance.
 - [ ] Part 2 rich previews: share endpoint deployed and tested (crawler 200 with OG body and 300s cache, browser 302 to requested published origin), but managed gateway rewrites HTML to text/plain. BLOCKED: requires HTML-capable public hosting/SSR proxy for real rich cards; native Viber/Facebook apps not directly testable here. New listing routes are preview-only until owner publishes.
 
