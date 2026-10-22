@@ -15,6 +15,9 @@ export interface Listing {
   title: string;
   brand?: string;
   model?: string;
+  modelBase?: string;
+  brandSlug?: string;
+  modelBaseSlug?: string;
   trim?: string;
   year?: number;
   price?: number;
@@ -58,6 +61,7 @@ export interface SearchFilters {
   fuel_type?: string; // comma-separated multi-select
   transmission?: string; // comma-separated multi-select
   body_type?: string; // comma-separated multi-select
+  similar_to?: string;
   priced_only?: string; // calculated price eligibility
   sort?: SortKey;
   ids?: string; // comma-separated encar ids (saved cars)
@@ -207,6 +211,9 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
     title,
     brand,
     model,
+    modelBase: raw.model_base as string | undefined,
+    brandSlug: raw.brand_slug as string | undefined,
+    modelBaseSlug: raw.model_base_slug as string | undefined,
     trim,
     year,
     price: toNumber(raw.price_eur),
