@@ -1,5 +1,7 @@
 import { useEffect, useId, useMemo, useState } from "react";
 import { isCompleteYearInput, normalizeYearInput, yearPresets } from "@/lib/yearFilter";
+import { MobileFacetPicker } from "./MobileFacetPicker";
+import { Switch } from "@/components/ui/switch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,7 +12,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ArrowLeft, Check, ChevronDown, Heart, RotateCcw, Search } from "lucide-react";
 import {
-  Facets, SearchFilters, fuelBg, transmissionBg, bodyBg, regionBg, catalogSelection, removeCatalogBrand, selectionValues,
+  Facets, SearchFilters, fuelBg, transmissionBg, bodyBg, catalogSelection, removeCatalogBrand, selectionValues,
 } from "@/lib/listings";
 
 const PINNED_BRANDS = [
@@ -39,7 +41,7 @@ const Section = ({
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Collapsible open={open} onOpenChange={setOpen} className="border-b border-border/60 py-3">
-      <CollapsibleTrigger className="flex w-full items-center justify-between text-sm font-semibold text-foreground">
+      <CollapsibleTrigger className="min-h-11 md:min-h-0 flex w-full items-center justify-between text-sm font-semibold text-foreground">
         {title}
         <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </CollapsibleTrigger>
@@ -78,17 +80,17 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
   const showBody = (facets?.body_types.length ?? 0) > 1;
 
   return (
-    <div className="flex flex-col">
+    <div className="catalog-filter-controls flex flex-col">
       <div className="flex items-center justify-between pb-2">
-        <h2 className="text-base font-bold text-foreground">Филтри</h2>
-        <Button variant="ghost" size="sm" onClick={onReset} className="text-muted-foreground">
+        <h2 className="text-base font-bold text-foreground">{t("catalog.filters")}</h2>
+        <Button variant="ghost" size="sm" onClick={onReset} className="min-h-11 text-muted-foreground">
           <RotateCcw className="mr-1 h-3.5 w-3.5" /> Изчисти
         </Button>
       </div>
       {onToggleSaved && (
         <Button
           variant={savedMode ? "default" : "outline"}
-          className="mb-2 w-full justify-center"
+          className="mb-2 min-h-11 w-full justify-center"
           aria-pressed={savedMode}
           onClick={onToggleSaved}
         >
@@ -126,7 +128,9 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
         />
       </div>
 
-      <Section title="Цена до България (€)">
+      <label className="flex min-h-12 items-center justify-between gap-3 border-b border-border py-3 text-sm"><span>{t("catalog.hideRequest")}</span><Switch checked={filters.priced_only === "1"} onCheckedChange={checked => set({ priced_only: checked ? "1" : "" })} /></label>
+
+      <Section title={t("catalog.price")}>
         <div className="flex items-center gap-2">
           <PresetOrInput
             value={filters.price_from ?? ""}
@@ -187,7 +191,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
       <Section title="Гориво">
         <div className="space-y-1">
           {(facets?.fuels ?? []).map((f) => (
-            <label key={f.value} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
+            <label key={f.value} className="flex cursor-pointer items-center gap-2 rounded-md min-h-11 px-1 py-1 text-sm hover:bg-muted">
               <Checkbox
                 checked={inList(filters.fuel_type, f.value)}
                 onCheckedChange={() => set({ fuel_type: toggleInList(filters.fuel_type, f.value) })}
@@ -203,7 +207,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
         <Section title="Скоростна кутия">
           <div className="space-y-1">
             {(facets?.transmissions ?? []).map((tr) => (
-              <label key={tr.value} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
+              <label key={tr.value} className="flex cursor-pointer items-center gap-2 rounded-md min-h-11 px-1 py-1 text-sm hover:bg-muted">
                 <Checkbox
                   checked={inList(filters.transmission, tr.value)}
                   onCheckedChange={() => set({ transmission: toggleInList(filters.transmission, tr.value) })}
@@ -220,12 +224,12 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
         <Section title="Тип каросерия">
           <div className="space-y-1">
             {(facets?.body_types ?? []).map((b) => (
-              <label key={b.value} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
+              <label key={b.value} className="flex cursor-pointer items-center gap-2 rounded-md min-h-11 px-1 py-1 text-sm hover:bg-muted">
                 <Checkbox
                   checked={inList(filters.body_type, b.value)}
                   onCheckedChange={() => set({ body_type: toggleInList(filters.body_type, b.value) })}
                 />
-                <span className="flex-1 text-foreground">{bodyBg(b.value)}</span>
+                <span className="flex-1 text-foreground">{b.value === "truck" ? t("catalog.truck") : bodyBg(b.value)}</span>
                 <span className="text-xs text-muted-foreground">{b.count.toLocaleString("bg-BG")}</span>
               </label>
             ))}
@@ -233,20 +237,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
         </Section>
       )}
 
-      <Section title="Регион в Корея">
-        <div className="max-h-56 space-y-1 overflow-y-auto pr-1">
-          {(facets?.regions ?? []).map((r) => (
-            <label key={r.value} className="flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm hover:bg-muted">
-              <Checkbox
-                checked={inList(filters.region, r.value)}
-                onCheckedChange={() => set({ region: toggleInList(filters.region, r.value) })}
-              />
-              <span className="flex-1 text-foreground">{regionBg(r.value)}</span>
-              <span className="text-xs text-muted-foreground">{r.count.toLocaleString("bg-BG")}</span>
-            </label>
-          ))}
-        </div>
-      </Section>
+
     </div>
   );
 };
@@ -271,6 +262,8 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
   const selected = names.length > 2 ? `${names[0]} + ${names.length - 1}` : names.join(", ");
   const filtered = options.filter((option) => option.name.toLowerCase().includes(query.trim().toLowerCase()));
 
+  if (isMobile) return <div className="space-y-2"><div className="text-sm font-semibold">{title}</div><Button variant="outline" disabled={disabled} aria-label={`${title}: ${selected || placeholder}`} className="min-h-11 w-full justify-between font-normal" onClick={() => setOpen(true)}><span className="truncate">{selected || placeholder}</span><ChevronDown className="ml-2 h-4 w-4 shrink-0" /></Button>{open && !disabled && <MobileFacetPicker title={title} options={options} value={value} searchPlaceholder={searchPlaceholder} emptyLabel={emptyLabel} onChange={onChange} onClose={() => setOpen(false)} />}</div>;
+
   return (
     <div className="space-y-2">
       <div id={labelId} className="text-sm font-semibold text-foreground">{title}</div>
@@ -291,7 +284,7 @@ const FacetDropdown = ({ title, placeholder, searchPlaceholder, emptyLabel, opti
               <div key={option.slug}>
               {option.group && option.group !== filtered[index - 1]?.group && <div className="border-b border-border px-1 py-2 text-xs font-semibold text-muted-foreground">{option.group}</div>}
               <label data-selected={selectedValues.includes(option.slug)} className="catalog-dropdown-row flex cursor-pointer items-center gap-2 rounded-md px-1 py-1 text-sm">
-                <Checkbox aria-label={option.group ? `${option.group}: ${option.name}` : option.name} checked={selectedValues.includes(option.slug)} onCheckedChange={() => { onChange(toggleInList(value, option.slug)); if (isMobile) setOpen(false); }} />
+                <Checkbox aria-label={option.group ? `${option.group}: ${option.name}` : option.name} checked={selectedValues.includes(option.slug)} onCheckedChange={() => { onChange(toggleInList(value, option.slug)); }} />
                 <span className="min-w-0 flex-1 truncate">{option.name}</span>
                 {option.count !== undefined && <span className="text-xs text-muted-foreground">{option.count.toLocaleString(language === "bg" ? "bg-BG" : "en-GB")}</span>}
               </label>
@@ -376,7 +369,7 @@ const PresetOrInput = ({
       onBlur={() => {
         if (yearOnly && !isCompleteYearInput(draft)) setDraft(value);
       }}
-      className="h-9 pr-7"
+      className="h-11 text-base md:h-9 md:text-sm pr-7"
     />
     <ChevronDown className="pointer-events-none absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
   </div>
@@ -384,7 +377,7 @@ const PresetOrInput = ({
   <PopoverContent data-catalog-presets side="bottom" sideOffset={4} align="start" onOpenAutoFocus={(event) => event.preventDefault()} onCloseAutoFocus={(event) => event.preventDefault()} className="catalog-dropdown-panel w-[var(--radix-popover-trigger-width)] overflow-y-auto overscroll-contain p-1">
     <div id={listId} role="listbox">
       {presets.map((preset, index) => (
-        <Button key={preset} id={`${listId}-${index}`} role="option" aria-selected={String(preset) === draft} data-selected={String(preset) === draft} variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => choose(preset)} className="catalog-dropdown-row h-8 w-full justify-between px-2 text-sm font-normal">
+        <Button key={preset} id={`${listId}-${index}`} role="option" aria-selected={String(preset) === draft} data-selected={String(preset) === draft} variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => choose(preset)} className="catalog-dropdown-row h-11 md:h-8 w-full justify-between px-2 text-sm font-normal">
           <span className="whitespace-nowrap">{presetLabel(preset)}</span>{String(preset) === draft && <Check className="h-3.5 w-3.5 shrink-0" />}
         </Button>
       ))}

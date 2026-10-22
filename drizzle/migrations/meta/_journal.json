@@ -211,6 +211,41 @@
       "when": 1792421629252,
       "tag": "0029_encar_random_listings",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1792657241710,
+      "tag": "0030_catalog_base_models",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1792657443448,
+      "tag": "0031_base_model_facets_cache",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1792657659235,
+      "tag": "0032_base_cache_sanitizer_compatibility",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1792659484846,
+      "tag": "0033_bounded_base_backfill_plan",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1792660621717,
+      "tag": "0034_base_backfill_custom_plans",
+      "breakpoints": true
     }
   ]
 }

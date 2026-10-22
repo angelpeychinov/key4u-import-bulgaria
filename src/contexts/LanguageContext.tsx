@@ -11,6 +11,16 @@ interface LanguageContextType {
 
 const translations = {
   en: {
+    'catalog.back': 'Back',
+    'catalog.popular': 'Popular',
+    'catalog.doneSelected': 'Done ({n} selected)',
+    'catalog.hideRequest': 'Hide price-on-request listings',
+    'catalog.listings': '{n} listings',
+    'catalog.showResults': 'Show {n} listings',
+    'catalog.filters': 'Filters',
+    'catalog.price': 'Price to Bulgaria (€)',
+    'catalog.pricedChip': 'Calculated price only',
+    'catalog.truck': 'Pickup / Truck',
     'inquiry.title': 'Listing inquiry',
     'inquiry.name': 'Name',
     'inquiry.phone': 'Phone',
@@ -184,6 +194,16 @@ const translations = {
     'footer.allRightsReserved': 'All rights reserved.',
   },
   bg: {
+    'catalog.back': 'Назад',
+    'catalog.popular': 'Популярни',
+    'catalog.doneSelected': 'Готово ({n} избрани)',
+    'catalog.hideRequest': 'Скрий обявите с цена при запитване',
+    'catalog.listings': '{n} обяви',
+    'catalog.showResults': 'Покажи {n} обяви',
+    'catalog.filters': 'Филтри',
+    'catalog.price': 'Цена до България (€)',
+    'catalog.pricedChip': 'Само с изчислена цена',
+    'catalog.truck': 'Пикап / Товарен',
     'inquiry.title': 'Запитване за обява',
     'inquiry.name': 'Име',
     'inquiry.phone': 'Телефон',

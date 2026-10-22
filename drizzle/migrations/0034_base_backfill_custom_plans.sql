@@ -1,0 +1,1 @@
+ALTER FUNCTION public.encar_backfill_base_models(integer) SET plan_cache_mode=force_custom_plan;

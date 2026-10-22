@@ -181,3 +181,13 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+.catalog-touch-scroll { -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+.catalog-safe-bottom { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+.catalog-mobile-picker { animation: catalog-picker-in 180ms ease-out; }
+@keyframes catalog-picker-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) { .catalog-mobile-picker { animation: none; } }
+@media (max-width: 767px) { .catalog-filter-sheet > button { width: 44px; height: 44px; top: 4px; right: 4px; display: grid; place-items: center; } .catalog-filter-controls input { font-size: 16px; min-height: 44px; } }
+
+.catalog-filter-sheet { transform: none !important; }
+.catalog-mobile-picker { width: 100vw; height: 100dvh; }

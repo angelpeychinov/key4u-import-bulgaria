@@ -7,7 +7,10 @@
 
 - The desktop catalog aside is the sticky, viewport-height scroll container and aligns at flex-start, preventing stretched parents from delaying filter scrolling; overscroll containment isolates wheel gestures from the results page.
 
-- Brand and model controls share a portaled multi-select FacetDropdown; qualified brand:model keys and a shared selection helper preserve per-brand restrictions and dependent removal across desktop, mobile, URLs, chips, and server queries.
+- Brand/model controls use desktop FacetDropdowns and in-sheet full-screen MobileFacetPicker below 768px; keeping touch scroll inside the sheet avoids modal scroll-lock interference, while qualified brand:model keys preserve dependent selections.
+- Catalog base models use the shared modelBase normalizer plus equivalent database functions/write guard; model_scope=base selects additive RPCs/caches and model_base_slug while legacy clients and original listing titles retain generation-specific names.
+- Catalog listing history entries contain the listing ID without changing list filters/page; closing pops the entry and restores recorded scroll without reloading results.
+- Catalog backfill and base-cache refresh run only through service-role RPCs and the secret-protected catalog-maintenance function; never expose maintenance credentials or grant public write access.
 
 - Catalog year, price, and mileage fields share PresetOrInput with unique suggestion lists; year validation stays in a tested helper so desktop and mobile apply identical complete-year rules.
 - Catalog filter popovers, portaled numeric presets and sort selects share the scoped catalog-dropdown-panel style; trigger-width positioning keeps desktop/mobile aligned without altering the global popover theme.

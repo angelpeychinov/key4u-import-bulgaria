@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useSearchParams } from "react-router-dom";
 import koreaHero from "@/assets/korea-hero.jpg.asset.json";
 import { SEO } from "@/components/SEO";
@@ -10,7 +11,7 @@ import { toast } from "sonner";
 import {
   Facets, Listing, SearchFilters, SortKey, SORT_OPTIONS,
   searchListings, fetchFacets, formatNumber, catalogSelection, removeCatalogBrand,
-  fuelBg, transmissionBg, bodyBg, regionBg, formatEur, formatMileage,
+  fuelBg, transmissionBg, bodyBg, formatEur, formatMileage,
 } from "@/lib/listings";
 import { ListingListCard } from "@/components/carsearch/ListingListCard";
 import { ListingDialog } from "@/components/carsearch/ListingDialog";
@@ -24,7 +25,7 @@ const PAGE_SIZE = 20;
 const emptyFilters: SearchFilters = {
   brand: "", model: "", year_from: "", year_to: "", price_from: "", price_to: "",
   mileage_min: "", mileage_max: "", fuel_type: "", transmission: "", body_type: "",
-  region: "", sort: "newest",
+  priced_only: "", sort: "newest",
 };
 
 const FILTER_KEYS = Object.keys(emptyFilters) as (keyof SearchFilters)[];
@@ -101,13 +102,11 @@ const buildChips = (filters: SearchFilters, facets: Facets | null): Chip[] => {
   for (const v of filters.body_type?.split(",").filter(Boolean) ?? []) {
     chips.push({ key: `body:${v}`, label: bodyBg(v), clear: (f) => ({ ...f, body_type: f.body_type?.split(",").filter((x) => x && x !== v).join(",") ?? "" }) });
   }
-  for (const v of filters.region?.split(",").filter(Boolean) ?? []) {
-    chips.push({ key: `region:${v}`, label: regionBg(v), clear: (f) => ({ ...f, region: f.region?.split(",").filter((x) => x && x !== v).join(",") ?? "" }) });
-  }
   return chips;
 };
 
 export default function CarSearch() {
+  const { t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState<SearchFilters>(() => filtersFromParams(searchParams));
   const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get("page")) || 1));
@@ -125,7 +124,9 @@ export default function CarSearch() {
 
   const linkedListingId = searchParams.get("listing");
   useEffect(() => {
-    if (!linkedListingId || !/^\d{1,20}$/.test(linkedListingId)) return;
+    if (!linkedListingId) { setSelected(null); return; }
+    if (!/^\d{1,20}$/.test(linkedListingId)) return;
+    if (selected?.encarId === linkedListingId) return;
     let cancelled = false;
     searchListings({ ids: linkedListingId }, 1, 1).then((result) => {
       if (!cancelled) setSelected(result.listings[0] ?? null);
@@ -166,28 +167,59 @@ export default function CarSearch() {
     if (next && id === facetRequestId.current) setFacets(next);
   };
 
-  // Debounced search + facets whenever filters change.
+  // URL drives the list; listing-only history entries never reload it.
   useEffect(() => {
-    setPage(1);
+    const next = filtersFromParams(searchParams);
+    const nextPage = Math.max(1, Number(searchParams.get("page")) || 1);
+    setFilters(previous => JSON.stringify(previous) === JSON.stringify(next) ? previous : next);
+    setPage(nextPage);
+  }, [searchParams]);
+
+  useEffect(() => {
     const timer = window.setTimeout(() => {
-      const params = filtersToParams(filters);
-      if (savedMode) params.set("saved", "1");
-      if (linkedListingId) params.set("listing", linkedListingId);
-      setSearchParams(params, { replace: true });
-      runSearch(effectiveFilters, 1);
+      runSearch(effectiveFilters, page);
       runFacets(effectiveFilters);
     }, 400);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters, savedMode, favoriteIds]);
+  }, [effectiveFilters, page]);
+
+  const changeFilters = (next: SearchFilters) => {
+    const params = filtersToParams(next);
+    if (savedMode) params.set("saved", "1");
+    setSearchParams(params, { replace: true });
+  };
 
   const goToPage = (next: number) => {
-    setPage(next);
-    runSearch(effectiveFilters, next);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", String(next));
+    setSearchParams(params);
     resultsTop.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const resetFilters = () => setFilters({ ...emptyFilters });
+  const listingScroll = useRef(0);
+  const openedFromList = useRef(false);
+  const openListing = (listing: Listing) => {
+    listingScroll.current = window.scrollY;
+    openedFromList.current = true;
+    setSelected(listing);
+    const params = new URLSearchParams(searchParams);
+    if (listing.encarId) params.set("listing", listing.encarId);
+    setSearchParams(params);
+  };
+  const closeListing = () => {
+    if (openedFromList.current) window.history.back();
+    else { const params = new URLSearchParams(searchParams); params.delete("listing"); setSearchParams(params, { replace: true }); }
+  };
+  useEffect(() => {
+    if (!linkedListingId && openedFromList.current) {
+      openedFromList.current = false;
+      const y = listingScroll.current;
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: y, behavior: "instant" })));
+    }
+  }, [linkedListingId]);
+
+  const resetFilters = () => changeFilters({ ...emptyFilters });
 
   const toggleSaved = () => {
     const params = new URLSearchParams(searchParams);
@@ -197,7 +229,7 @@ export default function CarSearch() {
     setSearchParams(params, { replace: true });
   };
 
-  const chips = useMemo(() => buildChips(filters, facets), [filters, facets]);
+  const chips = useMemo(() => { const next = buildChips(filters, facets); if (filters.priced_only === "1") next.push({ key: "priced", label: t("catalog.pricedChip"), clear: f => ({ ...f, priced_only: "" }) }); return next; }, [filters, facets, t]);
   const shownCount = savedMode || facets?.fallback ? count : facets?.total ?? count;
 
   return (
@@ -227,7 +259,8 @@ export default function CarSearch() {
           filters={filters}
           facets={facets}
           activeCount={chips.length}
-          onChange={setFilters}
+          resultCount={shownCount}
+          onChange={changeFilters}
           onReset={resetFilters}
           savedMode={savedMode}
           savedCount={favoriteIds.length}
@@ -237,26 +270,26 @@ export default function CarSearch() {
         <div className="flex gap-8">
           {/* Desktop sidebar */}
           <aside className="sticky top-20 hidden h-[calc(100vh-5rem)] w-72 shrink-0 self-start overflow-y-auto overscroll-contain pr-2 lg:block">
-            <FilterSidebar filters={filters} facets={facets} onChange={setFilters} onReset={resetFilters} savedMode={savedMode} savedCount={favoriteIds.length} onToggleSaved={toggleSaved} />
+            <FilterSidebar filters={filters} facets={facets} onChange={changeFilters} onReset={resetFilters} savedMode={savedMode} savedCount={favoriteIds.length} onToggleSaved={toggleSaved} />
           </aside>
 
           {/* Results */}
           <div className="min-w-0 flex-1">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xl font-bold text-foreground">
                 {savedMode ? (
                   <span className="flex items-center gap-1.5">
                     <Heart className="h-4 w-4 fill-red-500 text-red-500" />
                     Запазени автомобили: {formatNumber(shownCount)}
                   </span>
                 ) : (
-                  <>Намерени <span className="font-semibold text-foreground">{formatNumber(shownCount)}</span> автомобила</>
+                  <>{t("catalog.listings").replace("{n}", formatNumber(shownCount))}</>
                 )}
               </p>
               <div className="hidden lg:block">
                 <Select
                   value={filters.sort ?? "newest"}
-                  onValueChange={(v) => setFilters({ ...filters, sort: v as SortKey })}
+                  onValueChange={(v) => changeFilters({ ...filters, sort: v as SortKey })}
                 >
                   <SelectTrigger className="h-9 w-56">
                     <SelectValue />
@@ -271,18 +304,18 @@ export default function CarSearch() {
             </div>
 
             {chips.length > 0 && !savedMode && (
-              <div className="mb-4 flex flex-wrap items-center gap-2">
+              <div className="mb-4 flex items-center gap-2 overflow-x-auto overscroll-contain pb-2 lg:flex-wrap">
                 {chips.map((chip) => (
                   <Button variant="outline" size="sm"
                     key={chip.key}
-                    onClick={() => setFilters(chip.clear(filters))}
-                    className="flex items-center gap-1 rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground transition-colors hover:bg-accent"
+                    onClick={() => changeFilters(chip.clear(filters))}
+                    className="min-h-11 shrink-0 flex items-center gap-1 rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground transition-colors hover:bg-accent"
                   >
                     {chip.label}
                     <X className="h-3 w-3" />
                   </Button>
                 ))}
-                <Button variant="link" size="sm" onClick={resetFilters} className="text-xs font-medium text-primary hover:underline">
+                <Button variant="link" size="sm" onClick={resetFilters} className="min-h-11 shrink-0 text-xs font-medium text-primary hover:underline">
                   Изчисти всички
                 </Button>
               </div>
@@ -298,7 +331,7 @@ export default function CarSearch() {
               <>
                 <div className="space-y-4">
                   {listings.map((listing, i) => (
-                    <ListingListCard key={listing.encarId ?? listing.id} listing={listing} onOpen={setSelected} priority={i < 2} />
+                    <ListingListCard key={listing.encarId ?? listing.id} listing={listing} onOpen={openListing} priority={i < 2} />
                   ))}
                 </div>
                 <PaginationBar page={page} pages={pages} onPage={goToPage} />
@@ -321,7 +354,7 @@ export default function CarSearch() {
         </div>
       </div>
 
-      <ListingDialog listing={selected} onClose={() => setSelected(null)} />
+      <ListingDialog listing={selected} onClose={closeListing} />
     </main>
   );
 }

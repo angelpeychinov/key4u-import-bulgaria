@@ -198,7 +198,7 @@ Deno.serve(async (req) => {
     const { brands, models } = catalogSelection(incoming.get("brand"), incoming.get("model"));
     if (brands.length) {
       query = query.in("brand_slug", brands);
-      if (models.length) query = query.or(catalogOrFilter(brands, models));
+      if (models.length) query = query.or(catalogOrFilter(brands, models, incoming.get("model_scope") === "base" ? "model_base_slug" : "model_slug"));
     }
 
     const fuels = listParam(incoming, "fuel_type");
@@ -242,6 +242,8 @@ Deno.serve(async (req) => {
     const priceMax = filteredPriceMax(priceFrom, priceTo,
       priceTo ? firstKrwReaching(priceTo + 0.000001, pricing) - 1 : null, pricing.maxPricedKrw);
     if (priceMax !== null) query = query.lte("price_original", priceMax);
+
+    if (incoming.get("priced_only") === "1") query = query.gt("price_original", 0).lte("price_original", pricing.maxPricedKrw);
 
     const sortParam = (incoming.get("sort") ?? "newest") as SortKey;
     const sort = SORTS[sortParam] ?? SORTS.newest;

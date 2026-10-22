@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Part 1 catalog: code/schema implemented; 34 filter tests pass, desktop/mobile screen layout checked. BLOCKED by Cloud pooler outage: complete base-model backfill (last confirmed 81,991/210,477), refresh counts, top-60 mappings/suspicious report, real touch multi-select/priced-only/Back/scroll end-to-end checks. Do not publish. Maintenance requires healthy database connections; nothing continues after this turn.
+
 - [x] All catalog dropdowns and numeric suggestions share white scoped panels, field-width alignment and 4px gaps; numeric panels have no pointer and show spaced price/mileage labels with units and plain years; desktop/mobile browser measurements and screenshots verified, presets/validation/internal scrolling checked, 8 filter tests pass; not published.
 
 - [x] FindCar "Откъде да търсим?" chips (Канада/САЩ/Южна Корея multi, Без значение exclusive default); sent as `origin` array, server-validated, email row "Откъде: …" near the top; send-car-request deployed; 6 new validation tests; browser-verified; not published.
