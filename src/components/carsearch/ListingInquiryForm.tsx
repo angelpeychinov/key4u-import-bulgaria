@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { listingPath } from "@/lib/listingNavigation";
 import type { Listing } from "@/lib/listings";
 
 const schema = z.object({
@@ -35,7 +36,7 @@ export function ListingInquiryForm({ listing, total, onClose }: { listing: Listi
           listing: {
             title, mileage: listing.mileage ?? null, encarId: listing.encarId,
             encarUrl: listing.url || `https://www.encar.com/dc/dc_cardetailview.do?carid=${encodeURIComponent(listing.encarId)}`,
-            siteUrl: `https://key4u.bg/car-search?listing=${encodeURIComponent(listing.encarId)}`,
+            siteUrl: `https://key4u.bg${listingPath(listing)}`,
             priceKrw: listing.priceKrw ?? null, estimatedTotalEur: total ?? null,
           },
         } });

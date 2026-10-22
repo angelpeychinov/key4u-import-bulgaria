@@ -23,6 +23,9 @@ All colors MUST be HSL.
     --catalog-panel-hover: 220 14.286% 95.882%;
     --catalog-panel-shadow: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
 
+    --viber: 248 85% 66%;
+    --photo-overlay: 0 0% 0%;
+    --photo-text: 0 0% 100%;
     --primary: 161 44% 17%;
     --primary-foreground: 0 0% 100%;
 
@@ -191,3 +194,10 @@ All colors MUST be HSL.
 
 .catalog-filter-sheet { transform: none !important; }
 .catalog-mobile-picker { width: 100vw; height: 100dvh; }
+
+.photo-counter { background: hsl(var(--photo-overlay) / .65); color: hsl(var(--photo-text)); }
+.photo-lightbox { background: hsl(var(--photo-overlay) / .95); color: hsl(var(--photo-text)); }
+.contact-viber { color: hsl(var(--viber)); border-color: hsl(var(--viber)); }
+.contact-viber:hover { background: hsl(var(--viber) / .08); color: hsl(var(--viber)); }
+.listing-bottom-space { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+@media(min-width:768px) { .listing-bottom-space { padding-bottom: 32px; } }
