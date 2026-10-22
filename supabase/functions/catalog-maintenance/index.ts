@@ -12,11 +12,13 @@ Deno.serve(async req => {
   }
   let updated = 0;
   const start = Date.now();
-  while (Date.now() - start < 45000) {
-    const { data, error } = await db.rpc("encar_backfill_base_models", { _limit: 100 });
+  // Small batches with pauses so the backfill never starves live catalog queries.
+  while (Date.now() - start < 40000) {
+    const { data, error } = await db.rpc("encar_backfill_base_models", { _limit: 50 });
     if (error) return Response.json({ error: error.message, updated }, { status: 500 });
     updated += Number(data);
     if (!data) return Response.json({ updated, done: true });
+    await new Promise(resolve => setTimeout(resolve, 1500));
   }
   return Response.json({ updated, done: false });
 });
