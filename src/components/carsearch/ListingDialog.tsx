@@ -106,7 +106,7 @@ export const ListingContent = ({ listing }: Props) => {
   return (
     <>
             <div className="grid gap-6 md:grid-cols-5">
-              <div className="min-w-0 md:col-span-3"><ListingGallery photos={gallery} title={listing.title} onZoom={setZoomIndex} /></div>
+              <div className="-mx-4 min-w-0 md:col-span-3 md:mx-0"><ListingGallery photos={gallery} title={listing.title} onZoom={setZoomIndex} /></div>
 
               {/* Right: title, key specs, price */}
               <div className="space-y-4 md:col-span-2">

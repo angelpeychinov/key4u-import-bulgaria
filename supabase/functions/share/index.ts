@@ -1,5 +1,5 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
-import { validListingId } from '../_shared/listingRoute.ts';
+import { listingPath, validListingId } from '../_shared/listingRoute.ts';
 import { shareHtml } from '../_shared/shareHtml.ts';
 Deno.serve(async req => {
   const headers = { ...corsHeaders, 'Content-Type': 'text/html; charset=utf-8' };
@@ -20,7 +20,12 @@ Deno.serve(async req => {
     const photos = (Array.isArray(row.photos) ? row.photos : []).map((p: unknown) => typeof p === 'string' ? p : (p as { url?: string })?.url).filter((p: unknown) => typeof p === 'string');
     const fuels: Record<string, string> = { gasoline: 'Бензин', diesel: 'Дизел', hybrid: 'Хибрид', electric: 'Електрически', lpg: 'Газ (LPG)', 'gasoline+lpg': 'Бензин/газ', hydrogen: 'Водород' };
     const html = shareHtml({ brand: row.brand_name, model: row.model_name, modelBase: row.model_base, trim: row.trim, year: row.year, encarId: String(row.encar_id), mileage: row.mileage, photos: photos.length ? photos : [row.thumb].filter(Boolean), specs: { 'Гориво': fuels[row.fuel_type] ?? row.fuel_type ?? '—' }, importPrice: row.import_price ?? undefined }, `${origin}/functions/v1/share?id=${id}`);
-    return new Response(html, { headers: { ...headers, 'Cache-Control': 'public, max-age=300' } });
+    // The managed gateway rewrites HTML to text/plain. Browser requests therefore
+    // need an HTTP redirect; crawlers still receive the metadata body for inspection.
+    const crawler = /facebookexternalhit|facebot|viber|twitterbot|linkedinbot|slackbot|discordbot|telegrambot|whatsapp/i.test(req.headers.get('user-agent') ?? '');
+    const browser = !crawler && /Mozilla\//i.test(req.headers.get('user-agent') ?? '');
+    const target = `https://key4u-import-bulgaria.lovable.app${listingPath({ brand: row.brand_name, modelBase: row.model_base, model: row.model_name, year: row.year, encarId: String(row.encar_id) })}`;
+    return new Response(html, { status: browser ? 302 : 200, headers: { ...headers, ...(browser ? { Location: target } : {}), 'Cache-Control': 'public, max-age=300', Vary: 'User-Agent' } });
   } catch (error) {
     console.error('Share lookup failed', error instanceof Error ? error.message : 'Unknown error');
     return new Response('Listing temporarily unavailable', { status: 503, headers: { ...headers, 'Cache-Control': 'no-store' } });

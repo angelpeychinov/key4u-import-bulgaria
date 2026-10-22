@@ -13,7 +13,7 @@ export function ListingShare({ listing }: { listing: Listing }) {
   const name = [listing.brand, listing.model, listing.trim].filter(Boolean).join(' ');
   const price = listing.importPrice ? t('listing.sharePrice').replace('{n}', formatNumber(Math.round(listing.importPrice.total))) : t('listing.request');
   const text = `🚗 ${name} · ${listing.year ?? '—'}\n📍 ${formatNumber(listing.mileage)} ${t('catalog.mileageUnit')} · ${listing.specs['Гориво'] ?? '—'} · ${listing.specs['Скоростна кутия'] ?? '—'}\n💶 ${price}\n👉 ${url}`;
-  return <DropdownMenu open={open} onOpenChange={setOpen}>
+  return <DropdownMenu open={open} onOpenChange={value => { if (value && window.innerWidth < 768 && navigator.share) return; setOpen(value); }}>
     <DropdownMenuTrigger asChild><Button variant="outline" className="min-h-11" onPointerDown={e => {
       if (window.innerWidth < 768 && navigator.share) e.preventDefault();
     }} onClick={async e => {

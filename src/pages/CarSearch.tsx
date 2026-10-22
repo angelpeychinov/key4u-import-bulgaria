@@ -14,7 +14,7 @@ import {
   fuelBg, transmissionBg, bodyBg, formatEur, formatMileage,
 } from "@/lib/listings";
 import { ListingListCard } from "@/components/carsearch/ListingListCard";
-import { catalogSnapshots, listingPath } from "@/lib/listingNavigation";
+import { catalogSnapshots, listingPath, rememberCatalog } from "@/lib/listingNavigation";
 import { FilterSidebar } from "@/components/carsearch/FilterSidebar";
 import { MobileFilterBar } from "@/components/carsearch/MobileFilterBar";
 import { PaginationBar } from "@/components/carsearch/PaginationBar";
@@ -210,7 +210,7 @@ export default function CarSearch() {
 
   const openListing = (listing: Listing) => {
     const key = location.pathname + location.search;
-    catalogSnapshots.set(key, { result: { listings, count, pages, page, hasNext }, scroll: window.scrollY, loadedPage });
+    rememberCatalog(key, { result: { listings, count, pages, page, hasNext }, scroll: window.scrollY, loadedPage });
     navigate(listingPath(listing), { state: { fromCatalog: key, listing } });
   };
   const loadMore = async () => {
