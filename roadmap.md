@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Part 1 addendum: verify/fix whole mobile filter-sheet touch scrolling at 390px, anchored header/results button and locked background; preserve desktop independent scrolling. Do not publish.
+- [x] Part 1 addendum: dynamic-height mobile sheet with anchored header/results button and one touch-scroll area; 390px native touch emulation reaches both boundaries, background stays at scrollY=0, screenshots checked; desktop sticky/independent scrolling unchanged. Real-data sections remain unavailable during the existing catalog outage. Not published.
 
 - [ ] Part 1 catalog: code/schema implemented; 34 filter tests pass, desktop/mobile screen layout checked. BLOCKED by Cloud pooler outage: complete base-model backfill (last confirmed 81,991/210,477), refresh counts, top-60 mappings/suspicious report, real touch multi-select/priced-only/Back/scroll end-to-end checks. Do not publish. Maintenance requires healthy database connections; nothing continues after this turn.
 
