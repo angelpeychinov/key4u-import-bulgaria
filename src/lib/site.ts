@@ -1,0 +1,1 @@
+export const SITE_URL = 'https://key4u-import-bulgaria.lovable.app';
