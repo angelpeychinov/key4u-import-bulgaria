@@ -5,7 +5,7 @@
 // - sets first_seen_at only for new rows
 // deno-lint-ignore-file no-explicit-any
 import { translateListing } from "./encarMaps.ts";
-import { modelBaseCandidates, normalizeModelBase } from "./modelBase.ts";
+import { normalizeModelBase } from "./modelBase.ts";
 import { preserveBody } from "./encarModelBody.ts";
 
 export async function upsertListings(
@@ -21,16 +21,6 @@ export async function upsertListings(
   if (listings.length === 0) return { inserted: 0, updated: 0 };
   const encarIds = listings.map((l) => String(l.encar_id));
 
-  const knownByBrand = new Map<string, string[]>();
-  const brands = [...new Set(listings.map(l => String(l.brand_name ?? "")))];
-  await Promise.all(brands.map(async brand => {
-    const candidates = [...new Set(listings.filter(l => String(l.brand_name ?? "") === brand).flatMap(l => modelBaseCandidates(l.model_name, brand)))];
-    if (!candidates.length) return;
-    const { data, error } = await supabase.from("encar_listings").select("model_name").eq("brand_name", brand).in("model_name", candidates);
-    if (error) throw new Error("Standalone model lookup failed: " + error.message);
-    knownByBrand.set(brand, [...new Set<string>((data ?? []).map((row: any) => row.model_name))]);
-  }));
-
   const { data: existingRows, error: selectError } = await supabase
     .from("encar_listings")
     .select("encar_id, price_original, body_type")
@@ -44,7 +34,7 @@ export async function upsertListings(
   const nowIso = new Date().toISOString();
   const oldBodies = new Map<string, unknown>((existingRows ?? []).map((r: any) => [r.encar_id, r.body_type]));
   const rows = listings.map((l) => {
-    const row: Record<string, unknown> = { ...l, ...normalizeModelBase(l.model_name, l.brand_name, knownByBrand.get(String(l.brand_name ?? "")) ?? []), status: "active", last_seen_at: nowIso };
+    const row: Record<string, unknown> = { ...l, ...normalizeModelBase(l.model_name, l.brand_name), status: "active", last_seen_at: nowIso };
     row.body_type = preserveBody(l.body_type, oldBodies.get(String(l.encar_id)));
     delete row.first_seen_at; // never overwrite on existing rows
     const prev = oldPrice.get(String(l.encar_id));
