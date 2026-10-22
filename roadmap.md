@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Part 1 catalog: full-screen touch pickers, mobile targets/chips/counts, base-model schema/backfill/search/facets/report, remove region, priced-only toggle, listing Back/scroll preservation; verify 390px + desktop; do not publish.
+- [ ] Part 1 catalog: code/schema implemented; 34 filter tests pass, desktop/mobile screen layout checked. BLOCKED by Cloud pooler outage: complete base-model backfill (last confirmed 81,991/210,477), refresh counts, top-60 mappings/suspicious report, real touch multi-select/priced-only/Back/scroll end-to-end checks. Do not publish. Maintenance requires healthy database connections; nothing continues after this turn.
 
 - [x] All catalog dropdowns and numeric suggestions share white scoped panels, field-width alignment and 4px gaps; numeric panels have no pointer and show spaced price/mileage labels with units and plain years; desktop/mobile browser measurements and screenshots verified, presets/validation/internal scrolling checked, 8 filter tests pass; not published.
 
