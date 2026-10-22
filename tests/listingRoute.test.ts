@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { listingPath, listingIdFromSlug, validListingId, closestListings } from '../supabase/functions/_shared/listingRoute';
+import { listingPath, listingIdFromSlug, validListingId, closestListings, similarYearBounds } from '../supabase/functions/_shared/listingRoute';
 import { shareHtml } from '../supabase/functions/_shared/shareHtml';
 test('listing slug uses brand base model year and final Encar ID', () => {
   expect(listingPath({ brand: 'Hyundai', modelBase: 'Palisade', year: 2022, encarId: '42939237' })).toBe('/kola/hyundai-palisade-2022-42939237');
@@ -13,3 +13,5 @@ test('share destination uses requested published origin and no user supplied ori
   const html = shareHtml({brand:'Hyundai',modelBase:'Palisade',year:2022,encarId:'42939237'}, 'https://example.test/share?id=42939237');
   expect(html.includes('https://key4u-import-bulgaria.lovable.app/kola/hyundai-palisade-2022-42939237')).toBe(true);
 });
+
+test("similar listing years are exactly current year plus/minus two", () => { expect(similarYearBounds(2022)).toEqual({ from: 2020, to: 2024 }); });

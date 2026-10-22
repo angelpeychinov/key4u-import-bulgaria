@@ -13,12 +13,12 @@ export function ListingShare({ listing }: { listing: Listing }) {
   const name = [listing.brand, listing.model, listing.trim].filter(Boolean).join(' ');
   const price = listing.importPrice ? t('listing.sharePrice').replace('{n}', formatNumber(Math.round(listing.importPrice.total))) : t('listing.request');
   const text = `🚗 ${name} · ${listing.year ?? '—'}\n📍 ${formatNumber(listing.mileage)} ${t('catalog.mileageUnit')} · ${listing.specs['Гориво'] ?? '—'} · ${listing.specs['Скоростна кутия'] ?? '—'}\n💶 ${price}\n👉 ${url}`;
-  return <DropdownMenu open={open} onOpenChange={value => { if (value && window.innerWidth < 768 && navigator.share) return; setOpen(value); }}>
+  return <DropdownMenu open={open} onOpenChange={setOpen}>
     <DropdownMenuTrigger asChild><Button variant="outline" className="min-h-11" onPointerDown={e => {
-      if (window.innerWidth < 768 && navigator.share) e.preventDefault();
-    }} onClick={async e => {
-      if (window.innerWidth >= 768 || !navigator.share) return;
       e.preventDefault();
+    }} onClick={async e => {
+      e.preventDefault();
+      if (window.innerWidth >= 768 || !navigator.share) { setOpen(!open); return; }
       try { await navigator.share({ title: listing.title, text, url }); }
       catch (error) { if (!(error instanceof DOMException && error.name === 'AbortError')) setOpen(true); }
     }}><Share2 className="mr-2 h-4 w-4" />{t('listing.share')}</Button></DropdownMenuTrigger>

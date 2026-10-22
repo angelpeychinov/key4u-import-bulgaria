@@ -10,3 +10,5 @@ export function closestListings<T extends { encarId?: string; priceKrw?: number 
     return Math.abs((a.priceKrw ?? Infinity) - current.priceKrw) - Math.abs((b.priceKrw ?? Infinity) - current.priceKrw);
   }).slice(0, limit);
 }
+
+export const similarYearBounds = (year: number) => ({ from: year - 2, to: year + 2 });

@@ -1,3 +1,4 @@
+import { similarYearBounds } from "../_shared/listingRoute.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { catalogSelection, catalogOrFilter } from "../_shared/catalogSelection.ts";
@@ -192,9 +193,10 @@ Deno.serve(async (req) => {
         .select("encar_id,brand_slug,model_base_slug,year,price_original").eq("encar_id", similarId).eq("status", "active").maybeSingle();
       if (carError) return json({ error: "Listing unavailable" }, 503);
       if (!car?.brand_slug || !car.model_base_slug || !car.year) return json({ results: [], count: 0, page: 1, pages: 0, has_next: false });
+      const years = similarYearBounds(car.year);
       const baseQuery = () => supabase.from("encar_listings").select(COLS).eq("status", "active")
         .eq("brand_slug", car.brand_slug).eq("model_base_slug", car.model_base_slug)
-        .gte("year", car.year - 2).lte("year", car.year + 2).neq("encar_id", similarId);
+        .gte("year", years.from).lte("year", years.to).neq("encar_id", similarId);
       const krw = car.price_original;
       const queries = krw == null ? [baseQuery().order("last_seen_at", { ascending: false }).limit(6)] : [
         baseQuery().lte("price_original", krw).order("price_original", { ascending: false }).limit(6),
