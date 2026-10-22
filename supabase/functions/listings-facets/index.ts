@@ -129,6 +129,7 @@ Deno.serve(async (req) => {
 
   try {
     const incoming = new URL(req.url).searchParams;
+    const baseScope = incoming.get("model_scope") === "base";
     const { brands, models } = catalogSelection(incoming.get("brand"), incoming.get("model"));
     for (const [key, values] of [["brand", brands], ["model", models]] as const) {
       if (values.length) incoming.set(key, [...values].sort().join(","));
@@ -157,11 +158,11 @@ Deno.serve(async (req) => {
     );
     const readDefault = async () => {
       const { data } = await supabase.from("encar_facets_cache")
-        .select("payload,updated_at").eq("key", "default").maybeSingle();
+        .select("payload,updated_at").eq("key", baseScope ? "base_default" : "default").maybeSingle();
       return data?.payload ? { ...sanitizeFacets(data.payload), updated_at: data.updated_at } : null;
     };
     const hasFilters = ["brand", "model", "year_from", "year_to", "price_from", "price_to",
-      "mileage_min", "mileage_max", "fuel_type", "transmission", "body_type", "region"]
+      "mileage_min", "mileage_max", "fuel_type", "transmission", "body_type", "region", "priced_only"]
       .some((key) => { const value = incoming.get(key)?.trim(); return !!value && value !== "all"; })
       || incoming.get("has_accident") === "false";
     if (!hasFilters) {
@@ -180,9 +181,9 @@ Deno.serve(async (req) => {
       _models: models.length ? models : null,
       _year_from: numParam(incoming, "year_from") ?? null,
       _year_to: numParam(incoming, "year_to") ?? null,
-      _price_min: priceFrom ? firstKrwReaching(priceFrom, pricing) : null,
+      _price_min: priceFrom ? firstKrwReaching(priceFrom, pricing) : incoming.get("priced_only") === "1" ? 1 : null,
       _price_max: filteredPriceMax(priceFrom, priceTo,
-        priceTo ? firstKrwReaching(priceTo + 0.000001, pricing) - 1 : null, pricing.maxPricedKrw),
+        priceTo ? firstKrwReaching(priceTo + 0.000001, pricing) - 1 : null, pricing.maxPricedKrw) ?? (incoming.get("priced_only") === "1" ? pricing.maxPricedKrw : null),
       _mileage_min: numParam(incoming, "mileage_min") ?? null,
       _mileage_max: numParam(incoming, "mileage_max") ?? null,
       _fuels: listParam(incoming, "fuel_type") ?? null,
@@ -193,7 +194,7 @@ Deno.serve(async (req) => {
     };
 
     const started = Date.now();
-    const { data, error } = await supabase.rpc("encar_facets", args);
+    const { data, error } = await supabase.rpc(baseScope ? "encar_base_facets" : "encar_facets", args);
     if (error) {
       console.error("encar_facets failed", error);
       const fallback = await readDefault();

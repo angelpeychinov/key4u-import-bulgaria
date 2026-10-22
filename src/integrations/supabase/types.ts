@@ -119,6 +119,8 @@ export type Database = {
           last_seen_at: string
           listing_url: string | null
           mileage: number | null
+          model_base: string | null
+          model_base_slug: string | null
           model_name: string | null
           model_slug: string | null
           photos: Json
@@ -150,6 +152,8 @@ export type Database = {
           last_seen_at?: string
           listing_url?: string | null
           mileage?: number | null
+          model_base?: string | null
+          model_base_slug?: string | null
           model_name?: string | null
           model_slug?: string | null
           photos?: Json
@@ -181,6 +185,8 @@ export type Database = {
           last_seen_at?: string
           listing_url?: string | null
           mileage?: number | null
+          model_base?: string | null
+          model_base_slug?: string | null
           model_name?: string | null
           model_slug?: string | null
           photos?: Json
@@ -473,7 +479,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      encar_backfill_base_models: { Args: { _limit?: number }; Returns: number }
       encar_backfill_model_body: { Args: { _limit?: number }; Returns: number }
+      encar_base_facets: {
+        Args: {
+          _body_types?: string[]
+          _brands: string[]
+          _fuels?: string[]
+          _mileage_max?: number
+          _mileage_min?: number
+          _models: string[]
+          _no_accident?: boolean
+          _price_max?: number
+          _price_min?: number
+          _regions?: string[]
+          _transmissions?: string[]
+          _year_from?: number
+          _year_to?: number
+        }
+        Returns: Json
+      }
+      encar_base_models: {
+        Args: { _brand: string }
+        Returns: {
+          name: string
+          slug: string
+        }[]
+      }
       encar_brands: {
         Args: never
         Returns: {
@@ -518,6 +550,14 @@ export type Database = {
             }
             Returns: Json
           }
+      encar_model_base: {
+        Args: { _brand?: string; _model: string }
+        Returns: string
+      }
+      encar_model_base_slug: {
+        Args: { _brand?: string; _model: string }
+        Returns: string
+      }
       encar_models: {
         Args: { _brand: string }
         Returns: {
@@ -542,6 +582,8 @@ export type Database = {
           last_seen_at: string
           listing_url: string | null
           mileage: number | null
+          model_base: string | null
+          model_base_slug: string | null
           model_name: string | null
           model_slug: string | null
           photos: Json
@@ -565,6 +607,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      encar_refresh_base_facets: { Args: never; Returns: undefined }
       encar_refresh_default_facets: { Args: never; Returns: undefined }
       encar_sanitize_facets_payload: {
         Args: { _grouped?: boolean; _payload: Json }

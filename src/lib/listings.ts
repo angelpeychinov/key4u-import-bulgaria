@@ -58,7 +58,7 @@ export interface SearchFilters {
   fuel_type?: string; // comma-separated multi-select
   transmission?: string; // comma-separated multi-select
   body_type?: string; // comma-separated multi-select
-  region?: string; // comma-separated multi-select
+  priced_only?: string; // calculated price eligibility
   sort?: SortKey;
   ids?: string; // comma-separated encar ids (saved cars)
 }
@@ -128,7 +128,7 @@ export const FUEL_BG: Record<string, string> = {
 export const TRANSMISSION_BG: Record<string, string> = { auto: "Автоматична", manual: "Ръчна", cvt: "Вариатор (CVT)", semi_auto: "Полуавтоматична" };
 export const BODY_BG: Record<string, string> = {
   sedan: "Седан", hatchback: "Хечбек", coupe: "Купе", convertible: "Кабриолет", suv: "SUV",
-  wagon: "Комби", pickup: "Пикап", van: "Ван", minivan: "Миниван", truck: "Товарен", mini: "Мини", other: "Друго",
+  wagon: "Комби", pickup: "Пикап", van: "Ван", minivan: "Миниван", truck: "Пикап / Товарен", mini: "Мини", other: "Друго",
 };
 export const REGION_BG: Record<string, string> = {
   seoul: "Сеул", busan: "Пусан", daegu: "Тегу", incheon: "Инчон", gwangju: "Куанджу",
@@ -228,7 +228,7 @@ export const normalizeListing = (raw: Record<string, unknown>, index: number): L
 };
 
 const filtersToParams = (filters: SearchFilters): URLSearchParams => {
-  const params = new URLSearchParams();
+  const params = new URLSearchParams({ model_scope: "base" });
   Object.entries(filters).forEach(([key, value]) => {
     if (typeof value === "string" && value && value !== "all") params.set(key, value);
   });
@@ -305,7 +305,7 @@ export const fetchFacets = async (filters: SearchFilters): Promise<Facets | null
 
   // Independent fallback requests preserve choices even when filtered counts time out.
   const [defaults, brands, models] = await Promise.all([
-    supabase.from("encar_facets_cache").select("payload").eq("key", "default").maybeSingle()
+    supabase.from("encar_facets_cache").select("payload").eq("key", "base_default").maybeSingle()
       .then(({ data }) => data?.payload as Record<string, unknown> | undefined),
     result.brands.length ? Promise.resolve([]) : fetchTaxonomy("brands").catch(() => []),
     Promise.all(selection.brands.map((brand) => fetchTaxonomy("models", brand)
@@ -344,7 +344,7 @@ export const fetchTaxonomy = async (
   kind: "brands" | "models",
   brandSlug?: string,
 ): Promise<TaxonomyItem[]> => {
-  const params = new URLSearchParams({ kind });
+  const params = new URLSearchParams({ kind, model_scope: "base" });
   if (kind === "models") {
     if (!brandSlug) return [];
     params.set("brand", brandSlug);

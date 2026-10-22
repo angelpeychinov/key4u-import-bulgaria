@@ -1,0 +1,1 @@
+CREATE OR REPLACE FUNCTION public.encar_facets_cache_sanitize_trigger() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN NEW.payload := public.encar_sanitize_facets_payload(NEW.payload, NEW.key IN ('categorical_groups','base_categorical_groups')); RETURN NEW; END; $$;

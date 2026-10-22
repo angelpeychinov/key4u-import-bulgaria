@@ -5,6 +5,7 @@
 // - sets first_seen_at only for new rows
 // deno-lint-ignore-file no-explicit-any
 import { translateListing } from "./encarMaps.ts";
+import { normalizeModelBase } from "./modelBase.ts";
 import { preserveBody } from "./encarModelBody.ts";
 
 export async function upsertListings(
@@ -33,7 +34,7 @@ export async function upsertListings(
   const nowIso = new Date().toISOString();
   const oldBodies = new Map<string, unknown>((existingRows ?? []).map((r: any) => [r.encar_id, r.body_type]));
   const rows = listings.map((l) => {
-    const row: Record<string, unknown> = { ...l, status: "active", last_seen_at: nowIso };
+    const row: Record<string, unknown> = { ...l, ...normalizeModelBase(l.model_name, l.brand_name), status: "active", last_seen_at: nowIso };
     row.body_type = preserveBody(l.body_type, oldBodies.get(String(l.encar_id)));
     delete row.first_seen_at; // never overwrite on existing rows
     const prev = oldPrice.get(String(l.encar_id));

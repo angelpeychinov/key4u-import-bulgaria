@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
     } else {
       const brand = incoming.get("brand")?.trim();
       if (!brand) return json({ results: [] });
-      result = await supabase.rpc("encar_models", { _brand: brand });
+      result = await supabase.rpc(incoming.get("model_scope") === "base" ? "encar_base_models" : "encar_models", { _brand: brand });
     }
 
     const { data, error } = result;

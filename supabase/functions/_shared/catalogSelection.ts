@@ -25,7 +25,7 @@ export const catalogBrandBranches = (brands: string[], models: string[]) => bran
   models: models.filter((m) => m.startsWith(`${brand}:`)).map((m) => m.slice(brand.length + 1)),
 }));
 
-export const catalogOrFilter = (brands: string[], models: string[]) =>
+export const catalogOrFilter = (brands: string[], models: string[], column: "model_slug" | "model_base_slug" = "model_slug") =>
   catalogBrandBranches(brands, models).map(({ brand, models: selected }) => selected.length
-    ? `and(brand_slug.eq.${brand},model_slug.in.(${selected.join(",")}))`
+    ? `and(brand_slug.eq.${brand},${column}.in.(${selected.join(",")}))`
     : `brand_slug.eq.${brand}`).join(",");
