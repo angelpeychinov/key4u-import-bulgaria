@@ -12,7 +12,8 @@
 - Catalog base models use the shared modelBase normalizer plus equivalent database functions/write guard; model_scope=base selects additive RPCs/caches and model_base_slug while legacy clients and original listing titles retain generation-specific names.
 - Conditional model-name shortening requires exact standalone-name evidence scoped to the same brand; use indexed candidate lookups rather than catalog-wide scans, and correct already-filled rows through cursor-bounded protected maintenance after rule updates.
 - Listing pages parse the final Encar ID through shared listingRoute helpers; catalog navigation records loaded results and scroll in bounded in-memory snapshots so Back restores the list without re-fetching.
-- Share HTML fetches one listing through listings-search, keeping preview pricing identical; similar_to uses bounded brand/base/year price-neighbour queries without schema changes.
+- Share HTML fetches one listing through listings-search, keeping preview pricing identical; the managed gateway rewrites HTML to text/plain, so browsers use an HTTP redirect and reliable rich previews require HTML-capable hosting.
+- similar_to uses bounded brand/base/year price-neighbour queries without schema changes.
 - Embla handles gallery swipes and react-zoom-pan-pinch handles fullscreen zoom; modal body locking isolates photo gestures.
 - Catalog backfill and base-cache refresh run only through service-role RPCs and the secret-protected catalog-maintenance function; never expose maintenance credentials or grant public write access.
 

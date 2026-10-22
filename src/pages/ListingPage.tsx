@@ -46,7 +46,7 @@ export default function ListingPage() {
   const price = listing?.importPrice ? `~${formatNumber(Math.round(listing.importPrice.total))} €` : t('listing.request');
   const title = t('listing.seo').replace('{name}', name).replace('{year}', String(listing?.year ?? '')).replace('{price}', price);
   const canonical = `https://key4u.bg${listing ? listingPath(listing) : location.pathname}`;
-  const description = listing ? `${name} ${listing.year ?? ''} · ${formatNumber(listing.mileage)} ${t('catalog.mileageUnit')} · ${listing.specs['Гориво'] ?? ''} · ${price}. ${t('listing.sharePrice').replace('~{n} €', '')}` : t('listing.unavailable');
+  const description = listing ? `${name} ${listing.year ?? ''} · ${formatNumber(listing.mileage)} ${t('catalog.mileageUnit')} · ${listing.specs['Гориво'] ?? ''} · ${listing.importPrice ? t('listing.sharePrice').replace('{n}', formatNumber(Math.round(listing.importPrice.total))) : t('listing.request')}` : t('listing.unavailable');
   const draft = t('inquiry.viberMessage').replace('{title}', listing?.title ?? '').replace('{link}', canonical);
   return <main className="listing-bottom-space min-w-0 flex-1 bg-background pt-20">
     <Helmet><title>{listing ? title : t('listing.loading')}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" /><meta name="robots" content={failed || (!loading && !listing) ? 'noindex, follow' : 'index, follow'} /></Helmet>
