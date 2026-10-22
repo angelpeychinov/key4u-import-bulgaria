@@ -3,6 +3,7 @@
 
 User-agent: Googlebot
 Allow: /
+Allow: /kola/
 
 User-agent: Bingbot
 Allow: /

@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Cookie, X, Shield } from "lucide-react";
@@ -7,6 +8,7 @@ const COOKIE_CONSENT_KEY = "key4u-cookie-consent";
 type ConsentStatus = "accepted" | "declined" | null;
 
 export function CookieConsent() {
+  const { pathname } = useLocation();
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -38,7 +40,7 @@ export function CookieConsent() {
 
   return (
     <div 
-      className={`fixed bottom-0 left-0 right-0 z-50 p-3 transition-all duration-300 ease-out ${
+      className={`fixed ${pathname.startsWith("/kola/") ? "bottom-[calc(76px+env(safe-area-inset-bottom))] md:bottom-0" : "bottom-0"} left-0 right-0 z-50 p-3 transition-all duration-300 ease-out ${
         isAnimating ? "translate-y-0 opacity-100" : "translate-y-full opacity-0"
       }`}
     >

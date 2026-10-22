@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Autoplay from "embla-carousel-autoplay";
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { listingPath } from "@/lib/listingNavigation";
 import { Link } from "react-router-dom";
 import { ArrowRight, Camera, Car, Clock, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -116,7 +117,7 @@ export const KoreaCatalogSection = () => {
                     return (
                       <CarouselItem key={car.encarId} className="basis-[75%] pl-4 sm:basis-1/3 lg:basis-1/4 2xl:basis-1/5">
                         <Link
-                          to={`/car-search?listing=${car.encarId}`}
+                          to={listingPath(car)}
                           className="block h-full overflow-hidden rounded-lg border border-border/60 bg-card shadow-card transition-smooth hover:shadow-elegant"
                         >
                           <div className="aspect-[4/3] bg-muted">

@@ -14,6 +14,7 @@ import Home from "./pages/Home";
 import Process from "./pages/Process";
 import FindCar from "./pages/FindCar";
 import CarSearch from "./pages/CarSearch";
+import ListingPage from "./pages/ListingPage";
 import FAQ from "./pages/FAQ";
 // Delivered cars page paused — restore import + route below when re-enabling.
 // import Delivered from "./pages/Delivered";
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/process" element={<Process />} />
                 <Route path="/find-car" element={<FindCar />} />
                 <Route path="/car-search" element={<CarSearch />} />
+                <Route path="/kola/:slug" element={<ListingPage />} />
                 {/* Delivered cars page paused — restore route when re-enabling. */}
                 {/* <Route path="/delivered" element={<Delivered />} /> */}
                 <Route path="/faq" element={<FAQ />} />

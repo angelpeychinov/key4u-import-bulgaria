@@ -1,3 +1,4 @@
+import { similarYearBounds } from "../_shared/listingRoute.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { catalogSelection, catalogOrFilter } from "../_shared/catalogSelection.ts";
@@ -178,12 +179,40 @@ Deno.serve(async (req) => {
     const filterKeys = ["brand", "model", "fuel_type", "transmission", "body_type", "region", "has_accident", "year_from", "year_to", "mileage_min", "mileage_max", "price_from", "price_to", "ids"]
       .filter((k) => incoming.get(k));
     const narrow = !!incoming.get("model") || !!incoming.get("ids") || filterKeys.length >= 3;
-    const COLS = "id,encar_id,brand_name,brand_slug,model_name,model_slug,trim,year,price_original,mileage,fuel_type,transmission,body_type,color,region,has_accident,engine_cc,thumb,photos,listing_url,source_code,status,first_seen_at,last_seen_at,price_changed_at,previous_price_krw";
+    const COLS = "id,encar_id,brand_name,brand_slug,model_name,model_slug,model_base,model_base_slug,trim,year,price_original,mileage,fuel_type,transmission,body_type,color,region,has_accident,engine_cc,thumb,photos,listing_url,source_code,status,first_seen_at,last_seen_at,price_changed_at,previous_price_krw";
 
     let query = supabase
       .from("encar_listings")
       .select(COLS, { count: narrow ? "exact" : "estimated" })
       .eq("status", "active");
+
+    const similarId = incoming.get("similar_to");
+    if (similarId !== null) {
+      if (!/^\d{1,20}$/.test(similarId)) return json({ error: "Invalid listing ID" }, 400);
+      const { data: car, error: carError } = await supabase.from("encar_listings")
+        .select("encar_id,brand_slug,model_base_slug,year,price_original").eq("encar_id", similarId).eq("status", "active").maybeSingle();
+      if (carError) return json({ error: "Listing unavailable" }, 503);
+      if (!car?.brand_slug || !car.model_base_slug || !car.year) return json({ results: [], count: 0, page: 1, pages: 0, has_next: false });
+      const years = similarYearBounds(car.year);
+      const baseQuery = () => supabase.from("encar_listings").select(COLS).eq("status", "active")
+        .eq("brand_slug", car.brand_slug).eq("model_base_slug", car.model_base_slug)
+        .gte("year", years.from).lte("year", years.to).neq("encar_id", similarId);
+      const krw = car.price_original;
+      const queries = krw == null ? [baseQuery().order("last_seen_at", { ascending: false }).limit(6)] : [
+        baseQuery().lte("price_original", krw).order("price_original", { ascending: false }).limit(6),
+        baseQuery().gte("price_original", krw).order("price_original", { ascending: true }).limit(6),
+      ];
+      const batches = await Promise.all(queries);
+      if (batches.some(b => b.error)) return json({ error: "Similar listings unavailable" }, 503);
+      const unique = new Map(batches.flatMap(b => b.data ?? []).map(r => [r.encar_id, r]));
+      const rows = [...unique.values()].sort((a, b) => krw == null ? 0 : Math.abs(Number(a.price_original) - krw) - Math.abs(Number(b.price_original) - krw)).slice(0, 6);
+      const results = rows.map(row => {
+        const import_price = hasCalculatedPrice(Number(row.price_original), pricing.maxPricedKrw)
+          ? calculateKoreaImportPrice(Number(row.price_original), isOversizeVehicle(row), pricing) : null;
+        return { ...row, import_price, price_eur: import_price?.total ?? null };
+      });
+      return json({ results, count: results.length, page: 1, pages: 1, has_next: false });
+    }
 
     // Saved cars: explicit list of encar ids.
     const idsRaw = incoming.get("ids");

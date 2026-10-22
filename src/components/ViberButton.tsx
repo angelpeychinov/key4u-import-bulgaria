@@ -1,6 +1,9 @@
+import { useLocation } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 
 export const ViberButton = () => {
+  const { pathname } = useLocation();
+  if (pathname.startsWith("/kola/")) return null;
   const handleViberClick = () => {
     window.open('viber://chat?number=%2B359898252434', '_blank');
   };

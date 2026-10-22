@@ -1,6 +1,7 @@
 # Roadmap
 
-- [ ] Part 2: individual listing pages/legacy redirects and retained list state; swipe/zoom galleries; sticky mobile contacts; native/fallback sharing and public HTML previews; similar cars; mobile card swipes/load-more; single filter heading. Verify 390px + desktop and share endpoint; do not publish or perform database maintenance.
+- [x] Part 2 UI: listing pages/legacy redirect, retained list filters/sort/loaded results and exact scroll, galleries/swipe/pinch, sticky contacts, native/fallback sharing, six similar cars, mobile card swipe/load-more, single filter heading. Real 390px + desktop flows verified; 94 tests pass. No publishing/database maintenance.
+- [ ] Part 2 rich previews: share endpoint deployed and tested (crawler 200 with OG body and 300s cache, browser 302 to requested published origin), but managed gateway rewrites HTML to text/plain. BLOCKED: requires HTML-capable public hosting/SSR proxy for real rich cards; native Viber/Facebook apps not directly testable here. New listing routes are preview-only until owner publishes.
 
 - [ ] Part 1 model-base addendum: shared helper and 35 tests pass for leading codes, conditional subnames and Hyundai Starex. BLOCKED: database migration timed out; pending SQL in .lovable/pending-model-base-addendum.sql must be applied, then wire indexed standalone lookups into shared upsert, add protected correction action, deploy affected functions, correct existing rows and include new mappings in final report. Nothing published or deployed.
 

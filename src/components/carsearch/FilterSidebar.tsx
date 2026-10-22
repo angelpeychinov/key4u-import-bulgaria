@@ -82,7 +82,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
   return (
     <div className="catalog-filter-controls flex flex-col">
       <div className="flex items-center justify-between pb-2">
-        <h2 className="text-base font-bold text-foreground">{t("catalog.filters")}</h2>
+        <h2 className="hidden lg:block text-base font-bold text-foreground">{t("catalog.filters")}</h2>
         <Button variant="ghost" size="sm" onClick={onReset} className="min-h-11 text-muted-foreground">
           <RotateCcw className="mr-1 h-3.5 w-3.5" /> Изчисти
         </Button>

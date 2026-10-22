@@ -1,0 +1,12 @@
+import { listingPath } from './listingRoute.ts';
+export const escapeHtml = (value: unknown) => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] ?? ch));
+export function shareHtml(car: { brand?: string; model?: string; modelBase?: string; trim?: string; year?: number; encarId?: string; mileage?: number; photos?: string[]; specs?: Record<string, string>; importPrice?: { total: number } }, shareUrl: string) {
+  const target = `https://key4u-import-bulgaria.lovable.app${listingPath(car)}`;
+  const num = (n?: number) => n === undefined ? '—' : Math.round(n).toLocaleString('bg-BG');
+  const title = [car.brand, car.model, car.trim, car.year].filter(Boolean).join(' ') + ' | Key4U';
+  const description = `${car.importPrice ? `~${num(car.importPrice.total)} € до България` : 'Цена при запитване'} · ${num(car.mileage)} км · ${car.specs?.['Гориво'] ?? '—'} · ${car.year ?? '—'}`;
+  const first = car.photos?.[0];
+  let image = '';
+  try { if (first && new URL(first).protocol === 'https:') { const url = new URL(first); if (url.hostname === 'ci.encar.com') { url.searchParams.set('impolicy', 'heightRate'); url.searchParams.set('rh', '630'); url.searchParams.set('cw', '1200'); url.searchParams.set('ch', '630'); url.searchParams.set('cg', 'Center'); } image = url.toString(); } } catch { /* invalid media omitted */ }
+  return `<!doctype html><html lang="bg"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}"><meta property="og:type" content="website"><meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}">${image ? `<meta property="og:image" content="${escapeHtml(image)}">` : ''}<meta property="og:url" content="${escapeHtml(shareUrl)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHtml(title)}"><meta name="twitter:description" content="${escapeHtml(description)}">${image ? `<meta name="twitter:image" content="${escapeHtml(image)}">` : ''}<meta http-equiv="refresh" content="0;url=${escapeHtml(target)}"><link rel="canonical" href="${escapeHtml(target)}"></head><body><a href="${escapeHtml(target)}">${escapeHtml(title)}</a><script>location.replace(${JSON.stringify(target).replace(/</g, '\\u003c')})</script></body></html>`;
+}
