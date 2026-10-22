@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Part 2: individual listing pages/legacy redirects and retained list state; swipe/zoom galleries; sticky mobile contacts; native/fallback sharing and public HTML previews; similar cars; mobile card swipes/load-more; single filter heading. Verify 390px + desktop and share endpoint; do not publish or perform database maintenance.
+
 - [ ] Part 1 model-base addendum: shared helper and 35 tests pass for leading codes, conditional subnames and Hyundai Starex. BLOCKED: database migration timed out; pending SQL in .lovable/pending-model-base-addendum.sql must be applied, then wire indexed standalone lookups into shared upsert, add protected correction action, deploy affected functions, correct existing rows and include new mappings in final report. Nothing published or deployed.
 
 - [x] Part 1 addendum: dynamic-height mobile sheet with anchored header/results button and one touch-scroll area; 390px native touch emulation reaches both boundaries, background stays at scrollY=0, screenshots checked; desktop sticky/independent scrolling unchanged. Real-data sections remain unavailable during the existing catalog outage. Not published.
