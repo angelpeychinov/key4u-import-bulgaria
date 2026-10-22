@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Gauge, Calendar, Fuel, MapPin, Heart, Car } from "lucide-react";
-import { Listing, formatMileage, formatApproxEur, regionBg, fuelBg, transmissionBg, encarImg } from "@/lib/listings";
+import { ChevronLeft, ChevronRight, Gauge, Calendar, Fuel, Heart, Car } from "lucide-react";
+import { Listing, formatMileage, formatApproxEur, fuelBg, transmissionBg, encarImg } from "@/lib/listings";
 import { useFavorites } from "@/hooks/useFavorites";
 
 interface Props {
@@ -12,9 +12,11 @@ interface Props {
   priority?: boolean;
 }
 
-const MAX_PHOTOS = 5;
+const MAX_PHOTOS = 24;
 
 export const ListingListCard = ({ listing, onOpen, priority = false }: Props) => {
+  const touch = useRef<{x: number; y: number} | null>(null);
+  const swiped = useRef(false);
   const photos = listing.photos.slice(0, MAX_PHOTOS);
   const [photoIdx, setPhotoIdx] = useState(0);
   const { has, toggle } = useFavorites();
@@ -44,10 +46,15 @@ export const ListingListCard = ({ listing, onOpen, priority = false }: Props) =>
   return (
     <Card
       className="group flex cursor-pointer flex-col overflow-hidden border-border/60 shadow-card transition-smooth hover:shadow-elegant sm:flex-row"
-      onClick={() => onOpen(listing)}
+      onClick={() => { if (swiped.current) { swiped.current = false; return; } onOpen(listing); }}
     >
       {/* Photo flipper */}
-      <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-muted sm:aspect-auto sm:h-auto sm:w-64 md:w-72">
+      <div onTouchStart={e => { const first = e.touches[0]; if (first) touch.current = { x: first.clientX, y: first.clientY }; swiped.current = false; }} onTouchEnd={e => {
+        const start = touch.current; const end = e.changedTouches[0]; touch.current = null;
+        if (!start || !end || photos.length < 2) return;
+        const dx = end.clientX - start.x;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(end.clientY - start.y)) { swiped.current = true; setPhotoIdx(i => (i + (dx < 0 ? 1 : -1) + photos.length) % photos.length); }
+      }} className="touch-pan-y relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-muted sm:aspect-auto sm:h-auto sm:w-64 md:w-72">
         {photo ? (
           <img
             src={encarImg(photo, 640)}
@@ -109,7 +116,6 @@ export const ListingListCard = ({ listing, onOpen, priority = false }: Props) =>
           <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4 shrink-0" />{listing.year ?? "—"} г.</span>
           <span className="flex items-center gap-1.5"><Gauge className="h-4 w-4 shrink-0" />{formatMileage(listing.mileage)}</span>
           <span className="flex items-center gap-1.5"><Fuel className="h-4 w-4 shrink-0" />{fuel ?? fuelBg(undefined)}{transmission ? ` · ${transmission}` : ""}</span>
-          <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4 shrink-0" />{regionBg(listing.location)}</span>
         </div>
       </div>
 

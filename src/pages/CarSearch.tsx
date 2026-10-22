@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import koreaHero from "@/assets/korea-hero.jpg.asset.json";
 import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
   fuelBg, transmissionBg, bodyBg, formatEur, formatMileage,
 } from "@/lib/listings";
 import { ListingListCard } from "@/components/carsearch/ListingListCard";
-import { ListingDialog } from "@/components/carsearch/ListingDialog";
+import { catalogSnapshots, listingPath } from "@/lib/listingNavigation";
 import { FilterSidebar } from "@/components/carsearch/FilterSidebar";
 import { MobileFilterBar } from "@/components/carsearch/MobileFilterBar";
 import { PaginationBar } from "@/components/carsearch/PaginationBar";
@@ -107,15 +107,20 @@ const buildChips = (filters: SearchFilters, facets: Facets | null): Chip[] => {
 
 export default function CarSearch() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const snapshot = catalogSnapshots.get(location.pathname + location.search);
+  const [loadedPage, setLoadedPage] = useState(snapshot?.loadedPage ?? 1);
+  const [hasNext, setHasNext] = useState(snapshot?.result.hasNext ?? false);
+  const [appending, setAppending] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [filters, setFilters] = useState<SearchFilters>(() => filtersFromParams(searchParams));
   const [page, setPage] = useState(() => Math.max(1, Number(searchParams.get("page")) || 1));
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [count, setCount] = useState<number>(0);
+  const [listings, setListings] = useState<Listing[]>(snapshot?.result.listings ?? []);
+  const [count, setCount] = useState<number>(snapshot?.result.count ?? 0);
   const [pages, setPages] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!snapshot);
   const [facets, setFacets] = useState<Facets | null>(null);
-  const [selected, setSelected] = useState<Listing | null>(null);
   const [unavailable, setUnavailable] = useState(false);
   const resultsTop = useRef<HTMLDivElement>(null);
   const requestId = useRef(0);
@@ -124,15 +129,13 @@ export default function CarSearch() {
 
   const linkedListingId = searchParams.get("listing");
   useEffect(() => {
-    if (!linkedListingId) { setSelected(null); return; }
-    if (!/^\d{1,20}$/.test(linkedListingId)) return;
-    if (selected?.encarId === linkedListingId) return;
-    let cancelled = false;
-    searchListings({ ids: linkedListingId }, 1, 1).then((result) => {
-      if (!cancelled) setSelected(result.listings[0] ?? null);
+    if (!linkedListingId || !/^\d{1,20}$/.test(linkedListingId)) return;
+    let alive = true;
+    searchListings({ ids: linkedListingId }, 1, 1).then(r => {
+      if (alive && r.listings[0]) navigate(listingPath(r.listings[0]), { replace: true });
     }).catch(() => {});
-    return () => { cancelled = true; };
-  }, [linkedListingId]);
+    return () => { alive = false; };
+  }, [linkedListingId, navigate]);
 
   const savedMode = searchParams.get("saved") === "1";
 
@@ -150,6 +153,7 @@ export default function CarSearch() {
       setListings(result.listings);
       setCount(result.count ?? 0);
       setPages(result.pages ?? 0);
+      setHasNext(result.hasNext); setLoadedPage(targetPage);
       setUnavailable(!!result.unavailable);
       if (result.unavailable) toast.error("Каталогът е временно недостъпен.");
     } catch (err) {
@@ -176,15 +180,22 @@ export default function CarSearch() {
   }, [searchParams]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      runSearch(effectiveFilters, page);
+    const key = location.pathname + location.search;
+    const saved = catalogSnapshots.get(key);
+    if (saved) {
+      setListings(saved.result.listings); setCount(saved.result.count ?? 0); setPages(saved.result.pages ?? 0);
+      setLoadedPage(saved.loadedPage); setHasNext(saved.result.hasNext); setLoading(false);
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: saved.scroll, behavior: "instant" })));
       runFacets(effectiveFilters);
-    }, 400);
+      return;
+    }
+    const timer = window.setTimeout(() => { runSearch(effectiveFilters, page); runFacets(effectiveFilters); }, 400);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [effectiveFilters, page]);
 
   const changeFilters = (next: SearchFilters) => {
+    catalogSnapshots.clear();
     const params = filtersToParams(next);
     if (savedMode) params.set("saved", "1");
     setSearchParams(params, { replace: true });
@@ -197,31 +208,29 @@ export default function CarSearch() {
     resultsTop.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const listingScroll = useRef(0);
-  const openedFromList = useRef(false);
   const openListing = (listing: Listing) => {
-    listingScroll.current = window.scrollY;
-    openedFromList.current = true;
-    setSelected(listing);
-    const params = new URLSearchParams(searchParams);
-    if (listing.encarId) params.set("listing", listing.encarId);
-    setSearchParams(params);
+    const key = location.pathname + location.search;
+    catalogSnapshots.set(key, { result: { listings, count, pages, page, hasNext }, scroll: window.scrollY, loadedPage });
+    navigate(listingPath(listing), { state: { fromCatalog: key, listing } });
   };
-  const closeListing = () => {
-    if (openedFromList.current) window.history.back();
-    else { const params = new URLSearchParams(searchParams); params.delete("listing"); setSearchParams(params, { replace: true }); }
+  const loadMore = async () => {
+    if (appending || !hasNext) return;
+    setAppending(true);
+    const id = requestId.current;
+    try {
+      const result = await searchListings(effectiveFilters, loadedPage + 1, PAGE_SIZE);
+      if (id !== requestId.current) return;
+      if (result.unavailable) throw new Error("Unavailable");
+      setListings(previous => [...new Map([...previous, ...result.listings].map(car => [car.encarId ?? car.id, car])).values()]);
+      setLoadedPage(loadedPage + 1); setHasNext(result.hasNext); setPages(result.pages ?? pages);
+    } catch { toast.error(t("listing.unavailable")); }
+    finally { setAppending(false); }
   };
-  useEffect(() => {
-    if (!linkedListingId && openedFromList.current) {
-      openedFromList.current = false;
-      const y = listingScroll.current;
-      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top: y, behavior: "instant" })));
-    }
-  }, [linkedListingId]);
 
   const resetFilters = () => changeFilters({ ...emptyFilters });
 
   const toggleSaved = () => {
+    catalogSnapshots.clear();
     const params = new URLSearchParams(searchParams);
     if (savedMode) params.delete("saved");
     else params.set("saved", "1");
@@ -334,7 +343,8 @@ export default function CarSearch() {
                     <ListingListCard key={listing.encarId ?? listing.id} listing={listing} onOpen={openListing} priority={i < 2} />
                   ))}
                 </div>
-                <PaginationBar page={page} pages={pages} onPage={goToPage} />
+                <div className="hidden md:block"><PaginationBar page={page} pages={pages} onPage={goToPage} /></div>
+                {hasNext && <Button variant="outline" className="mt-5 min-h-12 w-full md:hidden" disabled={appending} onClick={loadMore}>{t(appending ? "listing.loading" : "listing.loadMore")}</Button>}
               </>
             ) : (
               <div className="mt-10 flex flex-col items-center gap-3 text-center">
@@ -354,7 +364,7 @@ export default function CarSearch() {
         </div>
       </div>
 
-      <ListingDialog listing={selected} onClose={closeListing} />
+
     </main>
   );
 }

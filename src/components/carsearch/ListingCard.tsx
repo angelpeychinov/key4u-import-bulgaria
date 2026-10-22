@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Gauge, MapPin, Car } from "lucide-react";
+import { Gauge, Car } from "lucide-react";
 import { Listing, SOURCE_LABELS, formatMileage, formatApproxEur } from "@/lib/listings";
 
 interface Props {
@@ -50,10 +50,7 @@ export const ListingCard = ({ listing, onOpen }: Props) => {
             <Gauge className="h-4 w-4 shrink-0" />
             {formatMileage(listing.mileage)}
           </p>
-          <p className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 shrink-0" />
-            {listing.location ?? "—"}
-          </p>
+
         </div>
 
         <Button
