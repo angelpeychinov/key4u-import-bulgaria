@@ -14,6 +14,7 @@ export default {
     },
     extend: {
       colors: {
+        viber: "hsl(var(--viber))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

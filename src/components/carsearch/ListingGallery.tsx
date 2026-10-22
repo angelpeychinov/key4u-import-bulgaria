@@ -21,7 +21,7 @@ export function ListingGallery({ photos, title, onZoom }: { photos: string[]; ti
     <div className="relative overflow-hidden rounded-lg bg-muted">
       <div ref={ref} className="overflow-hidden">
         <div className="flex touch-pan-y">
-          {photos.map((photo, i) => <Button key={`${photo}-${i}`} variant="ghost" className="block h-auto min-w-0 flex-[0_0_100%] rounded-none p-0" onClick={() => { if (api?.clickAllowed()) onZoom(i); }} aria-label={`${t('listing.zoom')} ${i + 1}`}>
+          {photos.map((photo, i) => <Button key={`${photo}-${i}`} variant="ghost" className="block h-auto min-w-0 flex-[0_0_100%] rounded-none p-0" onClick={() => { onZoom(i); }} aria-label={`${t('listing.zoom')} ${i + 1}`}>
             <img src={encarImg(photo, 1000)} alt={`${title} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} className="aspect-[4/3] max-h-[55vh] w-full object-cover md:max-h-[420px]" />
           </Button>)}
         </div>

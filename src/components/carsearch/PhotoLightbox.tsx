@@ -29,7 +29,7 @@ export const PhotoLightbox = ({ photos, index, title, onClose, onIndexChange }: 
     onTouchStart={e => { start.current = e.touches.length === 1 && scale.current <= 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; }}
     onTouchMove={e => { if (e.touches.length > 1) start.current = null; }}
     onTouchEnd={e => { const first = start.current; start.current = null; const end = e.changedTouches[0]; if (!first || !end || scale.current > 1) return; const dx = end.clientX - first.x; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(end.clientY - first.y)) go(dx < 0 ? 1 : -1); }}>
-    <TransformWrapper key={photos[index]} minScale={1} maxScale={5} onTransformed={(_, state) => { scale.current = state.scale; }} panning={{ disabled: scale.current <= 1 }} doubleClick={{ mode: 'toggle' }}>
+    <TransformWrapper key={photos[index]} minScale={1} maxScale={5} onTransform={(_, state) => { scale.current = state.scale; }} doubleClick={{ mode: 'toggle' }}>
       <TransformComponent wrapperClass="!w-full !h-full" contentClass="!w-full !h-full flex items-center justify-center">
         <img src={photos[index]} alt={`${title ?? ''} ${index + 1}`} onLoad={() => setLoaded(true)} className={`max-h-[90dvh] max-w-full select-none object-contain ${loaded ? 'opacity-100' : 'opacity-0'}`} />
       </TransformComponent>

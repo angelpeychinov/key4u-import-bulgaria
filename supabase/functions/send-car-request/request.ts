@@ -15,7 +15,7 @@ export const requestSchema = z.object({
     mileage: z.number().int().nonnegative().max(10000000).nullable(),
     encarId: text(20).regex(/^\d+$/),
     encarUrl: httpsUrl.refine((v) => /(^|\.)encar\.com$/.test(new URL(v).hostname), "Encar URL required"),
-    siteUrl: httpsUrl.refine((v) => new URL(v).hostname === "key4u.bg" && new URL(v).pathname === "/car-search", "Key4U listing URL required"),
+    siteUrl: httpsUrl.refine((v) => new URL(v).hostname === "key4u.bg" && (new URL(v).pathname === "/car-search" || /^\/kola\/[a-z0-9-]+-\d{1,20}$/.test(new URL(v).pathname)), "Key4U listing URL required"),
     priceKrw: z.number().int().nonnegative().max(1000000000000).nullable(),
     estimatedTotalEur: z.number().nonnegative().max(100000000).nullable(),
   }).optional(),

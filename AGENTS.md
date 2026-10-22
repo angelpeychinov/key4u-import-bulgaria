@@ -3,7 +3,7 @@
 - LanguageContext preserves its context identity in Vite hot data so mounted providers and refreshed consumers cannot diverge during preview updates; the missing-provider guard remains strict.
 
 - Car inquiries validate and persist server-side before emailing; a returned Resend error fails the request and only a returned email ID confirms acceptance, preventing false success.
-- Listing inquiries use a dedicated inline form and attach a canonical catalog deep link; CarSearch resolves listing IDs independently of current filters so emailed links open the intended car.
+- Listing inquiries use a dedicated inline form with canonical /kola links; validation accepts these and legacy /car-search links so previously sent emails remain usable.
 
 - The desktop catalog aside is the sticky, viewport-height scroll container and aligns at flex-start, preventing stretched parents from delaying filter scrolling; overscroll containment isolates wheel gestures from the results page.
 - The mobile filter sheet uses a dynamic-viewport-height clipped flex shell with nonshrinking header/footer and one native-touch middle scroll container, keeping controls reachable without scrolling the locked background.
@@ -11,7 +11,9 @@
 - Brand/model controls use desktop FacetDropdowns and in-sheet full-screen MobileFacetPicker below 768px; keeping touch scroll inside the sheet avoids modal scroll-lock interference, while qualified brand:model keys preserve dependent selections.
 - Catalog base models use the shared modelBase normalizer plus equivalent database functions/write guard; model_scope=base selects additive RPCs/caches and model_base_slug while legacy clients and original listing titles retain generation-specific names.
 - Conditional model-name shortening requires exact standalone-name evidence scoped to the same brand; use indexed candidate lookups rather than catalog-wide scans, and correct already-filled rows through cursor-bounded protected maintenance after rule updates.
-- Catalog listing history entries contain the listing ID without changing list filters/page; closing pops the entry and restores recorded scroll without reloading results.
+- Listing pages parse the final Encar ID through shared listingRoute helpers; catalog navigation records loaded results and scroll in bounded in-memory snapshots so Back restores the list without re-fetching.
+- Share HTML fetches one listing through listings-search, keeping preview pricing identical; similar_to uses bounded brand/base/year price-neighbour queries without schema changes.
+- Embla handles gallery swipes and react-zoom-pan-pinch handles fullscreen zoom; modal body locking isolates photo gestures.
 - Catalog backfill and base-cache refresh run only through service-role RPCs and the secret-protected catalog-maintenance function; never expose maintenance credentials or grant public write access.
 
 - Catalog year, price, and mileage fields share PresetOrInput with unique suggestion lists; year validation stays in a tested helper so desktop and mobile apply identical complete-year rules.

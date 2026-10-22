@@ -32,3 +32,7 @@ test("origin accepts only the four allowed values and needs at least one", () =>
   expect(requestSchema.safeParse({ ...base, origin: ["korea"] }).success).toBe(false);
   expect(requestSchema.safeParse({ ...base, origin: [] }).success).toBe(false);
 });
+test("inquiries accept new listing pages and reject unrelated site paths", () => {
+  expect(requestSchema.safeParse({ ...base, listing: { ...listing, siteUrl: "https://key4u.bg/kola/bmw-x5-2022-42733720" } }).success).toBe(true);
+  expect(requestSchema.safeParse({ ...base, listing: { ...listing, siteUrl: "https://key4u.bg/contact" } }).success).toBe(false);
+});
