@@ -82,15 +82,15 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
   return (
     <div className="catalog-filter-controls flex flex-col">
       <div className="flex items-center justify-between pb-2">
-        <h2 className="text-base font-bold text-foreground">Филтри</h2>
-        <Button variant="ghost" size="sm" onClick={onReset} className="text-muted-foreground">
+        <h2 className="text-base font-bold text-foreground">{t("catalog.filters")}</h2>
+        <Button variant="ghost" size="sm" onClick={onReset} className="min-h-11 text-muted-foreground">
           <RotateCcw className="mr-1 h-3.5 w-3.5" /> Изчисти
         </Button>
       </div>
       {onToggleSaved && (
         <Button
           variant={savedMode ? "default" : "outline"}
-          className="mb-2 w-full justify-center"
+          className="mb-2 min-h-11 w-full justify-center"
           aria-pressed={savedMode}
           onClick={onToggleSaved}
         >
@@ -229,7 +229,7 @@ export const FilterSidebar = ({ filters, facets, onChange, onReset, savedMode = 
                   checked={inList(filters.body_type, b.value)}
                   onCheckedChange={() => set({ body_type: toggleInList(filters.body_type, b.value) })}
                 />
-                <span className="flex-1 text-foreground">{bodyBg(b.value)}</span>
+                <span className="flex-1 text-foreground">{b.value === "truck" ? t("catalog.truck") : bodyBg(b.value)}</span>
                 <span className="text-xs text-muted-foreground">{b.count.toLocaleString("bg-BG")}</span>
               </label>
             ))}
