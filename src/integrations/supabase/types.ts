@@ -229,6 +229,30 @@ export type Database = {
         }
         Relationships: []
       }
+      encar_model_map: {
+        Row: {
+          brand_name: string
+          model_base: string | null
+          model_base_final: string | null
+          model_name: string
+          slug: string | null
+        }
+        Insert: {
+          brand_name: string
+          model_base?: string | null
+          model_base_final?: string | null
+          model_name: string
+          slug?: string | null
+        }
+        Update: {
+          brand_name?: string
+          model_base?: string | null
+          model_base_final?: string | null
+          model_name?: string
+          slug?: string | null
+        }
+        Relationships: []
+      }
       encar_sync_config: {
         Row: {
           key: string
@@ -479,6 +503,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      encar_apply_model_map: { Args: { _limit?: number }; Returns: number }
       encar_backfill_base_models: { Args: { _limit?: number }; Returns: number }
       encar_backfill_model_body: { Args: { _limit?: number }; Returns: number }
       encar_base_facets: {
@@ -550,8 +575,13 @@ export type Database = {
             }
             Returns: Json
           }
+      encar_fix_romanized: { Args: { _name: string }; Returns: string }
       encar_model_base: {
         Args: { _brand?: string; _model: string }
+        Returns: string
+      }
+      encar_model_base_final: {
+        Args: { _brand: string; _model: string }
         Returns: string
       }
       encar_model_base_slug: {
