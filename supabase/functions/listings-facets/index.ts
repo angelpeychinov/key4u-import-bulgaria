@@ -194,7 +194,19 @@ Deno.serve(async (req) => {
     };
 
     const started = Date.now();
-    const { data, error } = await supabase.rpc(baseScope ? "encar_base_facets" : "encar_facets", args);
+    // Cap the visitor-facing wait: a slow filtered count must never leave the
+    // catalog empty — fall back to the precomputed default facets instead.
+    const TIMED_OUT = Symbol("facets-timeout");
+    const raced = await Promise.race([
+      supabase.rpc(baseScope ? "encar_base_facets" : "encar_facets", args),
+      new Promise<typeof TIMED_OUT>((resolve) => setTimeout(() => resolve(TIMED_OUT), 4500)),
+    ]);
+    if (raced === TIMED_OUT) {
+      console.error("encar_facets timed out after 4.5s, serving cached default");
+      const fallback = await readDefault();
+      return json({ ...(fallback ?? {}), unavailable: true, fallback: true, models: [] });
+    }
+    const { data, error } = raced;
     if (error) {
       console.error("encar_facets failed", error);
       const fallback = await readDefault();

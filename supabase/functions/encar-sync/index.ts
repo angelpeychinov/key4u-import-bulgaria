@@ -134,12 +134,24 @@ function toRow(r: any, maker: string, bodies: Map<string, string>) {
   };
 }
 
-const FULL_INTERVAL_MS = 20 * 3600_000;
+// Full crawls re-read the whole catalog, so they run at most once a week,
+// started Sunday 03:00–05:59 Sofia, and resume across invocations (windows are
+// persisted), which spreads the work over many small batches instead of one burst.
+const FULL_MIN_AGE_MS = 6 * 24 * 3600_000;
 const INCR_INTERVAL_MS = 15 * 60_000;
 const INCR_MAX_PAGES = 8; // per car type; the list API has no ModifiedDate, so no date-based early stop
 
-function sofiaHour(): number {
-  return Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Sofia", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
+function sofiaParts(): { weekday: string; hour: number } {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Sofia", weekday: "short", hour: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date());
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return { weekday: get("weekday"), hour: Number(get("hour")) };
+}
+
+function fullWindowOpen(): boolean {
+  const { weekday, hour } = sofiaParts();
+  return weekday === "Sun" && hour >= 3 && hour < 6;
 }
 
 async function runIncremental(supabase: any, proxyUrl: string, t0: number, bodies: Map<string, string>) {
@@ -251,9 +263,8 @@ Deno.serve(async (req) => {
       const { data: lastFull } = await supabase.from("encar_sync_runs").select("started_at")
         .eq("kind", "full").eq("status", "done").order("started_at", { ascending: false }).limit(1);
       const lf = lastFull?.[0];
-      const h = sofiaHour();
-      const fullDue = !lf ||
-        (Date.now() - new Date(lf.started_at).getTime() > FULL_INTERVAL_MS && h >= 2 && h < 6);
+      const fullDue = fullWindowOpen() &&
+        (!lf || Date.now() - new Date(lf.started_at).getTime() > FULL_MIN_AGE_MS);
       if (!fullDue) {
         if (incBlocked) {
           await releaseLock();

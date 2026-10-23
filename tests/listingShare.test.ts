@@ -1,40 +1,60 @@
 import { expect, test } from 'bun:test';
 import { listingShareUrl } from '../src/lib/listingNavigation';
 import { nativeListingShare } from '../src/lib/nativeListingShare';
+import { buildListingShareText } from '../src/lib/listingShareText';
 import { allowedPhotoUrl } from '../supabase/functions/photo-proxy/url';
+import { formatNumber, type Listing } from '../src/lib/listings';
 
-const data = { title: 'BMW X5', text: 'Photo and price\n👉 https://key4u-import-bulgaria.lovable.app/kola/bmw-x5-2011-42462707', url: 'https://key4u-import-bulgaria.lovable.app/kola/bmw-x5-2011-42462707' };
-const file = new File(['jpeg'], 'bmw-x5-2011-42462707.jpg', { type: 'image/jpeg' });
+const car: Listing = {
+  id: '1', brand: 'BMW', model: 'X5 (G05)', modelBase: 'X5', year: 2011, encarId: '42462707',
+  title: 'BMW X5', photos: [], specs: { 'Гориво': 'Дизел', 'Скоростна кутия': 'Автоматична' },
+  mileage: 112340, importPrice: { price: 9000, transport: 2200, handling: 1050, total: 12250 },
+};
+const url = 'https://key4u.bg/kola/bmw-x5-2011-42462707';
 
-test('sharing uses the clean published listing URL', () => {
-  expect(listingShareUrl({ id: '1', brand: 'BMW', modelBase: 'X5', year: 2011, encarId: '42462707', title: 'BMW X5', photos: [], specs: {} })).toBe(data.url);
+test('sharing uses the clean published listing URL on key4u.bg', () => {
+  expect(listingShareUrl(car)).toBe(url);
 });
-test('native sharing prefers JPEG file, title and linked text without a duplicate URL', async () => {
+
+test('share text matches the approved format with price and short transmission', () => {
+  expect(buildListingShareText(car)).toBe(
+    `🇰🇷 BMW X5 2011 от Южна Корея\n${formatNumber(112340)} км · Дизел · Автоматик\n💶 ~${formatNumber(12250)} € до България, с всичко включено\n\n📞 За повече информация – 0898 25 24 34\n${url}`,
+  );
+});
+
+test('price-on-request listings use the request line', () => {
+  const text = buildListingShareText({ ...car, importPrice: undefined });
+  expect(text).toContain('💶 Цена при запитване');
+  expect(text).not.toContain('€ до България');
+});
+
+test('missing specs are skipped instead of printing placeholders', () => {
+  const text = buildListingShareText({ ...car, mileage: undefined, specs: {} });
+  expect(text).toBe(`🇰🇷 BMW X5 2011 от Южна Корея\n💶 ~${formatNumber(12250)} € до България, с всичко включено\n\n📞 За повече информация – 0898 25 24 34\n${url}`);
+  expect(text).not.toContain('—');
+});
+
+test('manual gearbox shares as Ръчна', () => {
+  const text = buildListingShareText({ ...car, specs: { 'Скоростна кутия': 'Ръчна' } });
+  expect(text).toContain('· Ръчна');
+});
+
+test('native share sends text only — no url field, no files', async () => {
   const calls: ShareData[] = [];
-  expect(await nativeListingShare({ canShare: d => d?.files?.[0] === file, share: async d => { calls.push(d); } }, data, file)).toBe(true);
-  expect(calls).toEqual([{ files: [file], title: data.title, text: data.text }]);
+  expect(await nativeListingShare({ share: async d => { calls.push(d); } }, { text: 'hello\nhttps://key4u.bg/kola/x' })).toBe(true);
+  expect(calls).toEqual([{ text: 'hello\nhttps://key4u.bg/kola/x' }]);
 });
-test('unsupported files share text and clean link', async () => {
-  const calls: ShareData[] = [];
-  await nativeListingShare({ canShare: () => false, share: async d => { calls.push(d); } }, data, file);
-  expect(calls).toEqual([data]);
+
+test('missing native share opens the fallback menu', async () => {
+  expect(await nativeListingShare({}, { text: 'x' })).toBe(false);
 });
-test('file failure falls back to text then menu when both fail', async () => {
-  const calls: ShareData[] = [];
-  expect(await nativeListingShare({ canShare: () => true, share: async d => { calls.push(d); throw new Error('Unavailable'); } }, data, file)).toBe(false);
-  expect(calls).toEqual([{ files: [file], title: data.title, text: data.text }, data]);
+
+test('share failure opens the fallback menu, cancellation does not', async () => {
+  expect(await nativeListingShare({ share: async () => { throw new Error('Unavailable'); } }, { text: 'x' })).toBe(false);
+  expect(await nativeListingShare({ share: async () => { throw new DOMException('Cancelled', 'AbortError'); } }, { text: 'x' })).toBe(true);
 });
-test('missing photo shares text and link', async () => {
-  const calls: ShareData[] = [];
-  await nativeListingShare({ canShare: () => true, share: async d => { calls.push(d); } }, data);
-  expect(calls).toEqual([data]);
-});
-test('user cancellation does not reopen another share flow', async () => {
-  let calls = 0;
-  expect(await nativeListingShare({ canShare: () => true, share: async () => { calls++; throw new DOMException('Cancelled', 'AbortError'); } }, data, file)).toBe(true);
-  expect(calls).toBe(1);
-});
+
 test('photo proxy only allows HTTPS ci.encar.com without credentials or alternate ports', () => {
   expect(allowedPhotoUrl('https://ci.encar.com/carpicture/a.jpg')?.hostname).toBe('ci.encar.com');
-  for (const url of ['http://ci.encar.com/a.jpg', 'https://ci.encar.com.evil.test/a.jpg', 'https://example.test/a.jpg', 'https://ci.encar.com@127.0.0.1/a', 'https://user:pass@ci.encar.com/a', 'https://ci.encar.com:8443/a', 'file:///a', '']) expect(allowedPhotoUrl(url)).toBeNull();
+  for (const u of ['http://ci.encar.com/a.jpg', 'https://ci.encar.com.evil.test/a.jpg', 'https://example.test/a.jpg', 'https://ci.encar.com@127.0.0.1/a', 'https://user:pass@ci.encar.com/a', 'https://ci.encar.com:8443/a', 'file:///a', '']) expect(allowedPhotoUrl(u)).toBeNull();
 });

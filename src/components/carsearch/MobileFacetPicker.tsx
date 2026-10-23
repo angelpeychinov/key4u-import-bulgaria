@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useHistoryLayer } from "@/hooks/useHistoryLayer";
 import { selectionValues } from "@/lib/listings";
 
 const POPULAR = ["hyundai", "kia", "genesis", "bmw", "mercedes-benz", "audi"];
@@ -17,6 +18,8 @@ export function MobileFacetPicker({ title, options, value, searchPlaceholder, em
   const [query, setQuery] = useState("");
   const back = useRef<HTMLButtonElement>(null);
   useEffect(() => { back.current?.focus(); }, []);
+  // Phone/browser Back closes the picker and returns to the filters, keeping selections.
+  useHistoryLayer(true, onClose);
   const selected = selectionValues(value);
   const filtered = options.filter(o => o.name.toLowerCase().includes(query.trim().toLowerCase()));
   const grouped = options.some(o => o.group);

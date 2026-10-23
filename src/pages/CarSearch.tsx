@@ -19,6 +19,7 @@ import { FilterSidebar } from "@/components/carsearch/FilterSidebar";
 import { MobileFilterBar } from "@/components/carsearch/MobileFilterBar";
 import { PaginationBar } from "@/components/carsearch/PaginationBar";
 import { useFavorites } from "@/hooks/useFavorites";
+import { CONTACT_PHONE_DISPLAY, VIBER_GROUP_URL } from "@/lib/contact";
 
 const PAGE_SIZE = 20;
 
@@ -122,9 +123,11 @@ export default function CarSearch() {
   const [loading, setLoading] = useState(!snapshot);
   const [facets, setFacets] = useState<Facets | null>(null);
   const [unavailable, setUnavailable] = useState(false);
+  const [failed, setFailed] = useState(false);
   const resultsTop = useRef<HTMLDivElement>(null);
   const requestId = useRef(0);
   const facetRequestId = useRef(0);
+  const retriedRef = useRef(false);
   const { ids: favoriteIds } = useFavorites();
 
   const linkedListingId = searchParams.get("listing");
@@ -150,19 +153,34 @@ export default function CarSearch() {
     try {
       const result = await searchListings(active, targetPage, PAGE_SIZE);
       if (id !== requestId.current) return;
+      if (result.unavailable) throw new Error("Unavailable");
       setListings(result.listings);
       setCount(result.count ?? 0);
       setPages(result.pages ?? 0);
       setHasNext(result.hasNext); setLoadedPage(targetPage);
-      setUnavailable(!!result.unavailable);
-      if (result.unavailable) toast.error("Каталогът е временно недостъпен.");
+      setUnavailable(false);
+      setFailed(false);
     } catch (err) {
       if (id !== requestId.current) return;
       console.error(err);
-      toast.error("Обявите не можаха да бъдат заредени. Опитайте отново.");
+      // One automatic retry after ~3s before showing the friendly error block.
+      if (!retriedRef.current) {
+        retriedRef.current = true;
+        window.setTimeout(() => { if (id === requestId.current) runSearch(active, targetPage); }, 3000);
+      } else {
+        setUnavailable(true);
+        setFailed(true);
+      }
     } finally {
       if (id === requestId.current) setLoading(false);
     }
+  };
+
+  const retrySearch = () => {
+    retriedRef.current = false;
+    setFailed(false);
+    runSearch(effectiveFilters, page);
+    runFacets(effectiveFilters);
   };
 
   const runFacets = async (active: SearchFilters) => {
@@ -189,6 +207,8 @@ export default function CarSearch() {
       runFacets(effectiveFilters);
       return;
     }
+    retriedRef.current = false;
+    setFailed(false);
     const timer = window.setTimeout(() => { runSearch(effectiveFilters, page); runFacets(effectiveFilters); }, 400);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -346,16 +366,25 @@ export default function CarSearch() {
                 <div className="hidden md:block"><PaginationBar page={page} pages={pages} onPage={goToPage} /></div>
                 {hasNext && <Button variant="outline" className="mt-5 min-h-12 w-full md:hidden" disabled={appending} onClick={loadMore}>{t(appending ? "listing.loading" : "listing.loadMore")}</Button>}
               </>
+            ) : failed ? (
+              <div className="mt-10 flex flex-col items-center gap-4 rounded-xl border border-border bg-muted/40 p-8 text-center">
+                <p className="max-w-md text-foreground">{t("catalog.updateError")}</p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Button className="min-h-12" onClick={retrySearch}>{t("catalog.retry")}</Button>
+                  <Button variant="outline" className="min-h-12" asChild>
+                    <a href={VIBER_GROUP_URL} target="_blank" rel="noopener noreferrer">{t("catalog.viberWrite")}</a>
+                  </Button>
+                </div>
+                <a href={`tel:+359898252434`} className="text-sm font-medium text-primary hover:underline">{CONTACT_PHONE_DISPLAY}</a>
+              </div>
             ) : (
               <div className="mt-10 flex flex-col items-center gap-3 text-center">
                 <p className="text-muted-foreground">
-                  {unavailable
-                    ? "Каталогът е временно недостъпен. Моля, опитайте по-късно."
-                    : savedMode
-                      ? "Нямате запазени автомобили. Отбележете сърчице на обява, за да я добавите тук."
-                      : "Няма намерени обяви по избраните критерии."}
+                  {savedMode
+                    ? "Нямате запазени автомобили. Отбележете сърчице на обява, за да я добавите тук."
+                    : "Няма намерени обяви по избраните критерии."}
                 </p>
-                {!savedMode && !unavailable && (
+                {!savedMode && (
                   <Button variant="outline" onClick={resetFilters}>Изчисти филтрите</Button>
                 )}
               </div>

@@ -23,12 +23,15 @@
 
 - Search and facets share the pricing-limit helper for calculated-price eligibility and EUR-filter ceilings, so configurable limits never diverge while original-price sorting remains unchanged.
 
-- Navigation owns route-aware scroll appearance and uses the global photo-header style only at the homepage top; other pages and expanded menus retain the solid header for legibility.- Encar data enters encar_listings only through the shared _shared/upsertListings.ts helper (used by listings-ingest and encar-sync), so price-history and first_seen_at rules stay identical.
-- encar-sync sends all *.encar.com requests through ENCAR_PROXY_URL, because Encar blocks cloud server IPs.
-- Default and categorical catalog facets use a scheduled grouped database cache; numeric filters scan one source, with taxonomy fallback to preserve choices under sync load.
-- Encar detail normalization and response facet sanitization share a tested text-safety helper; a database trigger sanitizes every facet-cache write to protect cached fallback reads.
+- Navigation owns route-aware scroll appearance and uses the global photo-header style only at the homepage top; other pages and expanded menus retain the solid header for legibility.
+- Encar data enters encar_listings only through _shared/upsertListings.ts (listings-ingest + encar-sync); unchanged rows are skipped via content_hash (cyrb53 over displayed fields) with at most a skinny touch (hash backfill and/or last_seen_at bump older than 6 h); price history only on real price change.
+- encar-sync uses ENCAR_PROXY_URL (Encar blocks cloud IPs); full crawls start only Sunday 03:00–05:59 Sofia, ≥6 days apart, resuming via persisted windows in small batches. Cron schedules are owner-managed — do not change them.
+- Default/categorical facets use a scheduled grouped cache; filtered facet requests race a 4.5 s timeout and fall back to the cached default payload; the catalog UI retries a failed search once after 3 s, then shows the friendly update block (Viber/phone).
+- Encar detail normalization and facet sanitization share a tested text-safety helper; a trigger sanitizes every facet-cache write.
 - Search distinguishes absent saved IDs from an explicit empty scope; empty saved searches return locally and the server rejects empty ID scopes to avoid exposing the full catalog as favorites.
 - Encar model/category bodies are resolved through the protected model mapping table cached per sync invocation; shared upserts preserve existing non-null bodies so detail classifications are never lost.
-- Body-category mapping uses Encar-provided facet expressions and size-bounded grouped queries to preserve punctuation and avoid rejected URLs; backfill updates only null classifications through indexed batches.
-- encar_listings raw_data/photos have planner statistics disabled (SET STATISTICS 0), because analyzing those large JSON columns stalled autovacuum for hours and timed out the catalog.
+- Body-category mapping uses Encar facet expressions and size-bounded grouped queries; backfill updates only null classifications through indexed batches.
+- encar_listings raw_data/photos have planner statistics disabled (SET STATISTICS 0): analyzing them stalled autovacuum for hours and timed out the catalog.
+- Mobile filter sheet presets and sort are native <select> (iOS wheel; portalled lists can't touch-scroll under scroll lock); desktop keeps popover/Radix. Sheet and MobileFacetPicker are useHistoryLayer history layers: Back closes only the top layer and never reverts filter URL changes.
+- Listing sharing is text-only navigator.share({ text }) with the approved Bulgarian text from buildListingShareText (link inside text, no url field, no photo file); SITE_URL is the single share-destination source. photo-proxy stays deployed but unused.
 - Customer contact details (email, Viber invite link) come from the shared constants in src/lib/contact.ts; static files that cannot import them (index.html structured data, public/llms.txt) must repeat the same literal value, and a test guards against stale spellings.
