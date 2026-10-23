@@ -43,7 +43,7 @@ export default function ListingPage() {
       const car = result.listings[0] ?? null; setListing(car);
       if (car && listingPath(car) !== location.pathname) navigate(listingPath(car), { replace: true, state: location.state });
     }).catch(() => { if (alive) setFailed(true); }).finally(() => { if (alive) setLoading(false); });
-    return () => { alive = false; };
+    return () => { alive = false; cancelAnimationFrame(raf); };
   }, [id]);
   useEffect(() => {
     if (!listing?.encarId) return;
