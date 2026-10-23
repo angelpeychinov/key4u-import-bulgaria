@@ -21,9 +21,19 @@ export default function ListingPage() {
   const [loading, setLoading] = useState(true);
   const [similar, setSimilar] = useState<Listing[]>([]);
   const [failed, setFailed] = useState(false);
+  // Native restoration is disabled while a listing is open: the browser
+  // clones the previous entry's scroll offset on pushState and re-applies it
+  // after content loads, landing the page mid-scroll. Back to the catalog
+  // still restores its position through the catalog snapshot.
+  useEffect(() => {
+    window.history.scrollRestoration = 'manual';
+    return () => { window.history.scrollRestoration = 'auto'; };
+  }, []);
   useEffect(() => {
     let alive = true;
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    const toTop = () => window.scrollTo({ top: 0, behavior: 'instant' });
+    toTop();
+    const raf = requestAnimationFrame(toTop);
     setLoading(true); setFailed(false); setSimilar([]);
     setListing(initial?.encarId === id ? initial : null);
     if (!id) { setLoading(false); return; }
@@ -33,7 +43,7 @@ export default function ListingPage() {
       const car = result.listings[0] ?? null; setListing(car);
       if (car && listingPath(car) !== location.pathname) navigate(listingPath(car), { replace: true, state: location.state });
     }).catch(() => { if (alive) setFailed(true); }).finally(() => { if (alive) setLoading(false); });
-    return () => { alive = false; };
+    return () => { alive = false; cancelAnimationFrame(raf); };
   }, [id]);
   useEffect(() => {
     if (!listing?.encarId) return;
