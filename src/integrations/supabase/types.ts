@@ -109,6 +109,7 @@ export type Database = {
           brand_name: string | null
           brand_slug: string | null
           color: string | null
+          content_hash: string | null
           created_at: string
           encar_id: string
           engine_cc: number | null
@@ -142,6 +143,7 @@ export type Database = {
           brand_name?: string | null
           brand_slug?: string | null
           color?: string | null
+          content_hash?: string | null
           created_at?: string
           encar_id: string
           engine_cc?: number | null
@@ -175,6 +177,7 @@ export type Database = {
           brand_name?: string | null
           brand_slug?: string | null
           color?: string | null
+          content_hash?: string | null
           created_at?: string
           encar_id?: string
           engine_cc?: number | null
@@ -602,6 +605,7 @@ export type Database = {
           brand_name: string | null
           brand_slug: string | null
           color: string | null
+          content_hash: string | null
           created_at: string
           encar_id: string
           engine_cc: number | null

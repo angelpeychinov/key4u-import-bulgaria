@@ -310,6 +310,7 @@ const PresetOrInput = ({
   value, placeholder, presets, onChange, yearOnly = false, mileage = false,
 }: { value: string; placeholder: string; presets: number[]; onChange: (v: string) => void; yearOnly?: boolean; mileage?: boolean }) => {
   const { t } = useLanguage();
+  const isMobile = useIsMobile();
   const presetLabel = (preset: number) => yearOnly ? String(preset) : `${String(preset).replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ${mileage ? t("catalog.mileageUnit") : "€"}`;
   const listId = useId();
   const [draft, setDraft] = useState(value);
@@ -323,6 +324,28 @@ const PresetOrInput = ({
     onChange(next);
     setOpen(false);
   };
+
+  // Mobile: a native <select> gives iOS its own picker wheel — a portalled
+  // popover list inside the filter sheet cannot be touch-scrolled there.
+  if (isMobile) {
+    return (
+      <div className="relative min-w-0 w-full">
+        <select
+          aria-label={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-11 w-full appearance-none rounded-md border border-input bg-background px-3 pr-7 text-base text-foreground"
+        >
+          <option value="">{placeholder}</option>
+          {value && !presets.includes(Number(value)) && <option value={value}>{value}</option>}
+          {presets.map((preset) => (
+            <option key={preset} value={preset}>{presetLabel(preset)}</option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-2 top-3.5 h-4 w-4 text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
   <Popover open={open} onOpenChange={setOpen}>

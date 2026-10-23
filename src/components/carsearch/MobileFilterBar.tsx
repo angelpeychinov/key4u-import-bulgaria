@@ -2,10 +2,10 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SlidersHorizontal } from "lucide-react";
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
 import { Facets, SearchFilters, SORT_OPTIONS, SortKey, formatNumber } from "@/lib/listings";
 import { FilterSidebar } from "./FilterSidebar";
+import { useHistoryLayer } from "@/hooks/useHistoryLayer";
 
 interface Props {
   filters: SearchFilters;
@@ -22,6 +22,8 @@ interface Props {
 export const MobileFilterBar = ({ filters, facets, activeCount, resultCount, onChange, onReset, savedMode, savedCount, onToggleSaved }: Props) => {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
+  // Phone/browser Back closes the sheet and returns to the listings.
+  useHistoryLayer(open, () => setOpen(false));
 
   return (
     <>
@@ -48,19 +50,20 @@ export const MobileFilterBar = ({ filters, facets, activeCount, resultCount, onC
           </SheetContent>
         </Sheet>
 
-        <Select
-          value={filters.sort ?? "newest"}
-          onValueChange={(v) => onChange({ ...filters, sort: v as SortKey })}
-        >
-          <SelectTrigger className="h-11 min-w-0 flex-1">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent side="bottom" align="start" sideOffset={4} data-catalog-select className="catalog-dropdown-panel data-[side=bottom]:translate-y-0 data-[side=top]:translate-y-0">
+        {/* Native select: iOS shows its own picker wheel, no portalled list to scroll-lock. */}
+        <div className="relative min-w-0 flex-1">
+          <select
+            aria-label={t("catalog.sort")}
+            value={filters.sort ?? "newest"}
+            onChange={(e) => onChange({ ...filters, sort: e.target.value as SortKey })}
+            className="h-11 w-full appearance-none truncate rounded-md border border-input bg-background px-3 pr-8 text-base text-foreground"
+          >
             {SORT_OPTIONS.map((o) => (
-              <SelectItem className="catalog-dropdown-row" key={o.value} value={o.value}>{o.label}</SelectItem>
+              <option key={o.value} value={o.value}>{o.label}</option>
             ))}
-          </SelectContent>
-        </Select>
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
+        </div>
       </div>
     </>
   );

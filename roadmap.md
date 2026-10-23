@@ -1,5 +1,10 @@
 # Roadmap
 
+- [ ] Stability task (2026-10-23, paid ads day — DO NOT PUBLISH, no heavy backfills, keep user's cron schedules '5-55/10 * * * *' encar-sync + '*/10 * * * *' facets refresh):
+  1) DB load: (a) full crawl only Sunday ~03:00 Sofia, spread over runs; (b) upserts skip unchanged rows via content_hash (light migration, no backfill); (c) facets always from cache w/ timeout→cached-default fallback; (d) UI friendly error block + auto-retry once after 3s (Viber + phone).
+  2) Mobile filters: native <select> in filter sheet (iOS wheel), back arrows on sub-screens keep selections, browser back = sub-screen→filters→listings, verify 390px touch scroll.
+  3) Sharing: SITE_URL→https://key4u.bg, text-only navigator.share (no photo file), exact BG share text, fallback menu unchanged.
+
 - [x] Focused listing share fix: all share controls use SITE_URL + clean listing path; JPEG prepared before tap through deployed host-restricted photo-proxy (CDN CORS confirmed), with text/menu fallbacks. Real listing at 390px exercised with instrumented native APIs: JPEG bytes/name/type, unsupported/missing/failed photo, text failure, Viber/Facebook/copy URLs; desktop menu checked, 12 tests pass, build OK. Actual Viber app receipt cannot be tested here. Existing share endpoint left deployed and unused; website not published.
 
 - [x] Part 2 UI: listing pages/legacy redirect, retained list filters/sort/loaded results and exact scroll, galleries/swipe/pinch, sticky contacts, native/fallback sharing, six similar cars, mobile card swipe/load-more, single filter heading. Real 390px + desktop flows verified; 94 tests pass. No publishing/database maintenance.
