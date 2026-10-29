@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Final-price wording and oversize model rule: preserve share/request/checklist, deploy affected pricing function and verify real Palisade/X5/Avante plus 390px labels; no publishing or database maintenance.
+- [x] Final-price wording and oversize model rule: labels localized, visible price tildes removed, listing-only exchange-rate line; share/request/checklist preserved. Shared exported oversize model list; listings-search deployed. 58 focused tests pass; real engine-null Palisade 42184588 and X5 42412741 each +600 EUR, Avante 42843754 +0. 390px catalog/price screenshots and desktop render checked, build OK; no publishing or database maintenance.
 
 - [x] Privacy policy and consent: exact BG copy in both languages, footer/banner/sitemap links, shared required consent UI, nullable server-generated consent_at without backfill. At 390px both forms blocked unchecked and accepted one real marked test each (HTTP 200, sent, timestamps verified); 13 tests passed, build OK. Website not published. Server accepts legacy omitted consent with null timestamp so unchanged published forms keep working until publication.
 
