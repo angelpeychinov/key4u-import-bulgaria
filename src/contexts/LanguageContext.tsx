@@ -67,6 +67,7 @@ const translations = {
     "listing.taxes": "Duty and VAT",
     "listing.commission": "Key4U commission",
     "listing.koreanPrice": "Price in Korea:",
+    "listing.priceNote": "The price is based on today's exchange rate and shipping rates and is confirmed on the day of purchase.",
     "listing.insurance": "Insurance (optional)",
     "listing.offer": "Contact us for a quote including all costs to Bulgaria.",
     "listing.details": "Details",
