@@ -1,4 +1,4 @@
-import { Facebook, Instagram, MessageCircle } from "lucide-react";
+import { Facebook, Instagram, Mail, MessageCircle, Phone } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import logoFooter from "@/assets/logo-footer.png";
 import { CONTACT_EMAIL, CONTACT_PHONE_DISPLAY } from "@/lib/contact";
@@ -42,8 +42,18 @@ export const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">{t('footer.contacts')}</h3>
             <ul className="space-y-2 text-sm opacity-90">
-              <li>{t('footer.emailLabel')} {CONTACT_EMAIL}</li>
-              <li>{t('footer.phoneLabel')} {CONTACT_PHONE_DISPLAY}</li>
+              <li>
+                <a href={`mailto:${CONTACT_EMAIL}`} aria-label="Имейл" className="flex items-center gap-2 hover:opacity-100 transition-smooth">
+                  <Mail size={18} />
+                  {CONTACT_EMAIL}
+                </a>
+              </li>
+              <li>
+                <a href="tel:+359898252434" aria-label="Телефон" className="flex items-center gap-2 hover:opacity-100 transition-smooth">
+                  <Phone size={18} />
+                  {CONTACT_PHONE_DISPLAY}
+                </a>
+              </li>
             </ul>
           </div>
         </div>
