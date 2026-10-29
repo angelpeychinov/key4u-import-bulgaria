@@ -4,7 +4,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { catalogSelection, catalogOrFilter } from "../_shared/catalogSelection.ts";
 import { FALLBACK_MAX_PRICED_KRW, filteredPriceMax, hasCalculatedPrice, resolveMaxPricedKrw } from "../_shared/pricingLimit.ts";
 
-const HIDDEN_MARGIN = 150;
+import { calculateKoreaImportPrice, isOversizeVehicle } from "../_shared/importPricing.ts";
 // Live rates come from the pricing_config table (cached 5 min); these are
 // fallbacks if the table is unreachable. fx = eur_to_cad * cad_to_krw already
 // includes the exchange loss, so there is NO separate EUR->CAD conversion fee.
@@ -52,43 +52,6 @@ const loadPricingConfig = async (
   return cfg;
 };
 
-const commissionForPrice = (krw: number): number => {
-  if (krw <= 20000000) return 900;
-  if (krw <= 35000000) return 1000;
-  if (krw <= 50000000) return 1300;
-  return 1500;
-};
-
-const dutyVatFee = (priceEur: number): number => {
-  if (priceEur < 10000) return 1000;
-  if (priceEur <= 15000) return 1300;
-  if (priceEur <= 20000) return 1500;
-  if (priceEur <= 25000) return 1800;
-  if (priceEur <= 30000) return 2000;
-  if (priceEur <= 35000) return 2200;
-  return 2500;
-};
-
-// Calibrated against Key4U's real Rotterdam calculator (8 data points, ±40 €).
-const calculateKoreaImportPrice = (priceKrw: number, isOversize = false, cfg: PricingConfig = FALLBACK_CFG) => {
-  // Цена на колата в EUR: без корейско ДДС (/1.1), с нашата надценка, по курс fx.
-  const carEur = ((priceKrw / 1.1) * (1 + cfg.carMarkupPct / 100)) / cfg.fx;
-
-  // "Цена до Ротердам"
-  const rotterdam = carEur + cfg.rotterdamFixed + (isOversize ? 350 : 0);
-  const dutyVat = dutyVatFee(carEur);
-  const domTransport = isOversize ? 1150 : 900; // Rotterdam -> Bulgaria
-  // "Комисионна и обработка"
-  const handling = HIDDEN_MARGIN + commissionForPrice(priceKrw);
-
-  return {
-    price: rotterdam,
-    transport: dutyVat + domTransport, // "Транспорт до България + мито и ДДС"
-    handling,
-    total: rotterdam + dutyVat + domTransport + handling,
-  };
-};
-
 // Smallest KRW price whose (non-oversize) final total reaches `eur`.
 // The total has tiny dips at fee-bracket edges, so we scan upward instead of
 // binary searching: everything below the result is guaranteed to cost < eur.
@@ -101,14 +64,6 @@ const firstKrwReaching = (eur: number, cfg: PricingConfig = FALLBACK_CFG): numbe
   // refine inside (k, k+STEP]
   while (total(k + 1) < eur) k += 1;
   return k + 1;
-};
-
-const isOversizeVehicle = (v: Record<string, unknown>): boolean => {
-  const body = String(v?.body_type ?? "").toLowerCase();
-  const cc = Number(v?.engine_cc ?? 0);
-  if (["pickup", "truck", "van", "minivan"].some((b) => body.includes(b))) return true;
-  if (body.includes("suv") && Number.isFinite(cc) && cc > 2000) return true;
-  return false;
 };
 
 const numParam = (params: URLSearchParams, key: string): number | undefined => {

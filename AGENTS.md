@@ -36,3 +36,5 @@
 - Customer contact details (email, Viber invite link) come from the shared constants in src/lib/contact.ts; static files that cannot import them (index.html structured data, public/llms.txt) must repeat the same literal value, and a test guards against stale spellings.
 
 - Inquiry forms share PrivacyConsent and require affirmative consent; the server records its own consent_at only when true. Omitted consent remains accepted for unchanged live forms until website publication.
+
+- Import totals and oversize classification live in the shared importPricing helper, with one exported brand/model list; search, random samples and similar listings use the same calculation to prevent pricing drift.
