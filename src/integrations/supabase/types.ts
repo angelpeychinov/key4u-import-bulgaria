@@ -462,6 +462,24 @@ export type Database = {
         }
         Relationships: []
       }
+      sitemap_cars: {
+        Row: {
+          lastmod: string | null
+          n: number
+          path: string
+        }
+        Insert: {
+          lastmod?: string | null
+          n: number
+          path: string
+        }
+        Update: {
+          lastmod?: string | null
+          n?: number
+          path?: string
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           confirmed_at: string | null
@@ -669,6 +687,7 @@ export type Database = {
         }[]
       }
       encar_sync_try_lock: { Args: { _seconds?: number }; Returns: boolean }
+      refresh_sitemap_cars: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
