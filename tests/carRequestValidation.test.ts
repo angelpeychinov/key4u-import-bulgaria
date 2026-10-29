@@ -37,11 +37,14 @@ test("inquiries accept new listing pages and reject unrelated site paths", () =>
   expect(requestSchema.safeParse({ ...base, listing: { ...listing, siteUrl: "https://key4u.bg/contact" } }).success).toBe(false);
 });
 
-test("both forms require explicit consent and reject omitted, false or string values", () => {
+test("both forms accept affirmative consent but reject false and string values", () => {
   for (const request of [base, { name: "Test", phone: "0000000000", model: "BMW", email: "key4u.import@gmail.com" }]) {
     expect(requestSchema.safeParse({ ...request, consent: true }).success).toBe(true);
-    for (const consent of [undefined, false, "true"]) {
+    for (const consent of [false, "true"]) {
       expect(requestSchema.safeParse({ ...request, consent }).success).toBe(false);
     }
   }
+});
+test("previously published forms remain compatible until the site update is published", () => {
+  expect(requestSchema.safeParse({ ...base, consent: undefined }).success).toBe(true);
 });
