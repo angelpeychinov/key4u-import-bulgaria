@@ -168,6 +168,10 @@ export const ListingContent = ({ listing }: Props) => {
                     <ContactButtons title={inquiryTitle} siteUrl={siteUrl} onInquiry={() => setInquiryOpen((open) => !open)} />
 
                     {inquiryOpen && <ListingInquiryForm listing={listing} total={total} onClose={() => setInquiryOpen(false)} />}
+
+                    <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+                      {t("listing.priceNote")}
+                    </p>
                   </div>
                 )}
 
