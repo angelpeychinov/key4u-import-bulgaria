@@ -38,7 +38,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (!validation.success) return json({ error: validation.error.flatten().fieldErrors }, 400);
     const data = validation.data;
     const { data: saved, error: saveError } = await db.from("car_request_submissions").insert({
-      name: data.name, phone: data.phone, email: data.email || null, model: data.model, request_data: data,
+      name: data.name, phone: data.phone, email: data.email || null, model: data.model, request_data: data, consent_at: data.consent === true ? new Date().toISOString() : null,
     }).select("id").single();
     if (saveError || !saved) {
       console.error("Car request storage failed", saveError?.code);

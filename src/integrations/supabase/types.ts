@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       car_request_submissions: {
         Row: {
+          consent_at: string | null
           created_at: string
           email: string | null
           email_id: string | null
@@ -27,6 +28,7 @@ export type Database = {
           request_data: Json
         }
         Insert: {
+          consent_at?: string | null
           created_at?: string
           email?: string | null
           email_id?: string | null
@@ -38,6 +40,7 @@ export type Database = {
           request_data: Json
         }
         Update: {
+          consent_at?: string | null
           created_at?: string
           email?: string | null
           email_id?: string | null
@@ -462,6 +465,24 @@ export type Database = {
         }
         Relationships: []
       }
+      sitemap_cars: {
+        Row: {
+          lastmod: string | null
+          n: number
+          path: string
+        }
+        Insert: {
+          lastmod?: string | null
+          n: number
+          path: string
+        }
+        Update: {
+          lastmod?: string | null
+          n?: number
+          path?: string
+        }
+        Relationships: []
+      }
       subscribers: {
         Row: {
           confirmed_at: string | null
@@ -669,6 +690,7 @@ export type Database = {
         }[]
       }
       encar_sync_try_lock: { Args: { _seconds?: number }; Returns: boolean }
+      refresh_sitemap_cars: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

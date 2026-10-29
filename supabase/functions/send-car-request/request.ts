@@ -3,6 +3,8 @@ import { z } from "npm:zod@3.25.76";
 const text = (max: number) => z.string().trim().max(max);
 const httpsUrl = text(2000).url().refine((value) => new URL(value).protocol === "https:", "HTTPS URL required");
 export const requestSchema = z.object({
+  // Existing published forms omit this until the website update is published.
+  consent: z.literal(true).optional(),
   name: text(100).min(1),
   phone: text(20).min(1),
   email: z.union([text(255).email(), z.literal("")]).optional(),

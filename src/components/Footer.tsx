@@ -34,6 +34,7 @@ export const Footer = () => {
               <li><a href="/process" className="opacity-90 hover:opacity-100 transition-smooth">{t('nav.process')}</a></li>
               <li><a href="/find-car" className="opacity-90 hover:opacity-100 transition-smooth">{t('nav.findCar')}</a></li>
               <li><a href="/faq" className="opacity-90 hover:opacity-100 transition-smooth">{t('nav.faq')}</a></li>
+              <li><a href="/poveritelnost" className="opacity-90 hover:opacity-100 transition-smooth">{t('privacy.footer')}</a></li>
             </ul>
           </div>
 

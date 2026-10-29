@@ -9,6 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { listingPath } from "@/lib/listingNavigation";
 import type { Listing } from "@/lib/listings";
+import { PrivacyConsent } from "@/components/PrivacyConsent";
 
 const schema = z.object({
   name: z.string().trim().min(1).max(100),
@@ -20,6 +21,8 @@ const schema = z.object({
 export function ListingInquiryForm({ listing, total, onClose }: { listing: Listing; total?: number; onClose: () => void }) {
   const { t } = useLanguage();
   const [sending, setSending] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", email: "", additional: t("inquiry.messageDefault") });
   const title = [listing.brand, listing.model, listing.trim, listing.year].filter(Boolean).join(" ") || listing.title;
   const change = (key: keyof typeof form, value: string) => setForm((previous) => ({ ...previous, [key]: value }));
@@ -27,12 +30,13 @@ export function ListingInquiryForm({ listing, total, onClose }: { listing: Listi
     <form className="mt-4 space-y-3 border-t border-border pt-4 text-foreground" onSubmit={async (event) => {
       event.preventDefault();
       if (sending) return;
+      if (!consent) { setConsentError(true); return; }
       const parsed = schema.safeParse(form);
       if (!parsed.success || !listing.encarId) { toast.error(t("inquiry.invalid")); return; }
       setSending(true);
       try {
         const { data, error } = await supabase.functions.invoke("send-car-request", { body: {
-          ...parsed.data, model: title,
+          ...parsed.data, model: title, consent: true,
           listing: {
             title, mileage: listing.mileage ?? null, encarId: listing.encarId,
             encarUrl: listing.url || `https://www.encar.com/dc/dc_cardetailview.do?carid=${encodeURIComponent(listing.encarId)}`,
@@ -55,6 +59,7 @@ export function ListingInquiryForm({ listing, total, onClose }: { listing: Listi
         <label className="block text-sm">{t("inquiry.phone")} *<Input required type="tel" maxLength={20} autoComplete="tel" value={form.phone} onChange={(e) => change("phone", e.target.value)} /></label>
         <label className="block text-sm">{t("inquiry.email")}<Input type="email" maxLength={255} autoComplete="email" value={form.email} onChange={(e) => change("email", e.target.value)} /></label>
         <label className="block text-sm">{t("inquiry.message")}<Textarea rows={3} maxLength={1000} value={form.additional} onChange={(e) => change("additional", e.target.value)} /></label>
+        <PrivacyConsent checked={consent} error={consentError} disabled={sending} onChange={(checked) => { setConsent(checked); setConsentError(false); }} />
         <Button type="submit" className="w-full">{sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}{t(sending ? "inquiry.sending" : "inquiry.send")}</Button>
       </fieldset>
     </form>
