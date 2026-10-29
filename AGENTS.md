@@ -35,3 +35,5 @@
 - Mobile filter sheet presets and sort are native <select> (iOS wheel; portalled lists can't touch-scroll under scroll lock); desktop keeps popover/Radix. Sheet and MobileFacetPicker are useHistoryLayer history layers: Back closes only the top layer and never reverts filter URL changes.
 - Listing sharing is text-only navigator.share({ text }) with the approved Bulgarian text from buildListingShareText (link inside text, no url field, no photo file); SITE_URL is the single share-destination source. photo-proxy stays deployed but unused.
 - Customer contact details (email, Viber invite link) come from the shared constants in src/lib/contact.ts; static files that cannot import them (index.html structured data, public/llms.txt) must repeat the same literal value, and a test guards against stale spellings.
+
+- Personal-data inquiry forms share PrivacyConsent and send an explicit boolean; server validation requires consent and records server-generated consent_at, so clients cannot supply the evidence timestamp.

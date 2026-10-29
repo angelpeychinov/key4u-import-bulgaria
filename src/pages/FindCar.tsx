@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Car, Search, User, Mail, Phone, Calendar, Palette, Settings, MessageSquare, Globe } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { PrivacyConsent } from "@/components/PrivacyConsent";
 
 const ORIGIN_OPTIONS: { value: string; labelKey: string }[] = [
   { value: "canada", labelKey: "form.originCanada" },
@@ -32,6 +33,8 @@ const carRequestSchema = z.object({
 export default function FindCar() {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -57,13 +60,14 @@ export default function FindCar() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!consent) { setConsentError(true); return; }
     setLoading(true);
 
     try {
       const validated = carRequestSchema.parse({ ...formData, origin });
 
       const { data, error } = await supabase.functions.invoke('send-car-request', {
-        body: validated,
+        body: { ...validated, consent: true },
       });
 
       if (error) {
@@ -82,6 +86,8 @@ export default function FindCar() {
         additional: "",
       });
       setOrigin(["any"]);
+      setConsent(false);
+      setConsentError(false);
     } catch (error) {
       if (error instanceof z.ZodError) {
         error.errors.forEach((err) => {
@@ -338,6 +344,7 @@ export default function FindCar() {
 
                   {/* Submit Button */}
                   <div className="pt-4">
+                    <div className="mb-4"><PrivacyConsent checked={consent} error={consentError} disabled={loading} onChange={(checked) => { setConsent(checked); setConsentError(false); }} /></div>
                     <Button
                       type="submit"
                       variant="hero"

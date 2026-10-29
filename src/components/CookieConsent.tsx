@@ -3,11 +3,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Cookie, X, Shield } from "lucide-react";
 
+import { useLanguage } from "@/contexts/LanguageContext";
+
 const COOKIE_CONSENT_KEY = "key4u-cookie-consent";
 
 type ConsentStatus = "accepted" | "declined" | null;
 
 export function CookieConsent() {
+  const { t } = useLanguage();
   const { pathname } = useLocation();
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -63,6 +66,7 @@ export function CookieConsent() {
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   <Cookie className="w-4 h-4 text-primary inline mr-1.5 md:hidden" />
                   Този сайт използва бисквитки за подобряване на потребителското изживяване.
+                  {" "}<a href="/poveritelnost" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-4">{t("privacy.title")}</a>
                 </p>
               </div>
               
