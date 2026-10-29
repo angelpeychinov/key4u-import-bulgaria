@@ -1,0 +1,1 @@
+ALTER TABLE public.car_request_submissions ADD COLUMN IF NOT EXISTS consent_at timestamptz;
