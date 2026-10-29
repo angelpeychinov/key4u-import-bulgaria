@@ -320,6 +320,7 @@ const translations = {
     "listing.taxes": "Мито и ДДС",
     "listing.commission": "Комисионна Key4U",
     "listing.koreanPrice": "Цена в Корея:",
+    "listing.priceNote": "Цената е по днешния валутен курс и корабни тарифи и се потвърждава в деня на покупката.",
     "listing.insurance": "Застраховка (по избор)",
     "listing.offer": "Свържи се с нас и ще ти изготвим точна оферта с всички разходи до България.",
     "listing.details": "Детайли",
