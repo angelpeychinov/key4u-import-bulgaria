@@ -7,7 +7,7 @@ import { ArrowRight, Camera, Car, Clock, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Listing, SortKey, encarImg, formatApproxEur, formatMileage, searchListings } from "@/lib/listings";
+import { Listing, SortKey, encarImg, formatEur, formatMileage, searchListings } from "@/lib/listings";
 
 // Self-contained homepage teaser for the Korea catalog; remove by deleting its line in Home.tsx.
 const BRANDS = [
@@ -131,7 +131,7 @@ export const KoreaCatalogSection = () => {
                             <p className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-snug text-foreground">{car.title}</p>
                             <p className="text-xs text-muted-foreground">{car.year ?? "—"} · {formatMileage(car.mileage)}</p>
                             <p className="pt-1 text-[11px] uppercase tracking-wide text-muted-foreground">{t("korea.home.priceLabel")}</p>
-                            <p className="text-lg font-bold text-primary">{formatApproxEur(car.importPrice?.total)}</p>
+                            <p className="text-lg font-bold text-primary">{formatEur(car.importPrice?.total)}</p>
                           </div>
                         </Link>
                       </CarouselItem>

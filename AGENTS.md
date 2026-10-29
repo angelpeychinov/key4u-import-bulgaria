@@ -1,11 +1,11 @@
 # Architecture rules
 
-- LanguageContext preserves its context identity in Vite hot data so mounted providers and refreshed consumers cannot diverge during preview updates; the missing-provider guard remains strict.
+- LanguageContext keeps identity in Vite hot data to prevent provider/consumer divergence during HMR; retain the strict missing-provider guard.
 
 - Car inquiries validate and persist server-side before emailing; a returned Resend error fails the request and only a returned email ID confirms acceptance, preventing false success.
 - Listing inquiries use a dedicated inline form with canonical /kola links; validation accepts these and legacy /car-search links so previously sent emails remain usable.
 
-- The desktop catalog aside is the sticky, viewport-height scroll container and aligns at flex-start, preventing stretched parents from delaying filter scrolling; overscroll containment isolates wheel gestures from the results page.
+- The desktop catalog aside is sticky, viewport-height and flex-start aligned, preventing stretched parents from delaying scrolling; overscroll containment isolates wheel gestures.
 - The mobile filter sheet uses a dynamic-viewport-height clipped flex shell with nonshrinking header/footer and one native-touch middle scroll container, keeping controls reachable without scrolling the locked background.
 
 - Brand/model controls use desktop FacetDropdowns and in-sheet full-screen MobileFacetPicker below 768px; keeping touch scroll inside the sheet avoids modal scroll-lock interference, while qualified brand:model keys preserve dependent selections.
@@ -36,3 +36,5 @@
 - Customer contact details (email, Viber invite link) come from the shared constants in src/lib/contact.ts; static files that cannot import them (index.html structured data, public/llms.txt) must repeat the same literal value, and a test guards against stale spellings.
 
 - Inquiry forms share PrivacyConsent and require affirmative consent; the server records its own consent_at only when true. Omitted consent remains accepted for unchanged live forms until website publication.
+
+- Shared importPricing owns totals and one exported oversize model list; search, random samples and similar cars share it to prevent pricing drift.

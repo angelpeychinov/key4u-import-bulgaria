@@ -1,8 +1,9 @@
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Gauge, Car } from "lucide-react";
-import { Listing, SOURCE_LABELS, formatMileage, formatApproxEur } from "@/lib/listings";
+import { Listing, SOURCE_LABELS, formatMileage, formatEur } from "@/lib/listings";
 
 interface Props {
   listing: Listing;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export const ListingCard = ({ listing, onOpen }: Props) => {
+  const { t } = useLanguage();
   const photo = listing.thumb ?? listing.photos[0];
 
   return (
@@ -41,8 +43,8 @@ export const ListingCard = ({ listing, onOpen }: Props) => {
         <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground">{listing.title}</h3>
 
         <div>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Цена до България</p>
-          <p className="text-xl font-bold text-[#183e32]">{formatApproxEur(listing.importPrice?.total)}</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">{t("listing.price")}</p>
+          <p className="text-xl font-bold text-[#183e32]">{formatEur(listing.importPrice?.total)}</p>
         </div>
 
         <div className="mt-auto space-y-1 text-sm text-muted-foreground">

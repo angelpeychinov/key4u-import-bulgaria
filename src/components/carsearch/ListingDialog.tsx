@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Check, ExternalLink, Mail, Phone } from "lucide-react";
-import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatApproxEur, formatKrw, encarImg } from "@/lib/listings";
+import { Listing, SOURCE_LABELS, formatMileage, formatEur, formatKrw, encarImg } from "@/lib/listings";
 import { CONTACT_PHONE } from "@/lib/contact";
 import { PhotoLightbox } from "@/components/carsearch/PhotoLightbox";
 import { ListingInquiryForm } from "./ListingInquiryForm";
@@ -132,9 +132,11 @@ export const ListingContent = ({ listing }: Props) => {
                     <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
                       <span className="text-sm uppercase tracking-wide text-primary/70">{t("listing.estimate")}</span>
                       <span className="text-3xl font-bold leading-none text-primary">
-                        {formatApproxEur(total)}
+                        {formatEur(total)}
                       </span>
                     </div>
+
+                    <p className="mt-2 text-xs text-muted-foreground">{t("listing.exchangeRate")}</p>
 
                     {listing.priceKrw !== undefined && (
                       <p className="mt-2 text-xs text-primary/60">
