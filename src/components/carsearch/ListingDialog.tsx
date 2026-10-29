@@ -129,14 +129,11 @@ export const ListingContent = ({ listing }: Props) => {
                   >
                     <h3 className="text-base font-semibold text-primary">{t("listing.price")}</h3>
 
-                    <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
-                      <span className="text-sm uppercase tracking-wide text-primary/70">{t("listing.estimate")}</span>
+                    <div className="mt-3 flex flex-wrap items-end justify-end gap-3">
                       <span className="text-3xl font-bold leading-none text-primary">
                         {formatEur(total)}
                       </span>
                     </div>
-
-                    <p className="mt-2 text-xs text-muted-foreground">{t("listing.exchangeRate")}</p>
 
                     {listing.priceKrw !== undefined && (
                       <p className="mt-2 text-xs text-primary/60">
@@ -171,10 +168,6 @@ export const ListingContent = ({ listing }: Props) => {
                     <ContactButtons title={inquiryTitle} siteUrl={siteUrl} onInquiry={() => setInquiryOpen((open) => !open)} />
 
                     {inquiryOpen && <ListingInquiryForm listing={listing} total={total} onClose={() => setInquiryOpen(false)} />}
-
-                    <p className="mt-4 text-xs leading-relaxed text-primary/60">
-                      {t("listing.disclaimer")}
-                    </p>
                   </div>
                 )}
 
